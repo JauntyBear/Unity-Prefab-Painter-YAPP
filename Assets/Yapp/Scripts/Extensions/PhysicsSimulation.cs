@@ -42,7 +42,7 @@ namespace Yapp
         {
             AutoGenerateComponents(gameObjects);
 
-            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb)).ToArray();
+            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, forceAngleInDegrees, randomizeForceAngle)).ToArray();
 
             SimulateOnce(simulatedBodies);
 
@@ -85,7 +85,7 @@ namespace Yapp
             foreach (SimulatedBody body in simulatedBodies)
             {
                 float randomForceAmount = Random.Range(forceMinMax.x, forceMinMax.y);
-                float forceAngle = ((randomizeForceAngle) ? Random.Range(0, 360f) : forceAngleInDegrees) * Mathf.Deg2Rad;
+                float forceAngle = body.forceAngle;
                 Vector3 forceDir = new Vector3(Mathf.Sin(forceAngle), 0, Mathf.Cos(forceAngle));
                 body.rigidbody.AddForce(forceDir * randomForceAmount, ForceMode.Impulse);
             }
@@ -108,7 +108,7 @@ namespace Yapp
 
             AutoGenerateComponents(gameObjects);
 
-            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb)).ToArray();
+            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, forceAngleInDegrees, randomizeForceAngle)).ToArray();
 
             simulationStepCount = 0;
             simulationStopTriggered = false;
@@ -233,12 +233,16 @@ namespace Yapp
             readonly Geometry geometry;
             readonly Transform transform;
 
-            public SimulatedBody(Transform transform)
+            public readonly float forceAngle;
+
+            public SimulatedBody(Transform transform, float forceAngleInDegrees, bool randomizeForceAngle)
             {
                 this.transform = transform;
                 this.rigidbody = transform.GetComponent<Rigidbody>();
 
                 this.geometry = new Geometry(transform);
+
+                this.forceAngle = ((randomizeForceAngle) ? Random.Range(0, 360f) : forceAngleInDegrees) * Mathf.Deg2Rad;
             }
 
             public void Undo()
