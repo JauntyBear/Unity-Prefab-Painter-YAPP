@@ -15,9 +15,23 @@ namespace Yapp
                 if (_boxTitleStyle == null)
                 {
                     _boxTitleStyle = new GUIStyle("Label");
-                    _boxTitleStyle.fontStyle = FontStyle.Italic;
+                    _boxTitleStyle.fontStyle = FontStyle.BoldAndItalic;
                 }
                 return _boxTitleStyle;
+            }
+        }
+
+        private static GUIStyle _groupTitleStyle;
+        public static GUIStyle GroupTitleStyle
+        {
+            get
+            {
+                if (_groupTitleStyle == null)
+                {
+                    _groupTitleStyle = new GUIStyle("Label");
+                    _groupTitleStyle.fontStyle = FontStyle.Bold;
+                }
+                return _groupTitleStyle;
             }
         }
 

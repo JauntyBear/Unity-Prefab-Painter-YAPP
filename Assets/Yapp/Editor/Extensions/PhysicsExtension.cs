@@ -48,7 +48,7 @@ namespace Yapp
 
             #region Simulate Once
 
-            EditorGUILayout.LabelField("Simulate Once", GUIStyles.BoxTitleStyle);
+            EditorGUILayout.LabelField("Simulate Once", GUIStyles.GroupTitleStyle);
 
             this.gizmo.physicsSimulation.maxIterations = EditorGUILayout.IntField("Max Iterations", this.gizmo.physicsSimulation.maxIterations);
 
@@ -63,7 +63,7 @@ namespace Yapp
 
             #region Simulate Continuously
 
-            EditorGUILayout.LabelField("Simulate Continuously", GUIStyles.BoxTitleStyle);
+            EditorGUILayout.LabelField("Simulate Continuously", GUIStyles.GroupTitleStyle);
 
             EditorGUILayout.IntField("Simulation Step", this.gizmo.physicsSimulation.simulationStepCount);
 
@@ -86,7 +86,7 @@ namespace Yapp
             EditorGUILayout.Space();
 
             #region Undo
-            EditorGUILayout.LabelField("Undo", GUIStyles.BoxTitleStyle);
+            EditorGUILayout.LabelField("Undo", GUIStyles.GroupTitleStyle);
 
             if (GUILayout.Button("Undo Last Simulation"))
             {
