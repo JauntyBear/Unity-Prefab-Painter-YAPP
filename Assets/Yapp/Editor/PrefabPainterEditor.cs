@@ -25,6 +25,7 @@ namespace Yapp
 
         private PhysicsExtension physicsModule;
         private CopyPasteExtension copyPasteModule;
+        private SelectionExtension selectionModule;
         private ToolsExtension toolsModule;
 
         private ContainerModuleEditor containerModule;
@@ -57,6 +58,7 @@ namespace Yapp
             this.prefabModule = new PrefabModuleEditor(this);
             this.physicsModule = new PhysicsExtension(this);
             this.copyPasteModule = new CopyPasteExtension(this);
+            this.selectionModule = new SelectionExtension(this);
             this.toolsModule = new ToolsExtension(this);
 
             modeButtons = new GUIContent[]
@@ -191,6 +193,9 @@ namespace Yapp
 
                     /// Copy/Paste
                     this.copyPasteModule.OnInspectorGUI();
+
+                    // Selection
+                    this.selectionModule.OnInspectorGUI();
 
                     // Tools
                     this.toolsModule.OnInspectorGUI();
