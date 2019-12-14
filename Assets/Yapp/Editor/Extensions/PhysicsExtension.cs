@@ -9,6 +9,7 @@ namespace Yapp
 
     public class PhysicsExtension 
     {
+
         #pragma warning disable 0414
         PrefabPainterEditor editor;
         #pragma warning restore 0414
@@ -34,24 +35,64 @@ namespace Yapp
 
             EditorGUILayout.LabelField("Physics Settings", GUIStyles.BoxTitleStyle);
 
-            this.gizmo.physicsSimulation.maxIterations = EditorGUILayout.IntField("Max Iterations", this.gizmo.physicsSimulation.maxIterations);
+            #region Settings
+
+            this.gizmo.physicsSimulation.forceApplyType = (PhysicsSimulation.ForceApplyType) EditorGUILayout.EnumPopup("Force Apply Type", this.gizmo.physicsSimulation.forceApplyType);
             this.gizmo.physicsSimulation.forceMinMax = EditorGUILayout.Vector2Field("Force Min/Max", this.gizmo.physicsSimulation.forceMinMax);
             this.gizmo.physicsSimulation.forceAngleInDegrees = EditorGUILayout.FloatField("Force Angle (Degrees)", this.gizmo.physicsSimulation.forceAngleInDegrees);
             this.gizmo.physicsSimulation.randomizeForceAngle = EditorGUILayout.Toggle("Randomize Force Angle", this.gizmo.physicsSimulation.randomizeForceAngle);
 
-            // GUILayout.BeginHorizontal();
+            #endregion Settings
 
-            if (GUILayout.Button("Run Simulation"))
+            EditorGUILayout.Space();
+
+            #region Simulate Once
+
+            EditorGUILayout.LabelField("Simulate Once", GUIStyles.BoxTitleStyle);
+
+            this.gizmo.physicsSimulation.maxIterations = EditorGUILayout.IntField("Max Iterations", this.gizmo.physicsSimulation.maxIterations);
+
+            if (GUILayout.Button("Simulate Once"))
             {
                 RunSimulation();
             }
+
+            #endregion Simulate Once
+
+            EditorGUILayout.Space();
+
+            #region Simulate Continuously
+
+            EditorGUILayout.LabelField("Simulate Continuously", GUIStyles.BoxTitleStyle);
+
+            EditorGUILayout.IntField("Simulation Step", this.gizmo.physicsSimulation.simulationStepCount);
+
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Start"))
+            {
+                StartSimulation();
+            }
+
+            if (GUILayout.Button("Stop"))
+            {
+                StopSimulation();
+            }
+
+            GUILayout.EndHorizontal();
+
+            #endregion Simulate Continuously
+
+            EditorGUILayout.Space();
+
+            #region Undo
+            EditorGUILayout.LabelField("Undo", GUIStyles.BoxTitleStyle);
 
             if (GUILayout.Button("Undo Last Simulation"))
             {
                 ResetAllBodies();
             }
-
-            // GUILayout.EndHorizontal();
+            #endregion Undo
 
             GUILayout.EndVertical();
         }
@@ -60,9 +101,7 @@ namespace Yapp
 
         private void RunSimulation()
         {
-
-            this.gizmo.physicsSimulation.RunSimulation(getContainerChildren());
-
+            this.gizmo.physicsSimulation.RunSimulationOnce(getContainerChildren());
         }
 
         private void ResetAllBodies()
@@ -82,5 +121,16 @@ namespace Yapp
 
             return children;
         }
+
+        private void StartSimulation()
+        {
+            this.gizmo.physicsSimulation.StartSimulation(getContainerChildren());
+        }
+
+        private void StopSimulation()
+        {
+            this.gizmo.physicsSimulation.StopSimulation();
+        } 
+
     }
 }
