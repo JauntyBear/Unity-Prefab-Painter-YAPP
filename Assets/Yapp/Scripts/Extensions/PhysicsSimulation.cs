@@ -92,7 +92,7 @@ namespace Yapp
         }
 
         #region Simulate Continuously
-        private bool simulationRunning = false;
+        public bool simulationRunning = false;
         private bool simulationStopTriggered = false;
         public int simulationStepCount = 0;
 
@@ -110,6 +110,7 @@ namespace Yapp
 
             simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, forceAngleInDegrees, randomizeForceAngle)).ToArray();
 
+            simulationRunning = true;
             simulationStepCount = 0;
             simulationStopTriggered = false;
 
