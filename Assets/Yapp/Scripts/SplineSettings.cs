@@ -24,7 +24,8 @@ namespace Yapp
         {
             Fixed,
             Range,
-            PrefabBounds
+            PrefabRadiusBounds,
+            PrefabForwardSize
         }
 
         [Range (0,10)]

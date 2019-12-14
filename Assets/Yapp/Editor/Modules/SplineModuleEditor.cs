@@ -91,7 +91,11 @@ namespace Yapp
             {
                 EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
             }
-            else if (gizmo.splineSettings.separation == SplineSettings.Separation.PrefabBounds)
+            else if (gizmo.splineSettings.separation == SplineSettings.Separation.PrefabRadiusBounds)
+            {
+                EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
+            }
+            else if (gizmo.splineSettings.separation == SplineSettings.Separation.PrefabForwardSize)
             {
                 EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
             }

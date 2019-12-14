@@ -53,26 +53,33 @@ namespace Yapp
             // debug gizmos
             if( prefabPainter.splineSettings.debug)
             {
-                foreach (GameObject prefab in prefabPainter.splineSettings.prefabInstances)
-                {
-
-                    Bounds bounds = GetPrefabBounds(prefab);
-
-                    // https://docs.unity3d.com/ScriptReference/Renderer-bounds.html
-                    Vector3 center = bounds.center;
-                    float radius = bounds.extents.magnitude;
-
-                    // sphere
-                    Gizmos.color = Color.white;
-                    Gizmos.DrawWireSphere(center, radius);
-
-                    // rectangle
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawWireCube(center, bounds.size);
-
-
-                }
+                DrawDebugGizmos();
             }
+        }
+
+        private void DrawDebugGizmos()
+        {
+
+            foreach (GameObject prefab in prefabPainter.splineSettings.prefabInstances)
+            {
+
+                Bounds bounds = GetPrefabBounds(prefab);
+
+                // https://docs.unity3d.com/ScriptReference/Renderer-bounds.html
+                Vector3 center = bounds.center;
+                float radius = bounds.extents.magnitude;
+
+                // sphere
+                Gizmos.color = Color.white;
+                Gizmos.DrawWireSphere(center, radius);
+
+                // rectangle
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireCube(center, bounds.size);
+
+
+            }
+
         }
 
         /// <summary>
@@ -240,8 +247,16 @@ namespace Yapp
                     distanceToMove = Random.Range(prefabPainter.splineSettings.separationDistanceMin, prefabPainter.splineSettings.separationDistanceMax);
                     break;
 
-                case SplineSettings.Separation.PrefabBounds:
+                case SplineSettings.Separation.PrefabRadiusBounds:
                     distanceToMove = GetPrefabRadius( prefab);
+
+                    // add additional distance to move
+                    distanceToMove += Random.Range(prefabPainter.splineSettings.separationDistanceMin, prefabPainter.splineSettings.separationDistanceMax);
+
+                    break;
+
+                case SplineSettings.Separation.PrefabForwardSize:
+                    distanceToMove = GetPrefabForwardSize(prefab);
 
                     // add additional distance to move
                     distanceToMove += Random.Range(prefabPainter.splineSettings.separationDistanceMin, prefabPainter.splineSettings.separationDistanceMax);
@@ -296,6 +311,20 @@ namespace Yapp
             float radius = bounds.size.magnitude;
 
             return radius;
+        }
+
+        private float GetPrefabForwardSize(GameObject prefab)
+        {
+
+            MeshRenderer mesh_renderer = prefab.GetComponent<MeshRenderer>();
+            MeshFilter meshFilter = mesh_renderer.GetComponent<MeshFilter>();
+            Mesh mesh = meshFilter.sharedMesh;
+
+            // bounds in world space: mesh_renderer.bounds
+            // bounds in local space: mesh.bounds
+            float size = mesh.bounds.extents.z * prefab.transform.localScale.z * 2;
+
+            return size;
         }
 
         /// <summary>
@@ -380,9 +409,14 @@ namespace Yapp
                 // check if the objects should be aligned next to each other
                 // TODO this is only done for the center lane currently; we don't have the information about the others
                 //      ie this only works in center lane mode currently
-                if (prefabPainter.splineSettings.separation == SplineSettings.Separation.PrefabBounds)
+                if (prefabPainter.splineSettings.separation == SplineSettings.Separation.PrefabRadiusBounds)
                 {
-                    // move along in the spline rotation, considering the radius
+                    // move along in the spline rotation, considering the radius (/2)
+                    addDistanceToDirection = splineRotation * prefab.transform.forward * GetDistanceToMove(prefab) / 2;
+                }
+                else if (prefabPainter.splineSettings.separation == SplineSettings.Separation.PrefabForwardSize)
+                {
+                    // move along in the spline rotation, considering the extents (/2)
                     addDistanceToDirection = splineRotation * prefab.transform.forward * GetDistanceToMove(prefab) / 2;
                 }
 
