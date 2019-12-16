@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using UnityEditorInternal;
 
 namespace Yapp
 {
@@ -25,13 +26,14 @@ namespace Yapp
         SerializedProperty reusePrefabs;
         SerializedProperty snap;
         SerializedProperty debug;
+        SerializedProperty controlPoints;
 
         SerializedProperty dirty;
 
         #endregion Properties
 
         // avoid endless loop by limiting min distance between objects to a value above 0
-        private static readonly float minDistanceBetweenObjectsd = 0.01f;
+        private static readonly float minDistanceBetweenObjects = 0.01f;
 
         PrefabPainterEditor editor;
         PrefabPainter gizmo;
@@ -65,6 +67,8 @@ namespace Yapp
 
             snap = editor.FindProperty(x => x.splineSettings.snap);
             debug = editor.FindProperty(x => x.splineSettings.debug);
+
+            controlPoints = editor.FindProperty(x => x.splineSettings.controlPoints);
 
             dirty =  editor.FindProperty(x => x.splineSettings.dirty);
 
@@ -126,6 +130,24 @@ namespace Yapp
 
             EditorGUILayout.PropertyField(debug, new GUIContent("Debug"));
 
+            /* show a list of points
+             * TODO: 
+             *   optimize instantiation
+             *   reflection for position
+             *   maybe move to dedicated debug tab
+             *   
+            ReorderableList list = new ReorderableList(editor.serializedObject, controlPoints, false, true, false, false);
+            list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = list.serializedProperty.GetArrayElementAtIndex(index);
+                rect.y += 2;
+                EditorGUI.PropertyField(
+                    new Rect(rect.x, rect.y, 200, EditorGUIUtility.singleLineHeight),
+                    element.FindPropertyRelative("position"), GUIContent.none); 
+            };
+            list.DoLayoutList();
+            */
+
             bool changed = EditorGUI.EndChangeCheck();
 
             if( changed)
@@ -138,7 +160,7 @@ namespace Yapp
 
                 // avoid endless loop by limiting min distance between objects to a value above 0
                 if( separationDistance.floatValue <= 0)
-                    separationDistance.floatValue = minDistanceBetweenObjectsd;
+                    separationDistance.floatValue = minDistanceBetweenObjects;
 
 
                 // allow control point rotation only in spline rotation mode
@@ -191,7 +213,7 @@ namespace Yapp
 
         }
 
-        // About the position hanlde see example https://docs.unity3d.com/ScriptReference/Handles.PositionHandle.html
+        // About the position handle see example https://docs.unity3d.com/ScriptReference/Handles.PositionHandle.html
         public void OnSceneGUI()
         {
             int controlId = GUIUtility.GetControlID(GetHashCode(), FocusType.Passive);
@@ -365,7 +387,6 @@ namespace Yapp
             {
                 PerformEditorAction();
             }
-            
 
             // show info
             Handles.BeginGUI();
@@ -386,8 +407,11 @@ namespace Yapp
 
             gizmo.splineModule.PlaceObjects();
 
-
             gizmo.splineSettings.dirty = false;
+
+            // Set the editor spline dirty, so that the changed settings (e.g.control points got dragged in the scene) get updated.
+            // Ensure the control points get saved when they are changed in the scene if we wouldn't do that, they'd only be change when something changes in the inspector
+            EditorUtility.SetDirty(editor.target);
         }
 
         private void DrawSplineGizmos()
@@ -589,7 +613,10 @@ namespace Yapp
 
             // trigger recreation of gameobjects
             gizmo.splineSettings.dirty |= true;
+
             PerformEditorAction(); // TODO: draw later at a core place
+
+            gizmo.splineSettings.dirty = true;
 
         }
 
@@ -600,6 +627,8 @@ namespace Yapp
             // trigger recreation of gameobjects
             gizmo.splineSettings.dirty |= true;
             PerformEditorAction(); // TODO: draw later at a core place
+
+            gizmo.splineSettings.dirty = true;
 
         }
 
@@ -621,9 +650,9 @@ namespace Yapp
 
             gizmo.splineSettings.controlPoints.Clear();
 
+            gizmo.splineSettings.dirty = true;
 
         }
-
 
         private void LogControlPoints()
         {
@@ -670,6 +699,8 @@ namespace Yapp
             }
 
             UpdatePrefabs();
+
+            gizmo.splineSettings.dirty = true;
         }
     }
 }

@@ -76,6 +76,10 @@ namespace Yapp
 
         public List<GameObject> prefabInstances = new List<GameObject>();
 
+        /// <summary>
+        /// List of control points. These should be stored as well for later editing
+        /// </summary>
+        [SerializeField]
         public List<ControlPoint> controlPoints = new List<ControlPoint>();
     }
 }
