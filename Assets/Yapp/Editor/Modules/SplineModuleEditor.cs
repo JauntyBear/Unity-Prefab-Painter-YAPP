@@ -698,8 +698,6 @@ namespace Yapp
                 }
             }
 
-            UpdatePrefabs();
-
             gizmo.splineSettings.dirty = true;
         }
     }
