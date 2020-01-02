@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Yapp/_Demo/PrefabPainter.unity
+    guid: 5b4f7de22518d8e4b8448f2a0e096e54
   m_configObjects: {}

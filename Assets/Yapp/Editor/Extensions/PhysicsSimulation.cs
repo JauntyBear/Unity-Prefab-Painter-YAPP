@@ -7,42 +7,26 @@ namespace Yapp
 {
     public class PhysicsSimulation : ScriptableObject
     {
-        public enum ForceApplyType
-        {
-            /// <summary>
-            /// Apply the force at the start of a simulation.
-            /// Like an explosion when you have a lot of prefabs at the same location.
-            /// </summary>
-            Initial,
-
-            /// <summary>
-            /// Apply the force continuously during the simulation.
-            /// Like wind blowing the prefabs away
-            /// </summary>
-            Continuous
-        }
-
-        #region Public Editor Fields
-
-        public int maxIterations = 1000;
-        public Vector2 forceMinMax = Vector2.zero;
-        public float forceAngleInDegrees = 0f;
-        public bool randomizeForceAngle = false;
-
-        public ForceApplyType forceApplyType = ForceApplyType.Initial;
-        #endregion Public Editor Fields
+        private PhysicsSettings physicsSettings;
 
         private SimulatedBody[] simulatedBodies;
 
         private List<Rigidbody> generatedRigidbodies;
         private List<Collider> generatedColliders;
 
+        public void ApplySettings(PhysicsSettings physicsSettings)
+        {
+            this.physicsSettings = physicsSettings;
+
+        }
+
         #region Simulate Once
         public void RunSimulationOnce(Transform[] gameObjects)
         {
+
             AutoGenerateComponents(gameObjects);
 
-            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, forceAngleInDegrees, randomizeForceAngle)).ToArray();
+            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, physicsSettings.forceAngleInDegrees, physicsSettings.randomizeForceAngle)).ToArray();
 
             SimulateOnce(simulatedBodies);
 
@@ -53,17 +37,17 @@ namespace Yapp
         private void SimulateOnce(SimulatedBody[] simulatedBodies)
         {
             // apply force if necessary
-            if (forceApplyType == ForceApplyType.Initial)
+            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Initial)
             {
                 ApplyForce();
             }
 
             // Run simulation for maxIteration frames, or until all child rigidbodies are sleeping
             Physics.autoSimulation = false;
-            for (int i = 0; i < maxIterations; i++)
+            for (int i = 0; i < physicsSettings.maxIterations; i++)
             {
                 // apply force if necessary
-                if (forceApplyType == ForceApplyType.Continuous)
+                if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Continuous)
                 {
                     ApplyForce();
                 }
@@ -84,7 +68,7 @@ namespace Yapp
             // Add force to bodies
             foreach (SimulatedBody body in simulatedBodies)
             {
-                float randomForceAmount = Random.Range(forceMinMax.x, forceMinMax.y);
+                float randomForceAmount = Random.Range(physicsSettings.forceMinMax.x, physicsSettings.forceMinMax.y);
                 float forceAngle = body.forceAngle;
                 Vector3 forceDir = new Vector3(Mathf.Sin(forceAngle), 0, Mathf.Cos(forceAngle));
                 body.rigidbody.AddForce(forceDir * randomForceAmount, ForceMode.Impulse);
@@ -92,13 +76,11 @@ namespace Yapp
         }
 
         #region Simulate Continuously
-        public bool simulationRunning = false;
         private bool simulationStopTriggered = false;
-        public int simulationStepCount = 0;
 
         public void StartSimulation(Transform[] gameObjects)
         {
-            if (simulationRunning)
+            if (physicsSettings.simulationRunning)
             {
                 Debug.Log("Simulation already running");
                 return;
@@ -108,17 +90,17 @@ namespace Yapp
 
             AutoGenerateComponents(gameObjects);
 
-            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, forceAngleInDegrees, randomizeForceAngle)).ToArray();
+            simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, physicsSettings.forceAngleInDegrees, physicsSettings.randomizeForceAngle)).ToArray();
 
-            simulationRunning = true;
-            simulationStepCount = 0;
+            physicsSettings.simulationRunning = true;
+            physicsSettings.simulationStepCount = 0;
             simulationStopTriggered = false;
 
             // Run simulation for maxIteration frames, or until all child rigidbodies are sleeping
             Physics.autoSimulation = false;
 
             // apply force if necessary
-            if (forceApplyType == ForceApplyType.Initial)
+            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Initial)
             {
                 ApplyForce();
             }
@@ -139,7 +121,7 @@ namespace Yapp
         {
 
             // apply force if necessary
-            if (forceApplyType == ForceApplyType.Continuous)
+            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Continuous)
             {
                 ApplyForce();
             }
@@ -154,7 +136,7 @@ namespace Yapp
             while (!simulationStopTriggered)
             {
 
-                simulationStepCount++;
+                physicsSettings.simulationStepCount++;
 
                 PerformSimulateStep(simulatedBodies);
 
@@ -165,7 +147,7 @@ namespace Yapp
 
             RemoveAutoGeneratedComponents();
 
-            simulationRunning = false;
+            physicsSettings.simulationRunning = false;
 
             Debug.Log("Simulation stopped");
 

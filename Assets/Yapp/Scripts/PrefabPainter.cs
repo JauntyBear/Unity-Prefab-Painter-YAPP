@@ -44,7 +44,7 @@ namespace Yapp
         /// and return to it and keep the phyics settings. Otherwise the physics settings would always be reset
         /// </summary>
         [HideInInspector]
-        public PhysicsSimulation physicsSimulation;
+        public PhysicsSettings physicsSettings = new PhysicsSettings();
 
         /// <summary>
         /// Container for copied positions and rotations

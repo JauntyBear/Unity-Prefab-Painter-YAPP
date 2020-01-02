@@ -9,22 +9,44 @@ namespace Yapp
 
     public class PhysicsExtension 
     {
+        #region Properties
+        SerializedProperty forceApplyType;
+        SerializedProperty maxIterations;
+        SerializedProperty forceMinMax;
+        SerializedProperty forceAngleInDegrees;
+        SerializedProperty randomizeForceAngle;
+        SerializedProperty simulationRunning;
+        SerializedProperty simulationStepCount;
 
-        #pragma warning disable 0414
+        #endregion Properties
+
+#pragma warning disable 0414
         PrefabPainterEditor editor;
         #pragma warning restore 0414
 
         PrefabPainter gizmo;
+
+        PhysicsSimulation physicsSimulation;
 
         public PhysicsExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
             this.gizmo = editor.GetPainter();
 
-            if (this.gizmo.physicsSimulation == null)
+            forceApplyType = editor.FindProperty(x => x.physicsSettings.forceApplyType);
+            maxIterations = editor.FindProperty(x => x.physicsSettings.maxIterations);
+            forceMinMax = editor.FindProperty(x => x.physicsSettings.forceMinMax);
+            forceAngleInDegrees = editor.FindProperty(x => x.physicsSettings.forceAngleInDegrees);
+            randomizeForceAngle = editor.FindProperty(x => x.physicsSettings.randomizeForceAngle);
+            simulationRunning = editor.FindProperty(x => x.physicsSettings.simulationRunning);
+            simulationStepCount = editor.FindProperty(x => x.physicsSettings.simulationStepCount);
+
+            if (physicsSimulation == null)
             {
-                this.gizmo.physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
+                physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
+                
             }
+            physicsSimulation.ApplySettings(gizmo.physicsSettings);
         }
 
         public void OnInspectorGUI()
@@ -37,10 +59,11 @@ namespace Yapp
 
             #region Settings
 
-            this.gizmo.physicsSimulation.forceApplyType = (PhysicsSimulation.ForceApplyType) EditorGUILayout.EnumPopup("Force Apply Type", this.gizmo.physicsSimulation.forceApplyType);
-            this.gizmo.physicsSimulation.forceMinMax = EditorGUILayout.Vector2Field("Force Min/Max", this.gizmo.physicsSimulation.forceMinMax);
-            this.gizmo.physicsSimulation.forceAngleInDegrees = EditorGUILayout.FloatField("Force Angle (Degrees)", this.gizmo.physicsSimulation.forceAngleInDegrees);
-            this.gizmo.physicsSimulation.randomizeForceAngle = EditorGUILayout.Toggle("Randomize Force Angle", this.gizmo.physicsSimulation.randomizeForceAngle);
+            EditorGUILayout.PropertyField(forceApplyType, new GUIContent("Force Apply Type"));
+
+            EditorGUILayout.PropertyField(forceMinMax, new GUIContent("Force Min/Max"));
+            EditorGUILayout.PropertyField(forceAngleInDegrees, new GUIContent("Force Angle (Degrees)"));
+            EditorGUILayout.PropertyField(randomizeForceAngle, new GUIContent("Randomize Force Angle"));
 
             #endregion Settings
 
@@ -50,7 +73,11 @@ namespace Yapp
 
             EditorGUILayout.LabelField("Simulate Once", GUIStyles.GroupTitleStyle);
 
-            this.gizmo.physicsSimulation.maxIterations = EditorGUILayout.IntField("Max Iterations", this.gizmo.physicsSimulation.maxIterations);
+            EditorGUILayout.PropertyField(maxIterations, new GUIContent("Max Iterations"));
+            if(maxIterations.intValue < 0)
+            {
+                maxIterations.intValue = 0;
+            }
 
             if (GUILayout.Button("Simulate Once"))
             {
@@ -65,12 +92,12 @@ namespace Yapp
 
             EditorGUILayout.LabelField("Simulate Continuously", GUIStyles.GroupTitleStyle);
 
-            EditorGUILayout.IntField("Simulation Step", this.gizmo.physicsSimulation.simulationStepCount);
+            EditorGUILayout.PropertyField(simulationStepCount, new GUIContent("Simulation Step"));
 
             GUILayout.BeginHorizontal();
 
             // colorize the button differently in case the physics is running, so that the user gets an indicator that the physics have to be stopped
-            GUI.color = this.gizmo.physicsSimulation.simulationRunning ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
+            GUI.color = this.gizmo.physicsSettings.simulationRunning ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
             if (GUILayout.Button("Start"))
             {
                 StartSimulation();
@@ -104,12 +131,12 @@ namespace Yapp
 
         private void RunSimulation()
         {
-            this.gizmo.physicsSimulation.RunSimulationOnce(getContainerChildren());
+            physicsSimulation.RunSimulationOnce(getContainerChildren());
         }
 
         private void ResetAllBodies()
         {
-            this.gizmo.physicsSimulation.UndoSimulation();
+            physicsSimulation.UndoSimulation();
         }
 
         #endregion Physics Simulation
@@ -127,12 +154,12 @@ namespace Yapp
 
         private void StartSimulation()
         {
-            this.gizmo.physicsSimulation.StartSimulation(getContainerChildren());
+            physicsSimulation.StartSimulation(getContainerChildren());
         }
 
         private void StopSimulation()
         {
-            this.gizmo.physicsSimulation.StopSimulation();
+            physicsSimulation.StopSimulation();
         } 
 
     }
