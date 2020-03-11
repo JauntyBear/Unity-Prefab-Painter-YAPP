@@ -222,25 +222,37 @@ namespace Yapp
                 // draw brush gizmo
                 DrawBrush(mousePos, hit.normal, radius, brushMode);
 
-                // paint prefabs on mouse drag
-                if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseDown)
+                // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
+                if (brushMode != BrushMode.None)
                 {
-                    // left button = 0; right = 1; middle = 2
-                    if (Event.current.button == 0)
+                    if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseDown)
                     {
-                        switch (brushMode)
+                        // left button = 0; right = 1; middle = 2
+                        if (Event.current.button == 0)
                         {
-                            case BrushMode.None:
-                                break;
-                            case BrushMode.Add:
-                                AddPrefabs(hit);
-                                break;
-                            case BrushMode.Remove:
-                                RemovePrefabs(hit.point);
-                                break;
+                            switch (brushMode)
+                            {
+                                case BrushMode.None:
+                                    // do nothing
+                                    break;
+
+                                case BrushMode.Add:
+
+                                    AddPrefabs(hit);
+
+                                    // consume event
+                                    Event.current.Use();
+                                    break;
+
+                                case BrushMode.Remove:
+
+                                    RemovePrefabs(hit.point);
+
+                                    // consume event
+                                    Event.current.Use();
+                                    break;
+                            }
                         }
-                        
-                        Event.current.Use();
                     }
                 }
             }
