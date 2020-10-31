@@ -250,6 +250,9 @@ namespace Yapp
                 {
                     MeshCollider collider = child.gameObject.AddComponent<MeshCollider>();
 
+                    // hide colliders in the hierarchy, they cost performance
+                    collider.hideFlags = HideFlags.HideInHierarchy;
+
                     collider.convex = true;
 
                     generatedColliders.Add(collider);
