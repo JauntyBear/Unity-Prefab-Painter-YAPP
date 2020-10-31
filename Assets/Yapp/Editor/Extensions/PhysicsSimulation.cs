@@ -133,7 +133,7 @@ namespace Yapp
         IEnumerator SimulateContinuously()
         {
 
-            while (!simulationStopTriggered)
+            while (!simulationStopTriggered && physicsSettings.IsStepCountValid())
             {
 
                 physicsSettings.simulationStepCount++;

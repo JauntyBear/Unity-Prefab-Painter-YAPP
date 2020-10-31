@@ -15,6 +15,13 @@ namespace Yapp
             FallOff2d
         }
 
+        public enum AutoPhysicsType
+        {
+            None,
+            Once,
+            Continuous
+        }
+
         public float brushSize = 2.0f;
 
         [Range(0, 360)]
@@ -54,7 +61,7 @@ namespace Yapp
         /// <summary>
         /// Automatically apply physics after painting
         /// </summary>
-        public bool autoPhysicsEnabled = false;
+        public AutoPhysicsType autoPhysicsType = AutoPhysicsType.None;
 
         /// <summary>
         /// When auto physics is enabled, then this value will be added to the y-position of the gameobject.

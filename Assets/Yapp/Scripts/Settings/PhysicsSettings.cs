@@ -35,8 +35,13 @@ namespace Yapp
         #region Simulate Continuously
         public bool simulationRunning = false;
         public int simulationStepCount = 0;
+        public int simulationStepCountMax = 1000;
         #endregion Simulate Continuously
 
+        public bool IsStepCountValid()
+        {
+            return simulationStepCount <= simulationStepCountMax;
+        }
 
     }
 }

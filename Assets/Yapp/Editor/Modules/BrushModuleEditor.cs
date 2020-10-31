@@ -27,7 +27,7 @@ namespace Yapp
         SerializedProperty curveSamplePoints;
         SerializedProperty spawnToVSPro;
 
-        SerializedProperty autoPhysicsEnabled;
+        SerializedProperty autoPhysicsType;
         SerializedProperty autoPhysicsHeightOffset;
         SerializedProperty autoPhysicsTime;
 
@@ -69,7 +69,7 @@ namespace Yapp
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
 
-            autoPhysicsEnabled = editor.FindProperty(x => x.brushSettings.autoPhysicsEnabled);
+            autoPhysicsType = editor.FindProperty(x => x.brushSettings.autoPhysicsType);
             autoPhysicsHeightOffset = editor.FindProperty(x => x.brushSettings.autoPhysicsHeightOffset);
             autoPhysicsTime = editor.FindProperty(x => x.brushSettings.autoPhysicsTime);
 
@@ -118,8 +118,8 @@ namespace Yapp
             EditorGUILayout.EndHorizontal();
 
             // auto physics
-            EditorGUILayout.PropertyField(autoPhysicsEnabled, new GUIContent("Auto Physics"));
-            if (autoPhysicsEnabled.boolValue)
+            EditorGUILayout.PropertyField(autoPhysicsType, new GUIContent("Auto Physics"));
+            if (autoPhysicsType.enumValueIndex != (int) BrushSettings.AutoPhysicsType.None)
             {
                 EditorGUI.indentLevel++;
                 {
@@ -289,7 +289,7 @@ namespace Yapp
             }
 
             // auto physics
-            bool applyAutoPhysics = autoPhysicsEnabled.boolValue && needsPhysicsApplied && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = gizmo.brushSettings.autoPhysicsType != BrushSettings.AutoPhysicsType.None && needsPhysicsApplied && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
 
@@ -891,7 +891,7 @@ namespace Yapp
         /// <returns></returns>
         private Vector3 ApplyAutoPhysicsHeightOffset( Vector3 position)
         {
-            if (!gizmo.brushSettings.autoPhysicsEnabled)
+            if (gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.None)
                 return position;
 
             // auto physics: add additional height offset
@@ -945,8 +945,18 @@ namespace Yapp
             PhysicsSettings physicsSettings = new PhysicsSettings();
             physicsSimulation.ApplySettings(physicsSettings);
 
+            // TODO: use only the new added ones?
             Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
-            physicsSimulation.RunSimulationOnce( containerChildren);
+
+            if( gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.Once)
+            {
+                physicsSimulation.RunSimulationOnce(containerChildren);
+            }
+            else if (gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.Continuous)
+            {
+                physicsSimulation.StartSimulation(containerChildren);
+            }
+
         }
         #endregion Physics
     }
