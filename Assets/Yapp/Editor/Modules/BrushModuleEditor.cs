@@ -27,6 +27,11 @@ namespace Yapp
         SerializedProperty curveSamplePoints;
         SerializedProperty spawnToVSPro;
 
+        SerializedProperty autoPhysicsEnabled;
+        SerializedProperty autoPhysicsHeightOffset;
+        SerializedProperty autoPhysicsTime;
+
+
         #endregion Properties
 
 #pragma warning disable 0414
@@ -37,6 +42,8 @@ namespace Yapp
 
 
         private bool debug = false;
+
+        private bool needsPhysicsApplied = false;
 
         private enum BrushMode
         {
@@ -62,7 +69,12 @@ namespace Yapp
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
 
+            autoPhysicsEnabled = editor.FindProperty(x => x.brushSettings.autoPhysicsEnabled);
+            autoPhysicsHeightOffset = editor.FindProperty(x => x.brushSettings.autoPhysicsHeightOffset);
+            autoPhysicsTime = editor.FindProperty(x => x.brushSettings.autoPhysicsTime);
+
             spawnToVSPro = editor.FindProperty(x => x.brushSettings.spawnToVSPro);
+
         }
 
         public void OnInspectorGUI()
@@ -105,9 +117,22 @@ namespace Yapp
             EditorGUILayout.MinMaxSlider(ref gizmo.brushSettings.slopeMin, ref gizmo.brushSettings.slopeMax, gizmo.brushSettings.slopeMinLimit, gizmo.brushSettings.slopeMaxLimit);
             EditorGUILayout.EndHorizontal();
 
-            #if VEGETATION_STUDIO_PRO
+            // auto physics
+            EditorGUILayout.PropertyField(autoPhysicsEnabled, new GUIContent("Auto Physics"));
+            if (autoPhysicsEnabled.boolValue)
+            {
+                EditorGUI.indentLevel++;
+                {
+                    EditorGUILayout.PropertyField(autoPhysicsHeightOffset, new GUIContent("Height Offset"));
+                    EditorGUILayout.PropertyField(autoPhysicsTime, new GUIContent("Time [s]"));
+                }
+                EditorGUI.indentLevel--;
+            }
+
+            // vegetation studio pro
+#if VEGETATION_STUDIO_PRO
                 EditorGUILayout.PropertyField(spawnToVSPro, new GUIContent("Spawn to VS Pro"));
-            #endif
+#endif
 
             // consistency check
             float minDiscSize = 0.01f;
@@ -240,6 +265,8 @@ namespace Yapp
 
                                     AddPrefabs(hit);
 
+                                    needsPhysicsApplied = true;
+
                                     // consume event
                                     Event.current.Use();
                                     break;
@@ -259,6 +286,16 @@ namespace Yapp
             else
             {
                 mousePosValid = false;
+            }
+
+            // auto physics
+            bool applyAutoPhysics = autoPhysicsEnabled.boolValue && needsPhysicsApplied && Event.current.type == EventType.MouseUp;
+            if (applyAutoPhysics)
+            {
+
+                ApplyPhysics();
+
+                needsPhysicsApplied = false;
             }
 
             if (Event.current.type == EventType.Layout)
@@ -699,6 +736,9 @@ namespace Yapp
             // add offset
             newPosition += prefabSettings.positionOffset;
 
+            // auto physics height offset
+            newPosition = ApplyAutoPhysicsHeightOffset(newPosition);
+
             Vector3 newLocalScale = prefabSettings.prefab.transform.localScale;
 
             // size
@@ -806,7 +846,11 @@ namespace Yapp
                 // get terrain y position
                 float y = Terrain.activeTerrain.SampleHeight(terrainPosition);
 
+                // create position vector
                 Vector3 prefabPosition = new Vector3( x, y, z);
+
+                // auto physics height offset
+                prefabPosition = ApplyAutoPhysicsHeightOffset(prefabPosition);
 
                 // check if a prefab already exists within the brush
                 bool prefabExists = false;
@@ -840,6 +884,21 @@ namespace Yapp
            
         }
 
+        /// <summary>
+        /// Add additional height offset if auto physics is enabled
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private Vector3 ApplyAutoPhysicsHeightOffset( Vector3 position)
+        {
+            if (!gizmo.brushSettings.autoPhysicsEnabled)
+                return position;
+
+            // auto physics: add additional height offset
+            position.y += gizmo.brushSettings.autoPhysicsHeightOffset;
+
+            return position;
+        }
 
         /// <summary>
         /// Remove prefabs
@@ -876,7 +935,20 @@ namespace Yapp
            
         }
 
-#endregion Paint Prefabs
+        #endregion Paint Prefabs
+
+        #region Physics
+        private void ApplyPhysics()
+        {
+            PhysicsSimulation physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
+
+            PhysicsSettings physicsSettings = new PhysicsSettings();
+            physicsSimulation.ApplySettings(physicsSettings);
+
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
+            physicsSimulation.RunSimulationOnce( containerChildren);
+        }
+        #endregion Physics
     }
 
 }

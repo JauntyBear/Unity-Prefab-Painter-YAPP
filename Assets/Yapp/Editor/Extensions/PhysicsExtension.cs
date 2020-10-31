@@ -144,12 +144,7 @@ namespace Yapp
         // TODO: create common class
         private Transform[] getContainerChildren()
         {
-            if (gizmo.container == null)
-                return new Transform[0];
-
-            Transform[] children = gizmo.container.transform.Cast<Transform>().ToArray();
-
-            return children;
+            return PrefabUtils.GetContainerChildren(gizmo.container);
         }
 
         private void StartSimulation()

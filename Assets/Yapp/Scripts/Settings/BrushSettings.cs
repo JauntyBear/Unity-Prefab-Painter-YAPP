@@ -52,8 +52,25 @@ namespace Yapp
         public bool allowOverlap = false;
 
         /// <summary>
+        /// Automatically apply physics after painting
+        /// </summary>
+        public bool autoPhysicsEnabled = false;
+
+        /// <summary>
+        /// When auto physics is enabled, then this value will be added to the y-position of the gameobject.
+        /// This way e. g. rocks are placed higher by default and gravity can be applied
+        /// </summary>
+        public float autoPhysicsHeightOffset = 1f;
+
+        /// <summary>
+        /// The number of seconds that physics is applied automatically
+        /// </summary>
+        public float autoPhysicsTime = 3f;
+
+        /// <summary>
         /// Optionally spawn into the Persistent Storage of Vegetation Studio Pro
         /// </summary>
         public bool spawnToVSPro = false;
+
     }
 }
