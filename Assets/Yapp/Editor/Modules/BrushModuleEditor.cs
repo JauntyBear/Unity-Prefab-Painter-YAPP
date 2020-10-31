@@ -27,9 +27,10 @@ namespace Yapp
         SerializedProperty curveSamplePoints;
         SerializedProperty spawnToVSPro;
 
-        SerializedProperty autoPhysicsType;
-        SerializedProperty autoPhysicsHeightOffset;
-        SerializedProperty autoPhysicsTime;
+        SerializedProperty autoSimulationType;
+        SerializedProperty autoSimulationHeightOffset;
+        SerializedProperty autoSimulationStepCountMax;
+        SerializedProperty autoSimulationStepIterations;
 
 
         #endregion Properties
@@ -69,9 +70,10 @@ namespace Yapp
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
 
-            autoPhysicsType = editor.FindProperty(x => x.brushSettings.autoPhysicsType);
-            autoPhysicsHeightOffset = editor.FindProperty(x => x.brushSettings.autoPhysicsHeightOffset);
-            autoPhysicsTime = editor.FindProperty(x => x.brushSettings.autoPhysicsTime);
+            autoSimulationType = editor.FindProperty(x => x.brushSettings.autoSimulationType);
+            autoSimulationHeightOffset = editor.FindProperty(x => x.brushSettings.autoSimulationHeightOffset);
+            autoSimulationStepCountMax = editor.FindProperty(x => x.brushSettings.autoSimulationStepCountMax);
+            autoSimulationStepIterations = editor.FindProperty(x => x.brushSettings.autoSimulationStepIterations);
 
             spawnToVSPro = editor.FindProperty(x => x.brushSettings.spawnToVSPro);
 
@@ -118,13 +120,14 @@ namespace Yapp
             EditorGUILayout.EndHorizontal();
 
             // auto physics
-            EditorGUILayout.PropertyField(autoPhysicsType, new GUIContent("Auto Physics"));
-            if (autoPhysicsType.enumValueIndex != (int) BrushSettings.AutoPhysicsType.None)
+            EditorGUILayout.PropertyField(autoSimulationType, new GUIContent("Physics Simulation"));
+            if (autoSimulationType.enumValueIndex != (int) BrushSettings.AutoSimulationType.None)
             {
                 EditorGUI.indentLevel++;
                 {
-                    EditorGUILayout.PropertyField(autoPhysicsHeightOffset, new GUIContent("Height Offset"));
-                    EditorGUILayout.PropertyField(autoPhysicsTime, new GUIContent("Time [s]"));
+                    EditorGUILayout.PropertyField(autoSimulationHeightOffset, new GUIContent("Height Offset"));
+                    EditorGUILayout.PropertyField(autoSimulationStepCountMax, new GUIContent("Step Count Max", "Maximum number of simulation steps to perform"));
+                    EditorGUILayout.PropertyField(autoSimulationStepIterations, new GUIContent("Step Iterations", "Number of physics steps to perform in a single simulation step. lower = smoother, higher = faster"));
                 }
                 EditorGUI.indentLevel--;
             }
@@ -289,7 +292,7 @@ namespace Yapp
             }
 
             // auto physics
-            bool applyAutoPhysics = gizmo.brushSettings.autoPhysicsType != BrushSettings.AutoPhysicsType.None && needsPhysicsApplied && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = gizmo.brushSettings.autoSimulationType != BrushSettings.AutoSimulationType.None && needsPhysicsApplied && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
 
@@ -891,11 +894,11 @@ namespace Yapp
         /// <returns></returns>
         private Vector3 ApplyAutoPhysicsHeightOffset( Vector3 position)
         {
-            if (gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.None)
+            if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.None)
                 return position;
 
             // auto physics: add additional height offset
-            position.y += gizmo.brushSettings.autoPhysicsHeightOffset;
+            position.y += gizmo.brushSettings.autoSimulationHeightOffset;
 
             return position;
         }
@@ -943,16 +946,19 @@ namespace Yapp
             PhysicsSimulation physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
 
             PhysicsSettings physicsSettings = new PhysicsSettings();
+            physicsSettings.simulationStepCountMax = gizmo.brushSettings.autoSimulationStepCountMax;
+            physicsSettings.simulationStepIterations = gizmo.brushSettings.autoSimulationStepIterations;
+
             physicsSimulation.ApplySettings(physicsSettings);
 
             // TODO: use only the new added ones?
             Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
 
-            if( gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.Once)
+            if( gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Once)
             {
                 physicsSimulation.RunSimulationOnce(containerChildren);
             }
-            else if (gizmo.brushSettings.autoPhysicsType == BrushSettings.AutoPhysicsType.Continuous)
+            else if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Continuous)
             {
                 physicsSimulation.StartSimulation(containerChildren);
             }

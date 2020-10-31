@@ -35,6 +35,11 @@ namespace Yapp
         #region Simulate Continuously
         public bool simulationRunning = false;
         public int simulationStepCount = 0;
+
+        [Range(1,1000)]
+        public int simulationStepIterations = 1;
+
+        [Range(1,10000)]
         public int simulationStepCountMax = 1000;
         #endregion Simulate Continuously
 
