@@ -135,6 +135,11 @@ namespace Yapp
             // hide the colliders in the hierarchy
             foreach (Transform transform in simulatedGameObjects)
             {
+                Collider collider = transform.GetComponent<Collider>();
+
+                if (!collider)
+                    continue;
+
                 transform.GetComponent<Collider>().hideFlags = HideFlags.HideInHierarchy;
             }
 
