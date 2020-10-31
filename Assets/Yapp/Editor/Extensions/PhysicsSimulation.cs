@@ -13,6 +13,7 @@ namespace Yapp
 
         private List<Rigidbody> generatedRigidbodies;
         private List<Collider> generatedColliders;
+        private List<Collider> nonConvexColliders;
 
         private Transform[] simulatedGameObjects = null;
 
@@ -119,28 +120,31 @@ namespace Yapp
 
         private void PreProcessSimulation()
         {
+            nonConvexColliders = new List<Collider>();
+
             // store the hide flags for the colliders
             colliderFlagsMap = new Dictionary<Collider, HideFlags>();
 
             foreach (Transform transform in simulatedGameObjects)
             {
-                Collider collider = transform.GetComponent<Collider>();
+                Collider[] colliders = transform.GetComponentsInChildren<Collider>();
 
-                if (!collider)
-                    continue;
+                foreach (Collider collider in colliders)
+                {
+                    colliderFlagsMap.Add(collider, hideFlags);
 
-                colliderFlagsMap.Add(collider, hideFlags);
-            }
+                    // hide the colliders in the hierarchy
+                    collider.hideFlags = HideFlags.HideInHierarchy;
 
-            // hide the colliders in the hierarchy
-            foreach (Transform transform in simulatedGameObjects)
-            {
-                Collider collider = transform.GetComponent<Collider>();
+                    // check convexity
+                    if( collider is MeshCollider && !((MeshCollider) collider).convex)
+                    {
+                        nonConvexColliders.Add(collider);
 
-                if (!collider)
-                    continue;
-
-                transform.GetComponent<Collider>().hideFlags = HideFlags.HideInHierarchy;
+                        ((MeshCollider)collider).convex = true;
+                    }
+                        
+                }
             }
 
             // generate eg colliders for gameobjects which don't have them
@@ -156,20 +160,27 @@ namespace Yapp
             // restore the hide flags
             foreach (Transform transform in simulatedGameObjects)
             {
-                Collider collider = transform.GetComponent<Collider>();
-
-                if (!collider)
-                    continue;
-
-                HideFlags hideFlags;
-                if( colliderFlagsMap.TryGetValue(collider, out hideFlags))
+                Collider[] colliders = transform.GetComponentsInChildren<Collider>();
+                foreach (Collider collider in colliders)
                 {
-                    collider.hideFlags = hideFlags;
+                    HideFlags hideFlags;
+                    if (colliderFlagsMap.TryGetValue(collider, out hideFlags))
+                    {
+                        collider.hideFlags = hideFlags;
+                    }
+
+                    // restore convexity
+                    if (collider is MeshCollider && nonConvexColliders.Contains( collider))
+                    {
+                        ((MeshCollider)collider).convex = false;
+                    }
                 }
             }
 
             // clear the hide flags map
             colliderFlagsMap = null;
+
+            nonConvexColliders = null;
 
         }
 
