@@ -17,7 +17,7 @@ namespace Yapp
 
 #if UNITY_EDITOR
 
-        public enum Mode { Brush, Spline, Container }
+        public enum Mode { Brush, Spline, Interaction, Container }
 
         /// <summary>
         /// The parent of the instantiated prefabs 

@@ -28,9 +28,10 @@ namespace Yapp
         private SelectionExtension selectionModule;
         private ToolsExtension toolsModule;
 
-        private ContainerModuleEditor containerModule;
         private BrushModuleEditor brushModule;
         private SplineModuleEditor splineModule;
+        private InteractionModuleEditor interactionModule;
+        private ContainerModuleEditor containerModule;
 
         private PrefabModuleEditor prefabModule;
 
@@ -54,6 +55,7 @@ namespace Yapp
 
             this.brushModule = new BrushModuleEditor(this);
             this.splineModule = new SplineModuleEditor(this);
+            this.interactionModule = new InteractionModuleEditor(this);
             this.containerModule = new ContainerModuleEditor(this);
             this.prefabModule = new PrefabModuleEditor(this);
             this.physicsModule = new PhysicsExtension(this);
@@ -66,6 +68,7 @@ namespace Yapp
                 // TODO: icons
                 new GUIContent( "Brush", "Paint prefabs using a brush"),
                 new GUIContent( "Spline", "Align prefabs along a spline"),
+                new GUIContent( "Interaction", "Brush interaction on the container children"),
                 new GUIContent( "Operations", "Operations on the container"),
             };
         }
@@ -185,6 +188,12 @@ namespace Yapp
 
                     break;
 
+                case PrefabPainter.Mode.Interaction:
+                    interactionModule.OnInspectorGUI();
+
+
+                    break;
+
                 case PrefabPainter.Mode.Container:
                     containerModule.OnInspectorGUI();
 
@@ -251,6 +260,10 @@ namespace Yapp
 
                 case PrefabPainter.Mode.Spline:
                     splineModule.OnSceneGUI();
+                    break;
+
+                case PrefabPainter.Mode.Interaction:
+                    interactionModule.OnSceneGUI();
                     break;
 
                 case PrefabPainter.Mode.Container:

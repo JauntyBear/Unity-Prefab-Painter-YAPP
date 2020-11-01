@@ -78,7 +78,7 @@ namespace Yapp
         /// <summary>
         /// The number of physics steps to perform in a single simulation step. lower = smoother, higher = faster
         /// </summary>
-        [Range(1, 1000)]
+        [Range(1, 50)]
         public int autoSimulationStepIterations = 1;
 
         /// <summary>
