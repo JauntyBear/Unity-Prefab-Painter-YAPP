@@ -8,6 +8,8 @@ namespace Yapp
     {
         #region Properties
 
+        SerializedProperty interactionType;
+        SerializedProperty antiGravityStrength;
         SerializedProperty magnetStrength;
 
         #endregion Properties
@@ -32,6 +34,8 @@ namespace Yapp
             this.editor = editor;
             this.gizmo = editor.GetPainter();
 
+            interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
+            antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
             magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
 
         }
@@ -41,19 +45,45 @@ namespace Yapp
 
             GUILayout.BeginVertical("box");
 
-            EditorGUILayout.LabelField("Interaction", GUIStyles.BoxTitleStyle);
+            EditorGUILayout.LabelField("Interaction (Experimental)", GUIStyles.BoxTitleStyle);
 
-            EditorGUILayout.HelpBox("Perform interactive operations on the container children", MessageType.Info);
+            EditorGUILayout.HelpBox("Perform interactive operations on the container children\nThis is highly experimental and bound to change", MessageType.Info);
 
             GUILayout.EndVertical();
+
 
             GUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Magnet", GUIStyles.BoxTitleStyle);
 
-            EditorGUILayout.PropertyField(magnetStrength, new GUIContent("Magnet Strength", "Strength of the Magnet"));
+            EditorGUILayout.LabelField("Interaction Type", GUIStyles.BoxTitleStyle);
 
+            EditorGUILayout.PropertyField(interactionType, new GUIContent("Type", "Type of interaction"));
 
             GUILayout.EndVertical();
+
+
+            if (interactionType.enumValueIndex == (int) InteractionSettings.InteractionType.AntiGravity)
+            {
+
+                GUILayout.BeginVertical("box");
+
+                EditorGUILayout.LabelField("Anti-Gravity", GUIStyles.BoxTitleStyle);
+
+                EditorGUILayout.PropertyField(antiGravityStrength, new GUIContent("Strength", "Increments in Y-Position per editor step"));
+
+                GUILayout.EndVertical();
+            }
+
+
+            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.Magnet)
+            {
+                GUILayout.BeginVertical("box");
+
+                EditorGUILayout.LabelField("Magnet", GUIStyles.BoxTitleStyle);
+
+                EditorGUILayout.PropertyField(magnetStrength, new GUIContent("Strength", "Strength of the Magnet"));
+
+                GUILayout.EndVertical();
+            }
 
         }
 
@@ -63,32 +93,55 @@ namespace Yapp
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
             if (brushComponent.DrawBrush(gizmo.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
-
-                switch (brushMode)
+                if( gizmo.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
                 {
-                    case BrushMode.ShiftPressed:
+                    switch (brushMode)
+                    {
+                        case BrushMode.ShiftPressed:
 
-                        Attract(raycastHit);
+                            AntiGravity(raycastHit);
 
-                        needsPhysicsApplied = true;
+                            needsPhysicsApplied = true;
 
-                        // don't consume event; mustn't be consumed during layout or repaint
-                        //Event.current.Use();
-                        break;
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+                    }
 
-                    case BrushMode.ShiftCtrlPressed:
+                 }
 
-                        Repell(raycastHit);
+                if (gizmo.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
+                {
 
-                        needsPhysicsApplied = true;
+                    switch (brushMode)
+                    {
+                        case BrushMode.ShiftPressed:
 
-                        // don't consume event; mustn't be consumed during layout or repaint
-                        //Event.current.Use();
-                        break;
+                            Attract(raycastHit);
+
+                            needsPhysicsApplied = true;
+
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+
+                        case BrushMode.ShiftCtrlPressed:
+
+                            Repell(raycastHit);
+
+                            needsPhysicsApplied = true;
+
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+
+                    }
 
                 }
+
             }
 
+            // TODO: change text
             // info for the scene gui; used to be dynamic and showing number of prefabs (currently is static until refactoring is done)
             string[] guiInfo = new string[] { "Add prefabs: shift + drag mouse\nRemove prefabs: shift + ctrl + drag mouse\nBrush size: ctrl + mousewheel, Brush rotation: ctrl + shift + mousewheel" };
             brushComponent.Layout(guiInfo);
@@ -98,6 +151,32 @@ namespace Yapp
             if (applyAutoPhysics)
             {
                 AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.brushSettings.autoSimulationType, gizmo.brushSettings.autoSimulationStepCountMax, gizmo.brushSettings.autoSimulationStepIterations);
+            }
+        }
+
+
+        /// <summary>
+        /// Increment y-position in world space
+        /// </summary>
+        /// <param name="hit"></param>
+        private void AntiGravity(RaycastHit hit)
+        {
+            // just some arbitrary value depending on the magnet strength which ranges from 0..100
+            float antiGravityFactor = gizmo.interactionSettings.antiGravityStrength / 1000f;
+
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
+
+            foreach (Transform transform in containerChildren)
+            {
+                Vector3 distance = hit.point - transform.position;
+
+                // only those within the brush
+                if (distance.magnitude > gizmo.brushSettings.brushSize / 2f)
+                    continue;
+
+                // https://docs.unity3d.com/ScriptReference/Transform-up.html
+                // https://docs.unity3d.com/ScriptReference/Vector3-up.html
+                transform.position += Vector3.up * antiGravityFactor;
             }
         }
 
@@ -118,6 +197,8 @@ namespace Yapp
         /// <param name="attract"></param>
         private void Magnet( RaycastHit hit, bool attract)
         {
+            // just some arbitrary value depending on the magnet strength which ranges from 0..100
+            float magnetFactor = gizmo.interactionSettings.magnetStrength / 1000f;
 
             Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
 
@@ -130,9 +211,6 @@ namespace Yapp
                     continue;
 
                 Vector3 direction = distance.normalized;
-
-                // just some arbitrary value depending on the magnet strength which ranges from 0..100
-                float magnetFactor = gizmo.interactionSettings.magnetStrength / 1000f;
 
                 transform.position += direction * magnetFactor * (attract ? 1 : -1);
             }
