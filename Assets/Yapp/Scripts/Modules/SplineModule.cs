@@ -1,6 +1,4 @@
-﻿#if UNITY_EDITOR
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +6,9 @@ namespace Yapp
 {
     public class SplineModule
     {
+
+#if UNITY_EDITOR
+
         PrefabPainter prefabPainter;
 
         public SplineModule( PrefabPainter prefabPainter)
@@ -509,7 +510,6 @@ namespace Yapp
             // add prefab rotation offset
             prefab.transform.Rotate(prefabSettings.rotationOffset);
         }
-
+#endif
     }
 }
-#endif
