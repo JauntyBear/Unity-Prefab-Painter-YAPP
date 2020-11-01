@@ -158,39 +158,26 @@ namespace Yapp
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
             if ( brushComponent.DrawBrush(gizmo.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
-                if (brushMode != BrushMode.None)
+                switch( brushMode)
                 {
-                    if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseDown)
-                    {
-                        // left button = 0; right = 1; middle = 2
-                        if (Event.current.button == 0)
-                        {
-                            switch (brushMode)
-                            {
-                                case BrushMode.None:
-                                    // do nothing
-                                    break;
+                    case BrushMode.ShiftDrag:
 
-                                case BrushMode.Add:
+                        AddPrefabs(raycastHit);
 
-                                    AddPrefabs(raycastHit);
+                        needsPhysicsApplied = true;
 
-                                    needsPhysicsApplied = true;
+                        // consume event
+                        Event.current.Use();
+                        break;
 
-                                    // consume event
-                                    Event.current.Use();
-                                    break;
+                    case BrushMode.ShiftCtrlDrag:
 
-                                case BrushMode.Remove:
+                        RemovePrefabs(raycastHit);
 
-                                    RemovePrefabs(raycastHit);
+                        // consume event
+                        Event.current.Use();
+                        break;
 
-                                    // consume event
-                                    Event.current.Use();
-                                    break;
-                            }
-                        }
-                    }
                 }
             }
 

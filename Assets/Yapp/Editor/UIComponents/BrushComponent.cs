@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Yapp
 {
@@ -8,9 +9,15 @@ namespace Yapp
         public enum BrushMode
         {
             None,
-            Add,
-            Remove
+            ShiftKey,
+            ShiftCtrlKey,
+            ShiftPressed,
+            ShiftCtrlPressed,
+            ShiftDrag, // used eg for adding prefabs
+            ShiftCtrlDrag // used eg for removing prefabs
         }
+
+        private bool mousePressed = false;
 
         public bool DrawBrush(BrushSettings brushSettings, out BrushMode brushMode, out RaycastHit mouseHit)
         {
@@ -31,7 +38,7 @@ namespace Yapp
                 /// process mouse events
                 ///
 
-                // control key pressed
+                // brush size & rotation: control key pressed
                 if (Event.current.control)
                 {
                     // mouse wheel up/down changes the radius
@@ -93,16 +100,69 @@ namespace Yapp
 
                 }
 
+                // default: nothing pressed
                 brushMode = BrushMode.None;
+
+                // mouse pressed state: unity editor acts only on events, so we need to keep track of the click state
+                if( Event.current.isMouse && Event.current.button == 0)
+                {
+                    if (Event.current.type == EventType.MouseDown)
+                    {
+                        mousePressed = true;
+                    }
+                    else if(Event.current.type == EventType.MouseUp || Event.current.type == EventType.MouseLeaveWindow)
+                    {
+                        mousePressed = false;
+                    }
+
+                }
+
+                // keyboard only case
                 if (Event.current.shift)
                 {
-                    brushMode = BrushMode.Add;
+                    brushMode = BrushMode.ShiftKey;
 
                     if (Event.current.control)
                     {
-                        brushMode = BrushMode.Remove;
+                        brushMode = BrushMode.ShiftCtrlKey;
                     }
+                }
 
+                // check if mouse button is being pressed without dragging; 
+                if (mousePressed)
+                {
+                    if (Event.current.shift)
+                    {
+                        brushMode = BrushMode.ShiftPressed;
+
+                        if (Event.current.control)
+                        {
+                            brushMode = BrushMode.ShiftCtrlPressed;
+                        }
+                    }
+                }
+
+                // keyboard + mouse case
+                if (Event.current.isMouse)
+                {
+                    // left button = 0; right = 1; middle = 2
+                    if (Event.current.button == 0)
+                    {
+                        // drag case
+                        if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
+                        {
+                            if (Event.current.shift)
+                            {
+                                brushMode = BrushMode.ShiftDrag;
+
+                                if (Event.current.control)
+                                {
+                                    brushMode = BrushMode.ShiftCtrlDrag;
+                                }
+                            }
+
+                        }
+                    }
                 }
 
                 // draw brush gizmo
@@ -155,11 +215,15 @@ namespace Yapp
                     innerColor = GUIStyles.BrushNoneInnerColor;
                     outerColor = GUIStyles.BrushNoneOuterColor;
                     break;
-                case BrushMode.Add:
+                case BrushMode.ShiftKey:
+                case BrushMode.ShiftPressed:
+                case BrushMode.ShiftDrag:
                     innerColor = GUIStyles.BrushAddInnerColor;
                     outerColor = GUIStyles.BrushAddOuterColor;
                     break;
-                case BrushMode.Remove:
+                case BrushMode.ShiftCtrlKey:
+                case BrushMode.ShiftCtrlPressed:
+                case BrushMode.ShiftCtrlDrag:
                     innerColor = GUIStyles.BrushRemoveInnerColor;
                     outerColor = GUIStyles.BrushRemoveOuterColor;
                     break;
