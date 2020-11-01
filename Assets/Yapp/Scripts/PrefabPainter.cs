@@ -66,6 +66,11 @@ namespace Yapp
         public SplineModule splineModule = null;
 
         /// <summary>
+        /// Interaction
+        /// </summary>
+        public InteractionSettings interactionSettings = new InteractionSettings();
+
+        /// <summary>
         /// This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only).
         /// You can use this to ensure that when you modify data in an editor, that data stays within a certain range.
         /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnValidate.html

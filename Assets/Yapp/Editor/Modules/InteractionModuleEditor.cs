@@ -6,6 +6,12 @@ namespace Yapp
 {
     public class InteractionModuleEditor: ModuleEditorI
     {
+        #region Properties
+
+        SerializedProperty magnetStrength;
+
+        #endregion Properties
+
 #pragma warning disable 0414
         PrefabPainterEditor editor;
         PrefabPainter gizmo;
@@ -20,12 +26,14 @@ namespace Yapp
         /// </summary>
         private bool needsPhysicsApplied = false; // TODO property
 
-        private float magnetFactor = 0.1f; // TODO property
 
         public InteractionModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
             this.gizmo = editor.GetPainter();
+
+            magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
+
         }
 
         public void OnInspectorGUI()
@@ -35,7 +43,15 @@ namespace Yapp
 
             EditorGUILayout.LabelField("Interaction", GUIStyles.BoxTitleStyle);
 
-            EditorGUILayout.HelpBox("Perform brush operations on the container children", MessageType.Info);
+            EditorGUILayout.HelpBox("Perform interactive operations on the container children", MessageType.Info);
+
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Magnet", GUIStyles.BoxTitleStyle);
+
+            EditorGUILayout.PropertyField(magnetStrength, new GUIContent("Magnet Strength", "Strength of the Magnet"));
+
 
             GUILayout.EndVertical();
 
@@ -81,7 +97,7 @@ namespace Yapp
             bool applyAutoPhysics = needsPhysicsApplied && gizmo.brushSettings.autoSimulationType != BrushSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                ApplyPhysics();
+                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.brushSettings.autoSimulationType, gizmo.brushSettings.autoSimulationStepCountMax, gizmo.brushSettings.autoSimulationStepIterations);
             }
         }
 
@@ -115,34 +131,11 @@ namespace Yapp
 
                 Vector3 direction = distance.normalized;
 
+                // just some arbitrary value depending on the magnet strength which ranges from 0..100
+                float magnetFactor = gizmo.interactionSettings.magnetStrength / 1000f;
+
                 transform.position += direction * magnetFactor * (attract ? 1 : -1);
             }
         }
-
-        #region Physics
-        private void ApplyPhysics()
-        {
-            PhysicsSimulation physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
-
-            PhysicsSettings physicsSettings = new PhysicsSettings();
-            physicsSettings.simulationStepCountMax = gizmo.brushSettings.autoSimulationStepCountMax;
-            physicsSettings.simulationStepIterations = gizmo.brushSettings.autoSimulationStepIterations;
-
-            physicsSimulation.ApplySettings(physicsSettings);
-
-            // TODO: use only the new added ones?
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
-
-            if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Once)
-            {
-                physicsSimulation.RunSimulationOnce(containerChildren);
-            }
-            else if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Continuous)
-            {
-                physicsSimulation.StartSimulation(containerChildren);
-            }
-
-        }
-        #endregion Physics
     }
 }

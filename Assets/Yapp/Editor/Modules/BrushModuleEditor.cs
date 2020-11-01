@@ -189,7 +189,7 @@ namespace Yapp
             bool applyAutoPhysics = needsPhysicsApplied && gizmo.brushSettings.autoSimulationType != BrushSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                ApplyPhysics();
+                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.brushSettings.autoSimulationType, gizmo.brushSettings.autoSimulationStepCountMax, gizmo.brushSettings.autoSimulationStepIterations);
             }
 
         }
@@ -536,31 +536,7 @@ namespace Yapp
 
         #endregion Paint Prefabs
 
-        #region Physics
-        private void ApplyPhysics()
-        {
-            PhysicsSimulation physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
 
-            PhysicsSettings physicsSettings = new PhysicsSettings();
-            physicsSettings.simulationStepCountMax = gizmo.brushSettings.autoSimulationStepCountMax;
-            physicsSettings.simulationStepIterations = gizmo.brushSettings.autoSimulationStepIterations;
-
-            physicsSimulation.ApplySettings(physicsSettings);
-
-            // TODO: use only the new added ones?
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
-
-            if( gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Once)
-            {
-                physicsSimulation.RunSimulationOnce(containerChildren);
-            }
-            else if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.Continuous)
-            {
-                physicsSimulation.StartSimulation(containerChildren);
-            }
-
-        }
-        #endregion Physics
     }
 
 }
