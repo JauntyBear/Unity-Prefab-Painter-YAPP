@@ -400,6 +400,12 @@ namespace Yapp
             // add prefab's position offset
             prefab.transform.position += prefabSettings.positionOffset;
 
+            // auto physics: add additional height offset
+            if (prefabPainter.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None)
+            {
+                prefab.transform.position += new Vector3( 0f, prefabPainter.spawnSettings.autoSimulationHeightOffset, 0f);
+            }
+
             // lanes
             Vector3 splinePosition = prefab.transform.position;
             Quaternion splineRotation = Quaternion.LookRotation(direction);

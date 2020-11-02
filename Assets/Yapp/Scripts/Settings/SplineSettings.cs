@@ -28,6 +28,17 @@ namespace Yapp
             PrefabForwardSize
         }
 
+        public enum SpawnMechanism
+        {
+            Automatic,
+            Manual,
+        }
+
+        /// <summary>
+        /// Spawn automatically during modification or manually via button press
+        /// </summary>
+        public SpawnMechanism spawnMechanism = SpawnMechanism.Automatic;
+
         [Range (0,10)]
         public int curveResolution = 0;
         public bool loop = false;

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using UnityEditorInternal;
+using static Yapp.SplineSettings;
 
 namespace Yapp
 {
@@ -11,6 +12,7 @@ namespace Yapp
     {
         #region Properties
 
+        SerializedProperty spawnMechanism;
         SerializedProperty curveResolution;
         SerializedProperty loop;
         SerializedProperty separation;
@@ -45,6 +47,8 @@ namespace Yapp
         {
             this.editor = editor;
             this.gizmo = editor.GetPainter();
+
+            spawnMechanism = editor.FindProperty(x => x.splineSettings.spawnMechanism);
 
             curveResolution = editor.FindProperty( x => x.splineSettings.curveResolution);
             loop = editor.FindProperty(x => x.splineSettings.loop);
@@ -81,6 +85,22 @@ namespace Yapp
             EditorGUILayout.LabelField("Spline settings", GUIStyles.BoxTitleStyle);
 
             EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.PropertyField(spawnMechanism, new GUIContent("Spawn Mechanism"));
+
+            if( spawnMechanism.enumValueIndex == (int) SpawnMechanism.Manual)
+            {
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.PrefixLabel("Manual Spawn");
+
+                    if (GUILayout.Button("Spawn Prefabs along Spline"))
+                    {
+                        SpawnPrefabsAlongSpline();
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+            }
 
             EditorGUILayout.PropertyField(curveResolution, new GUIContent("Curve Resolution"));
             EditorGUILayout.PropertyField(loop, new GUIContent("Loop"));
@@ -383,7 +403,8 @@ namespace Yapp
             DrawSplineGizmos();
 
             // create gameobjects
-            if( mousePosValid)
+            bool placeObjects = mousePosValid && spawnMechanism.enumValueIndex == (int) SpawnMechanism.Automatic;
+            if(placeObjects)
             {
                 PerformEditorAction();
             }
@@ -403,6 +424,9 @@ namespace Yapp
                 return;
 
             if (!gizmo.splineSettings.dirty)
+                return;
+
+            if (gizmo.splineSettings.spawnMechanism == SpawnMechanism.Manual)
                 return;
 
             gizmo.splineModule.PlaceObjects();
@@ -699,6 +723,31 @@ namespace Yapp
             }
 
             gizmo.splineSettings.dirty = true;
+        }
+
+        private void SpawnPrefabsAlongSpline()
+        {
+            // see PerformEditorAction
+            {
+                gizmo.splineModule.PlaceObjects();
+
+                gizmo.splineSettings.dirty = false;
+
+                // Set the editor spline dirty, so that the changed settings (e.g.control points got dragged in the scene) get updated.
+                // Ensure the control points get saved when they are changed in the scene if we wouldn't do that, they'd only be change when something changes in the inspector
+                EditorUtility.SetDirty(editor.target);
+            }
+
+            // used for later
+            bool needsPhysicsApplied = true;
+
+            // auto physics
+            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None;
+            if (applyAutoPhysics)
+            {
+                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
+            }
+
         }
     }
 }
