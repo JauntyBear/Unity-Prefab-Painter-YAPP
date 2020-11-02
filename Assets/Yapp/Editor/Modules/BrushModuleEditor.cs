@@ -28,12 +28,6 @@ namespace Yapp
         SerializedProperty curveSamplePoints;
         SerializedProperty spawnToVSPro;
 
-        SerializedProperty autoSimulationType;
-        SerializedProperty autoSimulationHeightOffset;
-        SerializedProperty autoSimulationStepCountMax;
-        SerializedProperty autoSimulationStepIterations;
-
-
         #endregion Properties
 
 #pragma warning disable 0414
@@ -51,9 +45,6 @@ namespace Yapp
         /// </summary>
         private bool needsPhysicsApplied = false;
 
-
-
-
         public BrushModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
@@ -70,11 +61,6 @@ namespace Yapp
             fallOff2dCurveZ = editor.FindProperty(x => x.brushSettings.fallOff2dCurveZ);
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
-
-            autoSimulationType = editor.FindProperty(x => x.brushSettings.autoSimulationType);
-            autoSimulationHeightOffset = editor.FindProperty(x => x.brushSettings.autoSimulationHeightOffset);
-            autoSimulationStepCountMax = editor.FindProperty(x => x.brushSettings.autoSimulationStepCountMax);
-            autoSimulationStepIterations = editor.FindProperty(x => x.brushSettings.autoSimulationStepIterations);
 
             spawnToVSPro = editor.FindProperty(x => x.brushSettings.spawnToVSPro);
 
@@ -119,19 +105,6 @@ namespace Yapp
             EditorGUILayout.PrefixLabel("Slope");
             EditorGUILayout.MinMaxSlider(ref gizmo.brushSettings.slopeMin, ref gizmo.brushSettings.slopeMax, gizmo.brushSettings.slopeMinLimit, gizmo.brushSettings.slopeMaxLimit);
             EditorGUILayout.EndHorizontal();
-
-            // auto physics
-            EditorGUILayout.PropertyField(autoSimulationType, new GUIContent("Physics Simulation"));
-            if (autoSimulationType.enumValueIndex != (int) BrushSettings.AutoSimulationType.None)
-            {
-                EditorGUI.indentLevel++;
-                {
-                    EditorGUILayout.PropertyField(autoSimulationHeightOffset, new GUIContent("Height Offset"));
-                    EditorGUILayout.PropertyField(autoSimulationStepCountMax, new GUIContent("Step Count Max", "Maximum number of simulation steps to perform"));
-                    EditorGUILayout.PropertyField(autoSimulationStepIterations, new GUIContent("Step Iterations", "Number of physics steps to perform in a single simulation step. lower = smoother, higher = faster"));
-                }
-                EditorGUI.indentLevel--;
-            }
 
             // vegetation studio pro
 #if VEGETATION_STUDIO_PRO
@@ -186,14 +159,14 @@ namespace Yapp
             brushComponent.Layout(guiInfo);
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && gizmo.brushSettings.autoSimulationType != BrushSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.brushSettings.autoSimulationType, gizmo.brushSettings.autoSimulationStepCountMax, gizmo.brushSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
             }
 
         }
-
+        
 
 
         #region Paint Prefabs
@@ -488,11 +461,11 @@ namespace Yapp
         /// <returns></returns>
         private Vector3 ApplyAutoPhysicsHeightOffset( Vector3 position)
         {
-            if (gizmo.brushSettings.autoSimulationType == BrushSettings.AutoSimulationType.None)
+            if (gizmo.spawnSettings.autoSimulationType == SpawnSettings.AutoSimulationType.None)
                 return position;
 
             // auto physics: add additional height offset
-            position.y += gizmo.brushSettings.autoSimulationHeightOffset;
+            position.y += gizmo.spawnSettings.autoSimulationHeightOffset;
 
             return position;
         }

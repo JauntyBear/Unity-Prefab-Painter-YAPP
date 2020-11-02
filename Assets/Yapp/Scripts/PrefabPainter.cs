@@ -35,6 +35,12 @@ namespace Yapp
         public BrushSettings brushSettings = new BrushSettings();
 
         /// <summary>
+        /// The diameter of the brush
+        /// </summary>
+        [HideInInspector]
+        public SpawnSettings spawnSettings = new SpawnSettings();
+
+        /// <summary>
         /// The prefab that will be instantiated
         /// </summary>
         [HideInInspector]

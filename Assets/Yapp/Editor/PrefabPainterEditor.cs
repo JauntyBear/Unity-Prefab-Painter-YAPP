@@ -27,6 +27,7 @@ namespace Yapp
         private CopyPasteExtension copyPasteModule;
         private SelectionExtension selectionModule;
         private ToolsExtension toolsModule;
+        private SpawnExtension spawnModule;
 
         private BrushModuleEditor brushModule;
         private SplineModuleEditor splineModule;
@@ -62,6 +63,7 @@ namespace Yapp
             this.copyPasteModule = new CopyPasteExtension(this);
             this.selectionModule = new SelectionExtension(this);
             this.toolsModule = new ToolsExtension(this);
+            this.spawnModule = new SpawnExtension(this);
 
             modeButtons = new GUIContent[]
             {
@@ -173,7 +175,11 @@ namespace Yapp
             switch (this.gizmo.mode)
             {
                 case PrefabPainter.Mode.Brush:
+
                     brushModule.OnInspectorGUI();
+
+                    // spawn
+                    spawnModule.OnInspectorGUI();
 
                     /// Prefabs
                     this.prefabModule.OnInspectorGUI();
@@ -181,7 +187,11 @@ namespace Yapp
                     break;
 
                 case PrefabPainter.Mode.Spline:
+
                     splineModule.OnInspectorGUI();
+
+                    // spawn
+                    spawnModule.OnInspectorGUI();
 
                     /// Prefabs
                     this.prefabModule.OnInspectorGUI();
@@ -189,8 +199,11 @@ namespace Yapp
                     break;
 
                 case PrefabPainter.Mode.Interaction:
+
                     interactionModule.OnInspectorGUI();
 
+                    // spawn
+                    spawnModule.OnInspectorGUI();
 
                     break;
 

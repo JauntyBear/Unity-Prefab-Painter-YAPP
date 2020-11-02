@@ -147,10 +147,10 @@ namespace Yapp
             brushComponent.Layout(guiInfo);
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && gizmo.brushSettings.autoSimulationType != BrushSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.brushSettings.autoSimulationType, gizmo.brushSettings.autoSimulationStepCountMax, gizmo.brushSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
             }
         }
 
