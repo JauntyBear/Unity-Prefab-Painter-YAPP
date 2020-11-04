@@ -40,6 +40,9 @@ namespace Yapp
         {
             GameObject container = gizmo.container as GameObject;
 
+            if (!container)
+                return;
+
             List<Transform> list = new List<Transform>();
             foreach (Transform child in container.transform)
             {
@@ -53,6 +56,10 @@ namespace Yapp
                 PrefabPainterEditor.DestroyImmediate(go);
 
             }
+
+            // remove spline instances
+            gizmo.splineSettings.prefabInstances.Clear();
+
         }
 
         #endregion Remove Container Children
