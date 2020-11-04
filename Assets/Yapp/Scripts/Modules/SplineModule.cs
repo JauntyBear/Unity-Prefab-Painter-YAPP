@@ -346,7 +346,7 @@ namespace Yapp
             for ( var lane=1; lane <= prefabPainter.splineSettings.lanes; lane++)
             {
 
-                // skip center lane if requestred
+                // skip center lane if requested
                 if (prefabPainter.splineSettings.skipCenterLane && offsetLane == 0)
                 {
                     offsetLane++;
@@ -362,6 +362,9 @@ namespace Yapp
 
                 // instance will be created or used => advance index
                 prefabInstanceIndex++;
+
+                // reset the instance; check later if we should reuse one or create a new one
+                instance = null;
 
                 // check if we have to create a new instance or use an existing one
                 if (prefabPainter.splineSettings.reusePrefabs)
