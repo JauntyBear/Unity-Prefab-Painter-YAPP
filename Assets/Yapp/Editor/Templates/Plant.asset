@@ -10,24 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e06ba7fa4ed9322469a0e408abcaba0c, type: 3}
-  m_Name: Object
+  m_Name: Plant
   m_EditorClassIdentifier: 
-  templateOrder: 0
-  templateName: Object
+  templateName: Plant
   prefab: {fileID: 0}
   active: 1
   probability: 1
   positionOffset: {x: 0, y: 0, z: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
-  randomRotation: 0
+  randomRotation: 1
   rotationMinX: 0
-  rotationMaxX: 360
+  rotationMaxX: 0
   rotationMinY: 0
   rotationMaxY: 360
   rotationMinZ: 0
-  rotationMaxZ: 360
-  changeScale: 0
-  scaleMin: 0.5
-  scaleMax: 1.5
+  rotationMaxZ: 0
+  changeScale: 1
+  scaleMin: 0.8
+  scaleMax: 1.2
   assetGUID: 
   vspro_VegetationItemID: 

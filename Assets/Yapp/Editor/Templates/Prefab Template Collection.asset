@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ddb2f354a5cd3489769ffb05c69d82, type: 3}
   m_Name: Prefab Template Collection
   m_EditorClassIdentifier: 
-  templates: []
+  templates:
+  - {fileID: 11400000, guid: e8e8a6e31e0a14a499e5eb25390e3ce7, type: 2}
+  - {fileID: 11400000, guid: 28f8ec3f4647af243a8dd1b45435c3d6, type: 2}
+  - {fileID: 11400000, guid: cef3448eb33ef114e948093709298b52, type: 2}
+  - {fileID: 11400000, guid: 4c570fa4e759b154cb01c0890463f605, type: 2}
+  - {fileID: 11400000, guid: d9d86ef561c324441863e060852baea3, type: 2}
+  - {fileID: 11400000, guid: a1f8961b31280b74cbb0b046ad9ff56f, type: 2}
