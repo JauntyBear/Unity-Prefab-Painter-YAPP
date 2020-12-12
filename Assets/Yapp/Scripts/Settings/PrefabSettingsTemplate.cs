@@ -4,19 +4,14 @@ using UnityEngine;
 
 namespace Yapp
 {
+    [CreateAssetMenu(fileName = Constants.PrefabSettingsTemplate_FileName, menuName = Constants.PrefabSettingsTemplate_MenuName)]
     [System.Serializable]
-    public class PrefabSettings
+    public class PrefabSettingsTemplate : ScriptableObject
     {
         /// <summary>
         /// The name which will be displayed in the prefab template grid of the inspector
         /// </summary>
         public string templateName;
-
-        /// <summary>
-        /// The prefab which should be instanted and placed at the brush position
-        /// </summary>
-        [HideInInspector]
-        public GameObject prefab;
 
         /// <summary>
         /// Whether the prefab is used or not
@@ -96,46 +91,5 @@ namespace Yapp
         /// Randomize Scale Maximum
         /// </summary>
         public float scaleMax = 1.5f;
-
-        /// <summary>
-        /// Storing asset GUID here for future reference (performance reasons)
-        /// </summary>
-        [HideInInspector]
-        public string assetGUID = null;
-
-        /// <summary>
-        /// Vegetation Studio Pro vspro_VegetationItemID
-        /// </summary>
-        [HideInInspector]
-        public string vspro_VegetationItemID = null;
-
-        /// <summary>
-        /// Apply the settings of the template to the current prefab settings
-        /// </summary>
-        /// <param name="template"></param>
-        public void ApplyTemplate(PrefabSettingsTemplate template)
-        {
-
-            active = template.active;
-            probability = template.probability;
-            positionOffset = template.positionOffset;
-            rotationOffset = template.rotationOffset;
-            randomRotation = template.randomRotation;
-            rotationMinX = template.rotationMinX;
-            rotationMaxX = template.rotationMaxX;
-            rotationMinY = template.rotationMinY;
-            rotationMaxY = template.rotationMaxY;
-            rotationMinZ = template.rotationMinZ;
-            rotationMaxZ = template.rotationMaxZ;
-            changeScale = template.changeScale;
-            scaleMin = template.scaleMin;
-            scaleMax = template.scaleMax;
-
-        }
-
-        public PrefabSettings Clone()
-        {
-            return (PrefabSettings)this.MemberwiseClone();
-        }
     }
 }

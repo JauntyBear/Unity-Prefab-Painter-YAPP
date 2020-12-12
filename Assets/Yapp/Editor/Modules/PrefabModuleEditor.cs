@@ -14,7 +14,7 @@ namespace Yapp
 
 
         public PrefabTemplateCollection templateCollection;
-        private PrefabSettings defaultTemplate = new PrefabSettings();
+        private PrefabSettingsTemplate defaultTemplate = new PrefabSettingsTemplate();
 
         public PrefabModuleEditor(PrefabPainterEditor editor)
         {
@@ -84,7 +84,7 @@ namespace Yapp
                                 {
                                     int index = column + row * Constants.PrefabTemplateGridColumnCount;
 
-                                    PrefabSettings template = index < templateCollection.templates.Count ? templateCollection.templates[index] : defaultTemplate;
+                                    PrefabSettingsTemplate template = index < templateCollection.templates.Count ? templateCollection.templates[index] : defaultTemplate;
 
                                     // drop area
                                     Rect prefabDropArea = GUILayoutUtility.GetRect(0.0f, 34.0f, GUIStyles.DropAreaStyle, GUILayout.ExpandWidth(true));
@@ -270,10 +270,10 @@ namespace Yapp
         {
         }
 
-        private void AddPrefab(GameObject prefab, PrefabSettings template)
+        private void AddPrefab(GameObject prefab, PrefabSettingsTemplate template)
         {
             // new settings
-            PrefabSettings prefabSettings = ScriptableObject.CreateInstance<PrefabSettings>();
+            PrefabSettings prefabSettings = new PrefabSettings();
 
             prefabSettings.ApplyTemplate(template);
 

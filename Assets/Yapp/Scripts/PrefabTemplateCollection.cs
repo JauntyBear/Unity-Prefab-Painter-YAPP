@@ -12,6 +12,6 @@ namespace Yapp
         /// Collection of various prefab settings templates
         /// </summary>
         [SerializeField]
-        public List<PrefabSettings> templates = new List<PrefabSettings>();
+        public List<PrefabSettingsTemplate> templates = new List<PrefabSettingsTemplate>();
     }
 }
