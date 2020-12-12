@@ -110,10 +110,10 @@ namespace Yapp
         {
         }
 
-        public PrefabSettings(PrefabSettings settings)
+        public PrefabSettings(PrefabSettings template)
         {
-            changeScale = settings.changeScale;
-            randomRotation = settings.randomRotation;
+            changeScale = template.changeScale;
+            randomRotation = template.randomRotation;
         }
 
         public PrefabSettings Clone()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using static Yapp.PrefabTemplates;
 
 namespace Yapp
 {
@@ -12,94 +13,19 @@ namespace Yapp
         PrefabPainter gizmo;
 #pragma warning restore 0414
 
-        struct PrefabPreset
+        // register the available prefab templates
+        List<Template> prefabTemplates = new List<Template>()
         {
-            public enum Type
-            {
-                Default, Object, Plant, Rock, House, Fence
-            }
-
-            public Type TypeId { get; set; }
-            public string Name { get; set; }
-            public PrefabSettings Settings { get; set; }
-        }
-
-        #region preset definitions
-        static PrefabPreset presetDefault = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.Default,
-            Name = "",
-            Settings = new PrefabSettings()
-            {
-                changeScale = false,
-                randomRotation = false
-            }
-        };
-        static PrefabPreset presetObject = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.Object,
-            Name = "Object",
-            Settings = new PrefabSettings()
-            {
-                changeScale = false,
-                randomRotation = false
-            }
-        };
-        static PrefabPreset presetPlant = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.Plant,
-            Name = "Plant",
-            Settings = new PrefabSettings()
-            {
-                changeScale = true,
-                randomRotation = false
-            }
-        };
-        static PrefabPreset presetRock = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.Rock,
-            Name = "Rock",
-            Settings = new PrefabSettings()
-            {
-                changeScale = true,
-                randomRotation = true
-            }
-        };
-        static PrefabPreset presetHouse = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.House,
-            Name = "House",
-            Settings = new PrefabSettings()
-            {
-                changeScale = false,
-                randomRotation = false
-            }
-        };
-        static PrefabPreset presetFence = new PrefabPreset()
-        {
-            TypeId = PrefabPreset.Type.Fence,
-            Name = "Fence",
-            Settings = new PrefabSettings()
-            {
-                changeScale = false,
-                randomRotation = false
-            }
-        };
-        #endregion preset definitions
-
-        // register the available prefab presets
-        List<PrefabPreset> prefabPresets = new List<PrefabPreset>()
-        {
-            presetPlant,
-            presetRock,
-            presetFence,
-            presetHouse,
-            presetObject,
-            // presetDefault, // default isn't registered, it's just used as a filler
+            PrefabTemplates.objectTemplate,
+            PrefabTemplates.plantTemplate,
+            PrefabTemplates.rockTemplate,
+            PrefabTemplates.fenceTemplate,
+            PrefabTemplates.houseTemplate,
+            // PrefabTemplates.defaultTemplate, // default isn't registered, it's just used as a filler multiple times
         };
 
-        // number of prefab preset drop targets per row in the preset grid
-        private int prefabPresetGridColumnCount = 4;
+        // number of prefab template drop targets per row in the template grid
+        private int prefabTemplateGridColumnCount = 4;
 
         public PrefabModuleEditor(PrefabPainterEditor editor)
         {
@@ -115,7 +41,7 @@ namespace Yapp
 
                 EditorGUILayout.LabelField("Prefabs", GUIStyles.BoxTitleStyle);
 
-                #region preset drop targets
+                #region template drop targets
                 GUILayout.BeginHorizontal();
                 {
                     GUILayout.BeginVertical();
@@ -123,23 +49,23 @@ namespace Yapp
                         // change background color in case there are no prefabs yet
                         if (gizmo.prefabSettingsList.Count == 0)
                         {
-                            EditorGUILayout.HelpBox("Drop prefabs on the prefab type boxes in order to use them.", MessageType.Info);
+                            EditorGUILayout.HelpBox("Drop prefabs on the prefab template boxes in order to use them.", MessageType.Info);
 
                             editor.SetErrorBackgroundColor();
                         }
 
-                        int gridRows = Mathf.CeilToInt((float)prefabPresets.Count / prefabPresetGridColumnCount);
+                        int gridRows = Mathf.CeilToInt((float)prefabTemplates.Count / prefabTemplateGridColumnCount);
 
                         for (int row = 0; row < gridRows; row++)
                         {
                             GUILayout.BeginHorizontal();
                             {
-                                for (int column = 0; column < prefabPresetGridColumnCount; column++)
+                                for (int column = 0; column < prefabTemplateGridColumnCount; column++)
                                 {
-                                    int index = column + row * prefabPresetGridColumnCount;
+                                    int index = column + row * prefabTemplateGridColumnCount;
 
-                                    PrefabPreset preset = index < prefabPresets.Count ? preset = prefabPresets[index] : presetDefault;
-                                    string name = preset.Name;
+                                    Template template = index < prefabTemplates.Count ? template = prefabTemplates[index] : defaultTemplate;
+                                    string name = template.Name;
 
                                     // drop area
                                     Rect prefabDropArea = GUILayoutUtility.GetRect(0.0f, 34.0f, GUIStyles.DropAreaStyle, GUILayout.ExpandWidth(true));
@@ -182,8 +108,8 @@ namespace Yapp
                                                             continue;
                                                         }
 
-                                                        // add the prefab to the list using the preset
-                                                        AddPrefab(droppedObject as GameObject, preset);
+                                                        // add the prefab to the list using the template
+                                                        AddPrefab(droppedObject as GameObject, template);
 
                                                     }
                                                 }
@@ -202,7 +128,7 @@ namespace Yapp
                 }
                 GUILayout.EndHorizontal();
 
-                #endregion preset drop targets
+                #endregion template drop targets
 
                 EditorGUILayout.Space();
 
@@ -314,10 +240,10 @@ namespace Yapp
         {
         }
 
-        private void AddPrefab(GameObject prefab, PrefabPreset preset)
+        private void AddPrefab(GameObject prefab, Template template)
         {
             // new settings
-            PrefabSettings prefabSettings = new PrefabSettings(preset.Settings);
+            PrefabSettings prefabSettings = new PrefabSettings(template.Settings);
 
             // initialize with dropped prefab
             prefabSettings.prefab = prefab;
