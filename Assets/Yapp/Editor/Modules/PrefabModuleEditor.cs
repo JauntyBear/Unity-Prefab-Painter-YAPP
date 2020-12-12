@@ -1,36 +1,56 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using static Yapp.PrefabTemplates;
 
 namespace Yapp
 {
     public class PrefabModuleEditor : ModuleEditorI
     {
+
 #pragma warning disable 0414
         PrefabPainterEditor editor;
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 #pragma warning restore 0414
 
-        // register the available prefab templates
-        List<Template> prefabTemplates = new List<Template>()
-        {
-            PrefabTemplates.objectTemplate,
-            PrefabTemplates.plantTemplate,
-            PrefabTemplates.rockTemplate,
-            PrefabTemplates.fenceTemplate,
-            PrefabTemplates.houseTemplate,
-            // PrefabTemplates.defaultTemplate, // default isn't registered, it's just used as a filler multiple times
-        };
 
-        // number of prefab template drop targets per row in the template grid
-        private int prefabTemplateGridColumnCount = 4;
+        public PrefabTemplateCollection templateCollection;
+        private PrefabSettings defaultTemplate = new PrefabSettings();
 
         public PrefabModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
+
+            LoadTemplateCollection();
+        }
+
+        private void LoadTemplateCollection()
+        {
+            // load the available prefab settings templates
+            string[] templateCollectionGuids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(PrefabTemplateCollection)));
+
+            // check if we have a template collection at all
+            if (templateCollectionGuids.Length == 0)
+            {
+                Debug.LogError(string.Format("No asset of type {0] found", typeof(PrefabTemplateCollection)));
+            }
+
+            // use the first one found
+            string templateCollectionGuidsFilePath = AssetDatabase.GUIDToAssetPath(templateCollectionGuids[0]);
+
+            // if we have more than 1 colleciton, inform the user that e use the first one
+            if (templateCollectionGuids.Length > 1)
+            {
+                Debug.LogError(string.Format("Multiple template collections found, this isn't supported yet. Using the first one found: {0}", templateCollectionGuidsFilePath));
+            }
+
+            templateCollection = AssetDatabase.LoadAssetAtPath(templateCollectionGuidsFilePath, typeof(PrefabTemplateCollection)) as PrefabTemplateCollection;
+
+            if (!templateCollection)
+            {
+                Debug.LogError(string.Format("Template collection not found: {0}", templateCollectionGuidsFilePath));
+            }
+
         }
 
         public void OnInspectorGUI()
@@ -47,75 +67,79 @@ namespace Yapp
                     GUILayout.BeginVertical();
                     {
                         // change background color in case there are no prefabs yet
-                        if (gizmo.prefabSettingsList.Count == 0)
+                        if (editorTarget.prefabSettingsList.Count == 0)
                         {
                             EditorGUILayout.HelpBox("Drop prefabs on the prefab template boxes in order to use them.", MessageType.Info);
 
                             editor.SetErrorBackgroundColor();
                         }
 
-                        int gridRows = Mathf.CeilToInt((float)prefabTemplates.Count / prefabTemplateGridColumnCount);
+                        int gridRows = Mathf.CeilToInt((float)templateCollection.templates.Count / Constants.PrefabTemplateGridColumnCount);
 
                         for (int row = 0; row < gridRows; row++)
                         {
                             GUILayout.BeginHorizontal();
                             {
-                                for (int column = 0; column < prefabTemplateGridColumnCount; column++)
+                                for (int column = 0; column < Constants.PrefabTemplateGridColumnCount; column++)
                                 {
-                                    int index = column + row * prefabTemplateGridColumnCount;
+                                    int index = column + row * Constants.PrefabTemplateGridColumnCount;
 
-                                    Template template = index < prefabTemplates.Count ? template = prefabTemplates[index] : defaultTemplate;
-                                    string name = template.Name;
+                                    PrefabSettings template = index < templateCollection.templates.Count ? templateCollection.templates[index] : defaultTemplate;
 
                                     // drop area
                                     Rect prefabDropArea = GUILayoutUtility.GetRect(0.0f, 34.0f, GUIStyles.DropAreaStyle, GUILayout.ExpandWidth(true));
 
-                                    // drop area box with background color and info text
-                                    GUI.color = GUIStyles.DropAreaBackgroundColor;
-                                    GUI.Box(prefabDropArea, name, GUIStyles.DropAreaStyle);
-                                    GUI.color = GUIStyles.DefaultBackgroundColor;
-
-                                    Event evt = Event.current;
-                                    switch (evt.type)
+                                    bool hasDropArea = index < templateCollection.templates.Count;
+                                    if (hasDropArea)
                                     {
-                                        case EventType.DragUpdated:
-                                        case EventType.DragPerform:
+                                        // drop area box with background color and info text
+                                        GUI.color = GUIStyles.DropAreaBackgroundColor;
+                                        GUI.Box(prefabDropArea, template.templateName, GUIStyles.DropAreaStyle);
+                                        GUI.color = GUIStyles.DefaultBackgroundColor;
 
-                                            if (prefabDropArea.Contains(evt.mousePosition))
-                                            {
+                                        Event evt = Event.current;
+                                        switch (evt.type)
+                                        {
+                                            case EventType.DragUpdated:
+                                            case EventType.DragPerform:
 
-                                                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-
-                                                if (evt.type == EventType.DragPerform)
+                                                if (prefabDropArea.Contains(evt.mousePosition))
                                                 {
-                                                    DragAndDrop.AcceptDrag();
 
-                                                    // list of new prefabs that should be created via drag/drop
-                                                    // we can't do it in the drag/drop code itself, we'd get exceptions like
-                                                    //   ArgumentException: Getting control 12's position in a group with only 12 controls when doing dragPerform. Aborting
-                                                    // followed by
-                                                    //   Unexpected top level layout group! Missing GUILayout.EndScrollView/EndVertical/EndHorizontal? UnityEngine.GUIUtility:ProcessEvent(Int32, IntPtr)
-                                                    // they must be added when everything is done (currently at the end of this method)
-                                                    editor.newDraggedPrefabs = new List<PrefabSettings>();
+                                                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
 
-                                                    foreach (Object droppedObject in DragAndDrop.objectReferences)
+                                                    if (evt.type == EventType.DragPerform)
                                                     {
+                                                        DragAndDrop.AcceptDrag();
 
-                                                        // allow only prefabs
-                                                        if (PrefabUtility.GetPrefabAssetType(droppedObject) == PrefabAssetType.NotAPrefab)
+                                                        // list of new prefabs that should be created via drag/drop
+                                                        // we can't do it in the drag/drop code itself, we'd get exceptions like
+                                                        //   ArgumentException: Getting control 12's position in a group with only 12 controls when doing dragPerform. Aborting
+                                                        // followed by
+                                                        //   Unexpected top level layout group! Missing GUILayout.EndScrollView/EndVertical/EndHorizontal? UnityEngine.GUIUtility:ProcessEvent(Int32, IntPtr)
+                                                        // they must be added when everything is done (currently at the end of this method)
+                                                        editor.newDraggedPrefabs = new List<PrefabSettings>();
+
+                                                        foreach (Object droppedObject in DragAndDrop.objectReferences)
                                                         {
-                                                            Debug.Log("Not a prefab: " + droppedObject);
-                                                            continue;
+
+                                                            // allow only prefabs
+                                                            if (PrefabUtility.GetPrefabAssetType(droppedObject) == PrefabAssetType.NotAPrefab)
+                                                            {
+                                                                Debug.Log("Not a prefab: " + droppedObject);
+                                                                continue;
+                                                            }
+
+                                                            // add the prefab to the list using the template
+                                                            AddPrefab(droppedObject as GameObject, template);
+
                                                         }
-
-                                                        // add the prefab to the list using the template
-                                                        AddPrefab(droppedObject as GameObject, template);
-
                                                     }
                                                 }
-                                            }
-                                            break;
+                                                break;
+                                        }
                                     }
+                                
                                 }
                             }
                             GUILayout.EndHorizontal();
@@ -130,25 +154,31 @@ namespace Yapp
 
                 #endregion template drop targets
 
-                EditorGUILayout.Space();
+                if (editorTarget.prefabSettingsList.Count > 0)
+                {
+                    EditorGUILayout.Space();
+                }
 
-                for (int i = 0; i < gizmo.prefabSettingsList.Count; i++)
+                for (int i = 0; i < editorTarget.prefabSettingsList.Count; i++)
                 {
                     if (i > 0)
                         editor.addGUISeparator();
 
-                    PrefabSettings prefabSettings = this.gizmo.prefabSettingsList[i];
+                    PrefabSettings prefabSettings = this.editorTarget.prefabSettingsList[i];
 
                     GUILayout.BeginHorizontal();
                     {
                         // preview
+
                         // try to get the asset preview
                         Texture2D previewTexture = AssetPreview.GetAssetPreview(prefabSettings.prefab);
+
                         // if no asset preview available, try to get the mini thumbnail
                         if (!previewTexture)
                         {
                             previewTexture = AssetPreview.GetMiniThumbnail(prefabSettings.prefab);
                         }
+
                         // if a preview is available, paint it
                         if (previewTexture)
                         {
@@ -167,25 +197,25 @@ namespace Yapp
 
                         if (GUILayout.Button("Add", EditorStyles.miniButton))
                         {
-                            this.gizmo.prefabSettingsList.Insert(i + 1, new PrefabSettings());
+                            this.editorTarget.prefabSettingsList.Insert(i + 1, new PrefabSettings());
                         }
                         if (GUILayout.Button("Duplicate", EditorStyles.miniButton))
                         {
                             PrefabSettings newPrefabSettings = prefabSettings.Clone();
-                            this.gizmo.prefabSettingsList.Insert(i + 1, newPrefabSettings);
+                            this.editorTarget.prefabSettingsList.Insert(i + 1, newPrefabSettings);
                         }
                         if (GUILayout.Button("Reset", EditorStyles.miniButton))
                         {
                             // remove existing
-                            this.gizmo.prefabSettingsList.RemoveAt(i);
+                            this.editorTarget.prefabSettingsList.RemoveAt(i);
 
                             // add new
-                            this.gizmo.prefabSettingsList.Insert(i, new PrefabSettings());
+                            this.editorTarget.prefabSettingsList.Insert(i, new PrefabSettings());
 
                         }
                         if (GUILayout.Button("Remove", EditorStyles.miniButton))
                         {
-                            this.gizmo.prefabSettingsList.Remove(prefabSettings);
+                            this.editorTarget.prefabSettingsList.Remove(prefabSettings);
                         }
 
                     }
@@ -240,10 +270,12 @@ namespace Yapp
         {
         }
 
-        private void AddPrefab(GameObject prefab, Template template)
+        private void AddPrefab(GameObject prefab, PrefabSettings template)
         {
             // new settings
-            PrefabSettings prefabSettings = new PrefabSettings(template.Settings);
+            PrefabSettings prefabSettings = ScriptableObject.CreateInstance<PrefabSettings>();
+
+            prefabSettings.ApplyTemplate(template);
 
             // initialize with dropped prefab
             prefabSettings.prefab = prefab;

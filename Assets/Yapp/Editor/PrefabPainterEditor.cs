@@ -14,6 +14,7 @@ namespace Yapp
     [CustomEditor(typeof(PrefabPainter))]
     public class PrefabPainterEditor : BaseEditor<PrefabPainter>
     {
+
         #region Properties
 
         SerializedProperty container;

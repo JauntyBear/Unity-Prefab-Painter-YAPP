@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace Yapp
 {
+    [CreateAssetMenu(fileName = Constants.PrefabSettigns_FileName, menuName = Constants.PrefabSettigns_MenuName)]
     [System.Serializable]
-    public class PrefabSettings
+    public class PrefabSettings : ScriptableObject
     {
+        /// <summary>
+        /// The name which will be displayed in the prefab template grid of the inspector
+        /// </summary>
+        public string templateName;
+
         /// <summary>
         /// The prefab which should be instanted and placed at the brush position
         /// </summary>
@@ -45,7 +51,6 @@ namespace Yapp
         /// <summary>
         /// Randomize rotation
         /// </summary>
-        [HideInInspector]
         public bool randomRotation;
 
         /// <summary>
@@ -81,39 +86,56 @@ namespace Yapp
         /// <summary>
         /// Randomize Scale Minimum
         /// </summary>
-        [HideInInspector]
         public bool changeScale = false;
 
         /// <summary>
         /// Randomize Scale Minimum
         /// </summary>
-        [HideInInspector]
         public float scaleMin = 0.5f;
 
         /// <summary>
         /// Randomize Scale Maximum
         /// </summary>
-        [HideInInspector]
         public float scaleMax = 1.5f;
 
         /// <summary>
         /// Storing asset GUID here for future reference (performance reasons)
         /// </summary>
+        [HideInInspector]
         public string assetGUID = null;
 
         /// <summary>
         /// Vegetation Studio Pro vspro_VegetationItemID
         /// </summary>
+        [HideInInspector]
         public string vspro_VegetationItemID = null;
 
         public PrefabSettings()
         {
         }
 
-        public PrefabSettings(PrefabSettings template)
+        /// <summary>
+        /// Apply the settings of the template to the current prefab settings
+        /// </summary>
+        /// <param name="template"></param>
+        public void ApplyTemplate(PrefabSettings template)
         {
-            changeScale = template.changeScale;
+
+            active = template.active;
+            probability = template.probability;
+            positionOffset = template.positionOffset;
+            rotationOffset = template.rotationOffset;
             randomRotation = template.randomRotation;
+            rotationMinX = template.rotationMinX;
+            rotationMaxX = template.rotationMaxX;
+            rotationMinY = template.rotationMinY;
+            rotationMaxY = template.rotationMaxY;
+            rotationMinZ = template.rotationMinZ;
+            rotationMaxZ = template.rotationMaxZ;
+            changeScale = template.changeScale;
+            scaleMin = template.scaleMin;
+            scaleMax = template.scaleMax;
+
         }
 
         public PrefabSettings Clone()
