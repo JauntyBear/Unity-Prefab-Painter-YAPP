@@ -44,6 +44,11 @@ Delete
 
 	* Click "Remove Container Children" to quickly remove the children of the current container
 
+Important Notes
+-------------------------------------------------
+Templates
+	+ when you change a template (prefab settings or template collection), you need to save your scene first or otherwise the changes won't be applied
+
 Features in future updates
 -------------------------------------------------	
 + rotation offset
