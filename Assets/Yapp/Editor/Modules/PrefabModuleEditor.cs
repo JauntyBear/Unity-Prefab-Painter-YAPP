@@ -7,11 +7,10 @@ namespace Yapp
 {
     public class PrefabModuleEditor : ModuleEditorI
     {
-        #pragma warning disable 0414
+#pragma warning disable 0414
         PrefabPainterEditor editor;
         PrefabPainter gizmo;
-        #pragma warning restore 0414
-
+#pragma warning restore 0414
 
         struct PrefabPreset
         {
@@ -22,15 +21,71 @@ namespace Yapp
 
             public Type TypeId { get; set; }
             public string Name { get; set; }
-            public bool RandomRotation { get; set; }
+            public PrefabSettings Settings { get; set; }
         }
 
-        static PrefabPreset presetDefault = new PrefabPreset() { TypeId = PrefabPreset.Type.Default, Name = "", RandomRotation = false };
-        static PrefabPreset presetObject = new PrefabPreset() { TypeId = PrefabPreset.Type.Object, Name = "Object", RandomRotation = false };
-        static PrefabPreset presetPlant = new PrefabPreset() { TypeId = PrefabPreset.Type.Plant, Name = "Plant", RandomRotation = false };
-        static PrefabPreset presetRock = new PrefabPreset() { TypeId = PrefabPreset.Type.Rock, Name = "Rock", RandomRotation = true };
-        static PrefabPreset presetHouse = new PrefabPreset() { TypeId = PrefabPreset.Type.House, Name = "House", RandomRotation = false };
-        static PrefabPreset presetFence = new PrefabPreset() { TypeId = PrefabPreset.Type.Fence, Name = "Fence", RandomRotation = false };
+        #region preset definitions
+        static PrefabPreset presetDefault = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.Default,
+            Name = "",
+            Settings = new PrefabSettings()
+            {
+                changeScale = false,
+                randomRotation = false
+            }
+        };
+        static PrefabPreset presetObject = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.Object,
+            Name = "Object",
+            Settings = new PrefabSettings()
+            {
+                changeScale = false,
+                randomRotation = false
+            }
+        };
+        static PrefabPreset presetPlant = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.Plant,
+            Name = "Plant",
+            Settings = new PrefabSettings()
+            {
+                changeScale = true,
+                randomRotation = false
+            }
+        };
+        static PrefabPreset presetRock = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.Rock,
+            Name = "Rock",
+            Settings = new PrefabSettings()
+            {
+                changeScale = true,
+                randomRotation = true
+            }
+        };
+        static PrefabPreset presetHouse = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.House,
+            Name = "House",
+            Settings = new PrefabSettings()
+            {
+                changeScale = false,
+                randomRotation = false
+            }
+        };
+        static PrefabPreset presetFence = new PrefabPreset()
+        {
+            TypeId = PrefabPreset.Type.Fence,
+            Name = "Fence",
+            Settings = new PrefabSettings()
+            {
+                changeScale = false,
+                randomRotation = false
+            }
+        };
+        #endregion preset definitions
 
         // register the available prefab presets
         List<PrefabPreset> prefabPresets = new List<PrefabPreset>()
@@ -73,7 +128,7 @@ namespace Yapp
                             editor.SetErrorBackgroundColor();
                         }
 
-                        int gridRows = Mathf.CeilToInt( (float) prefabPresets.Count / prefabPresetGridColumnCount);
+                        int gridRows = Mathf.CeilToInt((float)prefabPresets.Count / prefabPresetGridColumnCount);
 
                         for (int row = 0; row < gridRows; row++)
                         {
@@ -87,7 +142,7 @@ namespace Yapp
                                     string name = preset.Name;
 
                                     // drop area
-                                    Rect prefabDropArea = GUILayoutUtility.GetRect(0.0f, 34.0f, GUIStyles.DropAreaStyle , GUILayout.ExpandWidth(true));
+                                    Rect prefabDropArea = GUILayoutUtility.GetRect(0.0f, 34.0f, GUIStyles.DropAreaStyle, GUILayout.ExpandWidth(true));
 
                                     // drop area box with background color and info text
                                     GUI.color = GUIStyles.DropAreaBackgroundColor;
@@ -228,7 +283,7 @@ namespace Yapp
 
                     // position
                     prefabSettings.positionOffset = EditorGUILayout.Vector3Field("Position Offset", prefabSettings.positionOffset);
-                    
+
                     // rotation
                     prefabSettings.rotationOffset = EditorGUILayout.Vector3Field("Rotation Offset", prefabSettings.rotationOffset);
                     prefabSettings.randomRotation = EditorGUILayout.Toggle("Random Rotation", prefabSettings.randomRotation);
@@ -262,11 +317,7 @@ namespace Yapp
         private void AddPrefab(GameObject prefab, PrefabPreset preset)
         {
             // new settings
-            PrefabSettings prefabSettings = new PrefabSettings();
-
-            // apply preset to prefab settings
-            // TODO: might be better in the constructor, be it might be necessary to do some aftermath in the editor, so leaving it at this
-            ApplyPreset(prefabSettings, preset);
+            PrefabSettings prefabSettings = new PrefabSettings(preset.Settings);
 
             // initialize with dropped prefab
             prefabSettings.prefab = prefab;
@@ -275,9 +326,5 @@ namespace Yapp
 
         }
 
-        private void ApplyPreset(PrefabSettings prefabSettings, PrefabPreset preset)
-        {
-            prefabSettings.randomRotation = preset.RandomRotation;
-        }
     }
 }

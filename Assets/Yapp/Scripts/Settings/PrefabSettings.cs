@@ -106,6 +106,16 @@ namespace Yapp
         /// </summary>
         public string vspro_VegetationItemID = null;
 
+        public PrefabSettings()
+        {
+        }
+
+        public PrefabSettings(PrefabSettings settings)
+        {
+            changeScale = settings.changeScale;
+            randomRotation = settings.randomRotation;
+        }
+
         public PrefabSettings Clone()
         {
             return (PrefabSettings)this.MemberwiseClone();
