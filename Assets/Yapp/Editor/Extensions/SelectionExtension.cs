@@ -12,12 +12,12 @@ namespace Yapp
         PrefabPainterEditor editor;
         #pragma warning restore 0414
 
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         public SelectionExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
         }
 
         public void OnInspectorGUI()
@@ -58,7 +58,7 @@ namespace Yapp
 
         public void SelectAll()
         {
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
             List<Transform> list = new List<Transform>();
             foreach (Transform child in container.transform)
@@ -82,7 +82,7 @@ namespace Yapp
 
         public void SelectRandom( float delta)
         {
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
             List<Transform> list = new List<Transform>();
             foreach (Transform child in container.transform)

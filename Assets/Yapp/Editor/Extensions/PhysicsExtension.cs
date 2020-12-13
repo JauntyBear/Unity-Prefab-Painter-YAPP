@@ -24,14 +24,14 @@ namespace Yapp
         PrefabPainterEditor editor;
         #pragma warning restore 0414
 
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         PhysicsSimulation physicsSimulation;
 
         public PhysicsExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
 
             forceApplyType = editor.FindProperty(x => x.physicsSettings.forceApplyType);
             maxIterations = editor.FindProperty(x => x.physicsSettings.maxIterations);
@@ -46,7 +46,7 @@ namespace Yapp
                 physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
                 
             }
-            physicsSimulation.ApplySettings(gizmo.physicsSettings);
+            physicsSimulation.ApplySettings(editorTarget.physicsSettings);
         }
 
         public void OnInspectorGUI()
@@ -97,7 +97,7 @@ namespace Yapp
             GUILayout.BeginHorizontal();
 
             // colorize the button differently in case the physics is running, so that the user gets an indicator that the physics have to be stopped
-            GUI.color = this.gizmo.physicsSettings.simulationRunning ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
+            GUI.color = this.editorTarget.physicsSettings.simulationRunning ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
             if (GUILayout.Button("Start"))
             {
                 StartSimulation();
@@ -144,7 +144,7 @@ namespace Yapp
         // TODO: create common class
         private Transform[] getContainerChildren()
         {
-            return PrefabUtils.GetContainerChildren(gizmo.container);
+            return PrefabUtils.GetContainerChildren(editorTarget.container);
         }
 
         private void StartSimulation()

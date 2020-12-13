@@ -33,7 +33,7 @@ namespace Yapp
         PrefabPainterEditor editor;
         #pragma warning restore 0414
          
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         BrushComponent brushComponent = new BrushComponent();
 
@@ -47,7 +47,7 @@ namespace Yapp
         public BrushModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
 
 
             brushSize = editor.FindProperty( x => x.brushSettings.brushSize);
@@ -81,7 +81,7 @@ namespace Yapp
 
             EditorGUILayout.PropertyField(distribution, new GUIContent("Distribution"));
 
-            switch (gizmo.brushSettings.distribution)
+            switch (editorTarget.brushSettings.distribution)
             {
                 case BrushSettings.Distribution.Center:
                     break;
@@ -104,7 +104,7 @@ namespace Yapp
             // TODO: how to create a minmaxslider with propertyfield?
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Slope");
-            EditorGUILayout.MinMaxSlider(ref gizmo.brushSettings.slopeMin, ref gizmo.brushSettings.slopeMax, gizmo.brushSettings.slopeMinLimit, gizmo.brushSettings.slopeMaxLimit);
+            EditorGUILayout.MinMaxSlider(ref editorTarget.brushSettings.slopeMin, ref editorTarget.brushSettings.slopeMax, editorTarget.brushSettings.slopeMinLimit, editorTarget.brushSettings.slopeMaxLimit);
             EditorGUILayout.EndHorizontal();
 
             // vegetation studio pro
@@ -128,7 +128,7 @@ namespace Yapp
         {
 
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
-            if ( brushComponent.DrawBrush(gizmo.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
+            if ( brushComponent.DrawBrush(editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
                 switch( brushMode)
                 {
@@ -158,10 +158,10 @@ namespace Yapp
             brushComponent.Layout(guiInfo);
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = needsPhysicsApplied && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(editorTarget.container, editorTarget.spawnSettings.autoSimulationType, editorTarget.spawnSettings.autoSimulationStepCountMax, editorTarget.spawnSettings.autoSimulationStepIterations);
             }
 
         }
@@ -175,7 +175,7 @@ namespace Yapp
             if (!editor.IsEditorSettingsValid())
                 return;
 
-            switch (gizmo.brushSettings.distribution)
+            switch (editorTarget.brushSettings.distribution)
             {
                 case BrushSettings.Distribution.Center:
                     AddPrefabs_Center(hit.point, hit.normal);
@@ -184,10 +184,10 @@ namespace Yapp
                     AddPrefabs_Poisson(hit.point, hit.normal);
                     break;
                 case BrushSettings.Distribution.FallOff:
-                    Debug.Log("Not implemented yet: " + gizmo.brushSettings.distribution);
+                    Debug.Log("Not implemented yet: " + editorTarget.brushSettings.distribution);
                     break;
                 case BrushSettings.Distribution.FallOff2d:
-                    Debug.Log("Not implemented yet: " + gizmo.brushSettings.distribution);
+                    Debug.Log("Not implemented yet: " + editorTarget.brushSettings.distribution);
                     break;
             }
 
@@ -201,16 +201,16 @@ namespace Yapp
 
             // check if a gameobject is already within the brush size
             // allow only 1 instance per bush size
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
 
             // check if a prefab already exists within the brush
             bool prefabExists = false;
 
             // check overlap
-            if (!gizmo.brushSettings.allowOverlap)
+            if (!editorTarget.brushSettings.allowOverlap)
             {
-                float brushRadius = gizmo.brushSettings.brushSize / 2f;
+                float brushRadius = editorTarget.brushSettings.brushSize / 2f;
 
                 foreach (Transform child in container.transform)
                 {
@@ -237,9 +237,9 @@ namespace Yapp
         private void AddNewPrefab( Vector3 position, Vector3 normal)
         {
 
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
-            PrefabSettings prefabSettings = this.gizmo.GetPrefabSettings();
+            PrefabSettings prefabSettings = this.editorTarget.GetPrefabSettings();
 
             GameObject prefab = prefabSettings.prefab;
 
@@ -276,7 +276,7 @@ namespace Yapp
                 newRotation = Quaternion.Euler( rotationX, rotationY, rotationZ);
 
             }
-            else if (this.gizmo.brushSettings.alignToTerrain)
+            else if (this.editorTarget.brushSettings.alignToTerrain)
             {
                 newRotation = Quaternion.FromToRotation(Vector3.up, normal);
             }
@@ -291,7 +291,7 @@ namespace Yapp
             /// 
 
             // spawn item to vs pro
-            if ( gizmo.brushSettings.spawnToVSPro)
+            if ( editorTarget.brushSettings.spawnToVSPro)
             {
                 vegetationStudioProIntegration.AddNewPrefab(prefabSettings, newPosition, newRotation, newLocalScale);
             }
@@ -320,11 +320,11 @@ namespace Yapp
         /// </summary>
         private void AddPrefabs_Poisson(Vector3 position, Vector3 normal)
         {
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
-            float brushSize = gizmo.brushSettings.brushSize;
+            float brushSize = editorTarget.brushSettings.brushSize;
             float brushRadius = brushSize / 2.0f;
-            float discRadius = gizmo.brushSettings.poissonDiscSize / 2;
+            float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
 
             PoissonDiscSampler sampler = new PoissonDiscSampler(brushSize, brushSize, discRadius);
 
@@ -354,7 +354,7 @@ namespace Yapp
                 bool prefabExists = false;
 
                 // check overlap
-                if (!gizmo.brushSettings.allowOverlap)
+                if (!editorTarget.brushSettings.allowOverlap)
                 {
                     foreach (Transform child in container.transform)
                     {
@@ -389,11 +389,11 @@ namespace Yapp
         /// <returns></returns>
         private Vector3 ApplyAutoPhysicsHeightOffset( Vector3 position)
         {
-            if (gizmo.spawnSettings.autoSimulationType == SpawnSettings.AutoSimulationType.None)
+            if (editorTarget.spawnSettings.autoSimulationType == SpawnSettings.AutoSimulationType.None)
                 return position;
 
             // auto physics: add additional height offset
-            position.y += gizmo.spawnSettings.autoSimulationHeightOffset;
+            position.y += editorTarget.spawnSettings.autoSimulationHeightOffset;
 
             return position;
         }
@@ -410,9 +410,9 @@ namespace Yapp
             Vector3 position = raycastHit.point;
 
             // check if a gameobject of the container is within the brush size and remove it
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
-            float radius = gizmo.brushSettings.brushSize / 2f;
+            float radius = editorTarget.brushSettings.brushSize / 2f;
 
             List<Transform> removeList = new List<Transform>();
 

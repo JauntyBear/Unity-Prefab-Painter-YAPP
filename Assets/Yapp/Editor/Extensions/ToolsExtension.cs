@@ -12,12 +12,12 @@ namespace Yapp
         PrefabPainterEditor editor;
         #pragma warning restore 0414
 
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         public ToolsExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
         }
 
         public void OnInspectorGUI()
@@ -38,7 +38,7 @@ namespace Yapp
 
         public void RemoveContainerChildren()
         {
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
             if (!container)
                 return;
@@ -58,7 +58,7 @@ namespace Yapp
             }
 
             // remove spline instances
-            gizmo.splineSettings.prefabInstances.Clear();
+            editorTarget.splineSettings.prefabInstances.Clear();
 
         }
 

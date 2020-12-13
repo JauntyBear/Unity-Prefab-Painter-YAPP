@@ -10,13 +10,13 @@ namespace Yapp
     {
         #pragma warning disable 0414
         PrefabPainterEditor editor;
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
         #pragma warning restore 0414
         
         public ContainerModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
         }
 
         public void OnInspectorGUI()

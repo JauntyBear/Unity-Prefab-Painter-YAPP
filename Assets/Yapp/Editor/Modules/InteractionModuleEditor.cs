@@ -16,7 +16,7 @@ namespace Yapp
 
 #pragma warning disable 0414
         PrefabPainterEditor editor;
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 #pragma warning restore 0414
 
         BrushComponent brushComponent = new BrushComponent();
@@ -32,7 +32,7 @@ namespace Yapp
         public InteractionModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
 
             interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
             antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
@@ -91,9 +91,9 @@ namespace Yapp
         {
 
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
-            if (brushComponent.DrawBrush(gizmo.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
+            if (brushComponent.DrawBrush(editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
-                if( gizmo.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
+                if( editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
                 {
                     switch (brushMode)
                     {
@@ -110,7 +110,7 @@ namespace Yapp
 
                  }
 
-                if (gizmo.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
+                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
                 {
 
                     switch (brushMode)
@@ -147,10 +147,10 @@ namespace Yapp
             brushComponent.Layout(guiInfo);
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = needsPhysicsApplied && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(editorTarget.container, editorTarget.spawnSettings.autoSimulationType, editorTarget.spawnSettings.autoSimulationStepCountMax, editorTarget.spawnSettings.autoSimulationStepIterations);
             }
         }
 
@@ -162,16 +162,16 @@ namespace Yapp
         private void AntiGravity(RaycastHit hit)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float antiGravityFactor = gizmo.interactionSettings.antiGravityStrength / 1000f;
+            float antiGravityFactor = editorTarget.interactionSettings.antiGravityStrength / 1000f;
 
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
 
             foreach (Transform transform in containerChildren)
             {
                 Vector3 distance = hit.point - transform.position;
 
                 // only those within the brush
-                if (distance.magnitude > gizmo.brushSettings.brushSize / 2f)
+                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
                     continue;
 
                 // https://docs.unity3d.com/ScriptReference/Transform-up.html
@@ -198,16 +198,16 @@ namespace Yapp
         private void Magnet( RaycastHit hit, bool attract)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float magnetFactor = gizmo.interactionSettings.magnetStrength / 1000f;
+            float magnetFactor = editorTarget.interactionSettings.magnetStrength / 1000f;
 
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(gizmo.container);
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
 
             foreach (Transform transform in containerChildren)
             {
                 Vector3 distance = hit.point - transform.position;
 
                 // only those within the brush
-                if (distance.magnitude > gizmo.brushSettings.brushSize /2f)
+                if (distance.magnitude > editorTarget.brushSettings.brushSize /2f)
                     continue;
 
                 Vector3 direction = distance.normalized;

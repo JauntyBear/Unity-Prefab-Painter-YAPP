@@ -22,7 +22,7 @@ namespace Yapp
 
         #endregion Properties
 
-        private PrefabPainter gizmo;
+        private PrefabPainter editorTarget;
 
         private PhysicsExtension physicsModule;
         private CopyPasteExtension copyPasteModule;
@@ -53,7 +53,7 @@ namespace Yapp
             container = FindProperty( x => x.container); 
             mode = FindProperty(x => x.mode);
 
-            this.gizmo = target as PrefabPainter;
+            this.editorTarget = target as PrefabPainter;
 
             this.brushModule = new BrushModuleEditor(this);
             this.splineModule = new SplineModuleEditor(this);
@@ -78,7 +78,7 @@ namespace Yapp
 
         public PrefabPainter GetPainter()
         {
-            return this.gizmo;
+            return this.editorTarget;
         }
 
 
@@ -113,7 +113,7 @@ namespace Yapp
                 // container
                 EditorGUILayout.PrefixLabel("");
 
-                if (this.gizmo.container == null)
+                if (this.editorTarget.container == null)
                 {
                     editor.SetErrorBackgroundColor();
                 }
@@ -126,11 +126,11 @@ namespace Yapp
                 {
                     GameObject newContainer = new GameObject();
 
-                    string name = gizmo.name + " Container" + " (" + (this.gizmo.transform.childCount + 1) + ")";
+                    string name = editorTarget.name + " Container" + " (" + (this.editorTarget.transform.childCount + 1) + ")";
                     newContainer.name = name;
 
                     // set parent; reset position & rotation
-                    newContainer.transform.SetParent( this.gizmo.transform, false);
+                    newContainer.transform.SetParent( this.editorTarget.transform, false);
 
                     // set as new value
                     container.objectReferenceValue = newContainer;
@@ -173,7 +173,7 @@ namespace Yapp
             /// Mode dependent
             /// 
 
-            switch (this.gizmo.mode)
+            switch (this.editorTarget.mode)
             {
                 case PrefabPainter.Mode.Brush:
 
@@ -231,7 +231,7 @@ namespace Yapp
             // add new prefabs
             if(newDraggedPrefabs != null)
             {
-                this.gizmo.prefabSettingsList.AddRange(newDraggedPrefabs);
+                this.editorTarget.prefabSettingsList.AddRange(newDraggedPrefabs);
             }
 
             // Apply changes to the serializedProperty - always do this in the end of OnInspectorGUI.
@@ -261,12 +261,12 @@ namespace Yapp
 
         private void OnSceneGUI()
         {
-            this.gizmo = target as PrefabPainter;
+            this.editorTarget = target as PrefabPainter;
 
-            if (this.gizmo == null)
+            if (this.editorTarget == null)
                 return;
 
-            switch (this.gizmo.mode)
+            switch (this.editorTarget.mode)
             {
                 case PrefabPainter.Mode.Brush:
                     brushModule.OnSceneGUI();
@@ -330,13 +330,13 @@ namespace Yapp
         public bool IsEditorSettingsValid()
         {
             // container must be set
-            if (this.gizmo.container == null)
+            if (this.editorTarget.container == null)
             {
                 return false;
             }
 
             // check prefabs
-            foreach (PrefabSettings prefabSettings in this.gizmo.prefabSettingsList)
+            foreach (PrefabSettings prefabSettings in this.editorTarget.prefabSettingsList)
             {
                 // prefab must be set
                 if ( prefabSettings.prefab == null)
@@ -354,10 +354,10 @@ namespace Yapp
 
         public Transform[] getContainerChildren()
         {
-            if (gizmo.container == null)
+            if (editorTarget.container == null)
                 return new Transform[0];
 
-            Transform[] children = gizmo.container.transform.Cast<Transform>().ToArray();
+            Transform[] children = editorTarget.container.transform.Cast<Transform>().ToArray();
 
             return children;
         }

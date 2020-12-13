@@ -38,7 +38,7 @@ namespace Yapp
         private static readonly float minDistanceBetweenObjects = 0.01f;
 
         PrefabPainterEditor editor;
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         private bool mousePosValid = false;
         private Vector3 mousePos;
@@ -46,7 +46,7 @@ namespace Yapp
         public SplineModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
 
             spawnMechanism = editor.FindProperty(x => x.splineSettings.spawnMechanism);
 
@@ -107,19 +107,19 @@ namespace Yapp
 
             EditorGUILayout.PropertyField(separation, new GUIContent("Separation"));
 
-            if (gizmo.splineSettings.separation == SplineSettings.Separation.Fixed)
+            if (editorTarget.splineSettings.separation == SplineSettings.Separation.Fixed)
             {
                 EditorGUILayout.PropertyField(separationDistance, new GUIContent("  Distance"));
             }
-            else if (gizmo.splineSettings.separation == SplineSettings.Separation.Range)
+            else if (editorTarget.splineSettings.separation == SplineSettings.Separation.Range)
             {
                 EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
             }
-            else if (gizmo.splineSettings.separation == SplineSettings.Separation.PrefabRadiusBounds)
+            else if (editorTarget.splineSettings.separation == SplineSettings.Separation.PrefabRadiusBounds)
             {
                 EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
             }
-            else if (gizmo.splineSettings.separation == SplineSettings.Separation.PrefabForwardSize)
+            else if (editorTarget.splineSettings.separation == SplineSettings.Separation.PrefabForwardSize)
             {
                 EditorGuiUtilities.MinMaxEditor("  Distance Min", ref separationDistanceMin, "  Distance Max", ref separationDistanceMax);
             }
@@ -264,7 +264,7 @@ namespace Yapp
                                 {
                                     // toggle add mode
                                     
-                                    SplineSettings.AttachMode selectedAttachMode = gizmo.splineSettings.attachMode;
+                                    SplineSettings.AttachMode selectedAttachMode = editorTarget.splineSettings.attachMode;
 
                                     /*
                                     SplineSettings.AttachMode selectedAttachMode = (SplineSettings.AttachMode)System.Enum.GetValues(typeof(SplineSettings.AttachMode)).GetValue(attachMode.enumValueIndex);
@@ -274,9 +274,9 @@ namespace Yapp
                                     */
 
                                     if (selectedAttachMode == SplineSettings.AttachMode.Bounds)
-                                        gizmo.splineSettings.attachMode = SplineSettings.AttachMode.Between;
+                                        editorTarget.splineSettings.attachMode = SplineSettings.AttachMode.Between;
                                     else
-                                        gizmo.splineSettings.attachMode = SplineSettings.AttachMode.Bounds;
+                                        editorTarget.splineSettings.attachMode = SplineSettings.AttachMode.Bounds;
 
                                     // trigger repaint, so that the enumpopup will be updated
                                     editor.Repaint();
@@ -317,10 +317,10 @@ namespace Yapp
                     Handles.DrawWireDisc(mousePos, hit.normal, radius);
 
                     // draw line to closest point
-                    if (gizmo.splineSettings.controlPoints.Count > 0)
+                    if (editorTarget.splineSettings.controlPoints.Count > 0)
                     {
                         // draw indicator line to closest control point
-                        Vector3 lineStartPosition = gizmo.splineSettings.controlPoints.ElementAt(addControlPointIndex).position;
+                        Vector3 lineStartPosition = editorTarget.splineSettings.controlPoints.ElementAt(addControlPointIndex).position;
                         Vector3 lineEndPosition = mousePos;
 
                         Handles.DrawLine(lineStartPosition, lineEndPosition);
@@ -338,10 +338,10 @@ namespace Yapp
                                 neighbourIndex = addControlPointIndex + 1;
                             }
 
-                            if (gizmo.splineSettings.attachMode == SplineSettings.AttachMode.Between && neighbourIndex >= 0 && neighbourIndex <= gizmo.splineSettings.controlPoints.Count - 1)
+                            if (editorTarget.splineSettings.attachMode == SplineSettings.AttachMode.Between && neighbourIndex >= 0 && neighbourIndex <= editorTarget.splineSettings.controlPoints.Count - 1)
                             {
 
-                                Vector3 neighbourLineStartPosition = gizmo.splineSettings.controlPoints.ElementAt(neighbourIndex).position;
+                                Vector3 neighbourLineStartPosition = editorTarget.splineSettings.controlPoints.ElementAt(neighbourIndex).position;
                                 Vector3 neighbourLineEndPosition = mousePos;
 
                                 Handles.DrawLine(neighbourLineStartPosition, neighbourLineEndPosition);
@@ -355,7 +355,7 @@ namespace Yapp
                         // delete node
                         if(deleteMode)
                         {
-                            bool canDelete = gizmo.splineSettings.controlPoints.Count > 0;
+                            bool canDelete = editorTarget.splineSettings.controlPoints.Count > 0;
 
                             if (Event.current.button == 0 && canDelete)
                             {
@@ -412,7 +412,7 @@ namespace Yapp
             // show info
             Handles.BeginGUI();
 
-            string[] info = new string[] { "Add Control Point: shift + click", "Remove control point: shift + ctrl + click", "Change Attach Mode: shift + A, Current: " + gizmo.splineSettings.attachMode };
+            string[] info = new string[] { "Add Control Point: shift + click", "Remove control point: shift + ctrl + click", "Change Attach Mode: shift + A, Current: " + editorTarget.splineSettings.attachMode };
             PrefabPainterEditor.ShowGuiInfo(info);
 
             Handles.EndGUI();
@@ -423,15 +423,15 @@ namespace Yapp
             if (!editor.IsEditorSettingsValid())
                 return;
 
-            if (!gizmo.splineSettings.dirty)
+            if (!editorTarget.splineSettings.dirty)
                 return;
 
-            if (gizmo.splineSettings.spawnMechanism == SpawnMechanism.Manual)
+            if (editorTarget.splineSettings.spawnMechanism == SpawnMechanism.Manual)
                 return;
 
-            gizmo.splineModule.PlaceObjects();
+            editorTarget.splineModule.PlaceObjects();
 
-            gizmo.splineSettings.dirty = false;
+            editorTarget.splineSettings.dirty = false;
 
             // Set the editor spline dirty, so that the changed settings (e.g.control points got dragged in the scene) get updated.
             // Ensure the control points get saved when they are changed in the scene if we wouldn't do that, they'd only be change when something changes in the inspector
@@ -444,9 +444,9 @@ namespace Yapp
             bool nodesChanged = false;
 
             // dizmos
-            for (int i = 0; i < gizmo.splineSettings.controlPoints.Count; i++)
+            for (int i = 0; i < editorTarget.splineSettings.controlPoints.Count; i++)
             {
-                ControlPoint controlPoint = gizmo.splineSettings.controlPoints[i];
+                ControlPoint controlPoint = editorTarget.splineSettings.controlPoints[i];
 
                 // position handles
                 Vector3 oldPosition = controlPoint.position;
@@ -456,7 +456,7 @@ namespace Yapp
                 if (oldPosition != newPosition)
                 {
                     // snap single control point to the terrain if its position changed
-                    if (gizmo.splineSettings.snap)
+                    if (editorTarget.splineSettings.snap)
                     {
                         RaycastHit hit;
                         if( getSnapPosition( controlPoint.position, out hit))
@@ -469,7 +469,7 @@ namespace Yapp
                 }
 
                 // rotation depends on whether it's enabled or not
-                if (gizmo.splineSettings.controlPointRotation)
+                if (editorTarget.splineSettings.controlPointRotation)
                 {
                     Quaternion oldRotation = controlPoint.rotation;
                     Quaternion newRotation = Handles.RotationHandle(oldRotation, controlPoint.position);
@@ -482,14 +482,14 @@ namespace Yapp
 
                 }
 
-                if( gizmo.splineSettings.debug)
+                if( editorTarget.splineSettings.debug)
                 {
                     Handles.Label( controlPoint.position, "Point " + i, EditorStyles.miniBoldLabel);
                 }
 
             }
 
-            gizmo.splineSettings.dirty |= nodesChanged;
+            editorTarget.splineSettings.dirty |= nodesChanged;
 
             // draw center
             /*
@@ -522,17 +522,17 @@ namespace Yapp
             int controlPointIndex = -1;
             float smallestDistance = float.MaxValue;
 
-            for (var i = 0; i < gizmo.splineSettings.controlPoints.Count; i++)
+            for (var i = 0; i < editorTarget.splineSettings.controlPoints.Count; i++)
             {
 
                 // bounds mode: skip all that aren't bounds
-                if(gizmo.splineSettings.attachMode == SplineSettings.AttachMode.Bounds)
+                if(editorTarget.splineSettings.attachMode == SplineSettings.AttachMode.Bounds)
                 {
-                    if (i != 0 && i != gizmo.splineSettings.controlPoints.Count - 1)
+                    if (i != 0 && i != editorTarget.splineSettings.controlPoints.Count - 1)
                         continue;
                 }
 
-                ControlPoint controlPoint = gizmo.splineSettings.controlPoints.ElementAt(i);
+                ControlPoint controlPoint = editorTarget.splineSettings.controlPoints.ElementAt(i);
                 float distance = Vector3.Distance(controlPoint.position, position);
 
                 if (i == 0 || distance < smallestDistance)
@@ -600,31 +600,31 @@ namespace Yapp
             // no control points yet
             if (closestControlPointIndex == -1)
             {
-                gizmo.splineSettings.controlPoints.Add(controlPoint);
+                editorTarget.splineSettings.controlPoints.Add(controlPoint);
             }
             // first control point: insert before
             else if (closestControlPointIndex == 0)
             {
-                switch (gizmo.splineSettings.attachMode)
+                switch (editorTarget.splineSettings.attachMode)
                 {
                     case SplineSettings.AttachMode.Bounds:
-                        gizmo.splineSettings.controlPoints.Add( controlPoint);
+                        editorTarget.splineSettings.controlPoints.Add( controlPoint);
                         break;
                     case SplineSettings.AttachMode.Between:
-                        gizmo.splineSettings.controlPoints.Insert(1, controlPoint);
+                        editorTarget.splineSettings.controlPoints.Insert(1, controlPoint);
                         break;
                 }
             }
             // last control point: add after
-            else if (closestControlPointIndex == gizmo.splineSettings.controlPoints.Count - 1)
+            else if (closestControlPointIndex == editorTarget.splineSettings.controlPoints.Count - 1)
             {
-                switch (gizmo.splineSettings.attachMode)
+                switch (editorTarget.splineSettings.attachMode)
                 {
                     case SplineSettings.AttachMode.Bounds:
-                        gizmo.splineSettings.controlPoints.Add(controlPoint);
+                        editorTarget.splineSettings.controlPoints.Add(controlPoint);
                         break;
                     case SplineSettings.AttachMode.Between:
-                        gizmo.splineSettings.controlPoints.Insert(gizmo.splineSettings.controlPoints.Count - 1, controlPoint);
+                        editorTarget.splineSettings.controlPoints.Insert(editorTarget.splineSettings.controlPoints.Count - 1, controlPoint);
                         break;
                 }
             }
@@ -632,65 +632,65 @@ namespace Yapp
             else
             {
                 int newControlPointIndex = closestControlPointIndex;
-                gizmo.splineSettings.controlPoints.Insert(newControlPointIndex, controlPoint);
+                editorTarget.splineSettings.controlPoints.Insert(newControlPointIndex, controlPoint);
             }
 
             // trigger recreation of gameobjects
-            gizmo.splineSettings.dirty |= true;
+            editorTarget.splineSettings.dirty |= true;
 
             PerformEditorAction(); // TODO: draw later at a core place
 
-            gizmo.splineSettings.dirty = true;
+            editorTarget.splineSettings.dirty = true;
 
         }
 
         private void RemoveControlPoint( int index)
         {
-            gizmo.splineSettings.controlPoints.RemoveAt(index);
+            editorTarget.splineSettings.controlPoints.RemoveAt(index);
 
             // trigger recreation of gameobjects
-            gizmo.splineSettings.dirty |= true;
+            editorTarget.splineSettings.dirty |= true;
             PerformEditorAction(); // TODO: draw later at a core place
 
-            gizmo.splineSettings.dirty = true;
+            editorTarget.splineSettings.dirty = true;
 
         }
 
         private void ClearSpline( bool removePrefabInstances)
         {
 
-            gizmo.splineSettings.controlPoints.Clear();
+            editorTarget.splineSettings.controlPoints.Clear();
 
             if (removePrefabInstances)
             {
 
-                foreach (GameObject go in gizmo.splineSettings.prefabInstances)
+                foreach (GameObject go in editorTarget.splineSettings.prefabInstances)
                 {
                     PrefabPainter.DestroyImmediate(go);
                 }
             }
 
-            gizmo.splineSettings.prefabInstances.Clear();
+            editorTarget.splineSettings.prefabInstances.Clear();
 
-            gizmo.splineSettings.controlPoints.Clear();
+            editorTarget.splineSettings.controlPoints.Clear();
 
-            gizmo.splineSettings.dirty = true;
+            editorTarget.splineSettings.dirty = true;
 
         }
 
         private void LogControlPoints()
         {
             Debug.Log("Control Points:");
-            for (int i = 0; i < gizmo.splineSettings.controlPoints.Count; i++)
+            for (int i = 0; i < editorTarget.splineSettings.controlPoints.Count; i++)
             {
-                ControlPoint controlPoint = gizmo.splineSettings.controlPoints[i];
+                ControlPoint controlPoint = editorTarget.splineSettings.controlPoints[i];
                 Debug.Log("Control Point " + i + ":" + controlPoint.position);
             }
         }
 
         Vector3 GetSplineCenter()
         {
-            List<ControlPoint> cps = this.gizmo.splineSettings.controlPoints;
+            List<ControlPoint> cps = this.editorTarget.splineSettings.controlPoints;
 
             if (cps.Count <= 2)
             {
@@ -712,9 +712,9 @@ namespace Yapp
         /// </summary>
         private void SnapAll()
         {
-            for (int i = 0; i < gizmo.splineSettings.controlPoints.Count; i++)
+            for (int i = 0; i < editorTarget.splineSettings.controlPoints.Count; i++)
             {
-                ControlPoint controlPoint = gizmo.splineSettings.controlPoints[i];
+                ControlPoint controlPoint = editorTarget.splineSettings.controlPoints[i];
 
                 RaycastHit hit;
                 if( getSnapPosition( controlPoint.position, out hit)) {
@@ -722,16 +722,16 @@ namespace Yapp
                 }
             }
 
-            gizmo.splineSettings.dirty = true;
+            editorTarget.splineSettings.dirty = true;
         }
 
         private void SpawnPrefabsAlongSpline()
         {
             // see PerformEditorAction
             {
-                gizmo.splineModule.PlaceObjects();
+                editorTarget.splineModule.PlaceObjects();
 
-                gizmo.splineSettings.dirty = false;
+                editorTarget.splineSettings.dirty = false;
 
                 // Set the editor spline dirty, so that the changed settings (e.g.control points got dragged in the scene) get updated.
                 // Ensure the control points get saved when they are changed in the scene if we wouldn't do that, they'd only be change when something changes in the inspector
@@ -742,10 +742,10 @@ namespace Yapp
             bool needsPhysicsApplied = true;
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && gizmo.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None;
+            bool applyAutoPhysics = needsPhysicsApplied && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(gizmo.container, gizmo.spawnSettings.autoSimulationType, gizmo.spawnSettings.autoSimulationStepCountMax, gizmo.spawnSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(editorTarget.container, editorTarget.spawnSettings.autoSimulationType, editorTarget.spawnSettings.autoSimulationStepCountMax, editorTarget.spawnSettings.autoSimulationStepIterations);
             }
 
         }

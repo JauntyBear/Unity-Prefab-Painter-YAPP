@@ -20,12 +20,12 @@ namespace Yapp
         PrefabPainterEditor editor;
 #pragma warning restore 0414
 
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         public SpawnExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
 
             autoSimulationType = editor.FindProperty(x => x.spawnSettings.autoSimulationType);
             autoSimulationHeightOffset = editor.FindProperty(x => x.spawnSettings.autoSimulationHeightOffset);

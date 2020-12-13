@@ -12,12 +12,12 @@ namespace Yapp
         PrefabPainterEditor editor;
         #pragma warning restore 0414
 
-        PrefabPainter gizmo;
+        PrefabPainter editorTarget;
 
         public CopyPasteExtension(PrefabPainterEditor editor)
         {
             this.editor = editor;
-            this.gizmo = editor.GetPainter();
+            this.editorTarget = editor.GetPainter();
         }
 
         public void OnInspectorGUI()
@@ -49,9 +49,9 @@ namespace Yapp
 
         private void CopyTransforms()
         {
-            gizmo.copyPasteGeometryMap.Clear();
+            editorTarget.copyPasteGeometryMap.Clear();
 
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
             foreach (Transform child in container.transform)
             {
@@ -60,21 +60,21 @@ namespace Yapp
                 if (go == null)
                     continue;
 
-                gizmo.copyPasteGeometryMap.Add(go.GetInstanceID(), new Geometry(go.transform));
+                editorTarget.copyPasteGeometryMap.Add(go.GetInstanceID(), new Geometry(go.transform));
 
             }
 
             // logging
-            Debug.Log("Copying transforms & rotations: " + gizmo.copyPasteGeometryMap.Keys.Count);
+            Debug.Log("Copying transforms & rotations: " + editorTarget.copyPasteGeometryMap.Keys.Count);
         }
 
 
         private void PasteTransforms()
         {
             // logging
-            Debug.Log("Pasting transforms & rotations: " + gizmo.copyPasteGeometryMap.Keys.Count);
+            Debug.Log("Pasting transforms & rotations: " + editorTarget.copyPasteGeometryMap.Keys.Count);
 
-            GameObject container = gizmo.container as GameObject;
+            GameObject container = editorTarget.container as GameObject;
 
             foreach (Transform child in container.transform)
             {
@@ -85,7 +85,7 @@ namespace Yapp
 
                 Geometry geometry = null;
 
-                if (gizmo.copyPasteGeometryMap.TryGetValue(go.GetInstanceID(), out geometry))
+                if (editorTarget.copyPasteGeometryMap.TryGetValue(go.GetInstanceID(), out geometry))
                 {
                     go.transform.position = geometry.getPosition();
                     go.transform.rotation = geometry.getRotation();
