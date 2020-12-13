@@ -14,5 +14,10 @@ namespace Yapp
         /// Number of prefab template drop targets per row in the template grid of the inspector
         /// </summary>
         public const int PrefabTemplateGridColumnCount = 4;
+
+        /// <summary>
+        /// The id for YAPP in Vegetation Studio Pro. Used for the persistent storage.
+        /// </summary>
+        public const byte VegetationStudioPro_SourceId = 19;
     }
 }
