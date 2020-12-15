@@ -15,8 +15,8 @@ namespace Yapp
         SerializedProperty forceMinMax;
         SerializedProperty forceAngleInDegrees;
         SerializedProperty randomizeForceAngle;
-        SerializedProperty simulationRunning;
-        SerializedProperty simulationStepCount;
+        SerializedProperty simulationTime;
+        SerializedProperty simulationSteps;
 
         #endregion Properties
 
@@ -25,8 +25,6 @@ namespace Yapp
         #pragma warning restore 0414
 
         PrefabPainter editorTarget;
-
-        PhysicsSimulation physicsSimulation;
 
         public PhysicsExtension(PrefabPainterEditor editor)
         {
@@ -38,15 +36,9 @@ namespace Yapp
             forceMinMax = editor.FindProperty(x => x.physicsSettings.forceMinMax);
             forceAngleInDegrees = editor.FindProperty(x => x.physicsSettings.forceAngleInDegrees);
             randomizeForceAngle = editor.FindProperty(x => x.physicsSettings.randomizeForceAngle);
-            simulationRunning = editor.FindProperty(x => x.physicsSettings.simulationRunning);
-            simulationStepCount = editor.FindProperty(x => x.physicsSettings.simulationStepCount);
+            simulationTime = editor.FindProperty(x => x.physicsSettings.simulationTime);
+            simulationSteps = editor.FindProperty(x => x.physicsSettings.simulationSteps);
 
-            if (physicsSimulation == null)
-            {
-                physicsSimulation = ScriptableObject.CreateInstance<PhysicsSimulation>();
-                
-            }
-            physicsSimulation.ApplySettings(editorTarget.physicsSettings);
         }
 
         public void OnInspectorGUI()
@@ -69,35 +61,17 @@ namespace Yapp
 
             EditorGUILayout.Space();
 
-            #region Simulate Once
-
-            EditorGUILayout.LabelField("Simulate Once", GUIStyles.GroupTitleStyle);
-
-            EditorGUILayout.PropertyField(maxIterations, new GUIContent("Max Iterations"));
-            if(maxIterations.intValue < 0)
-            {
-                maxIterations.intValue = 0;
-            }
-
-            if (GUILayout.Button("Simulate Once"))
-            {
-                RunSimulation();
-            }
-
-            #endregion Simulate Once
-
-            EditorGUILayout.Space();
-
             #region Simulate Continuously
 
-            EditorGUILayout.LabelField("Simulate Continuously", GUIStyles.GroupTitleStyle);
+            EditorGUILayout.LabelField("Simulation", GUIStyles.GroupTitleStyle);
 
-            EditorGUILayout.PropertyField(simulationStepCount, new GUIContent("Simulation Step"));
+            EditorGUILayout.PropertyField(simulationTime, new GUIContent("Time", "The time in seconds for which the physics simulation will be running"));
+            EditorGUILayout.PropertyField(simulationSteps, new GUIContent("Steps", "The number of Physics.Simulate() invocations per frame"));
 
             GUILayout.BeginHorizontal();
 
             // colorize the button differently in case the physics is running, so that the user gets an indicator that the physics have to be stopped
-            GUI.color = this.editorTarget.physicsSettings.simulationRunning ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
+            GUI.color = PhysicsSimulator.IsActive() ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
             if (GUILayout.Button("Start"))
             {
                 StartSimulation();
@@ -129,32 +103,22 @@ namespace Yapp
 
         #region Physics Simulation
 
-        private void RunSimulation()
-        {
-            physicsSimulation.RunSimulationOnce(getContainerChildren());
-        }
-
         private void ResetAllBodies()
         {
-            physicsSimulation.UndoSimulation();
+            PhysicsSimulator.UndoSimulation();
         }
 
         #endregion Physics Simulation
 
-        // TODO: create common class
-        private Transform[] getContainerChildren()
-        {
-            return PrefabUtils.GetContainerChildren(editorTarget.container);
-        }
-
         private void StartSimulation()
         {
-            physicsSimulation.StartSimulation(getContainerChildren());
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+            AutoPhysicsSimulation.ApplyPhysics(editorTarget.physicsSettings, containerChildren, SpawnSettings.AutoSimulationType.Continuous);
         }
 
         private void StopSimulation()
         {
-            physicsSimulation.StopSimulation();
+            PhysicsSimulator.Stop();
         } 
 
     }

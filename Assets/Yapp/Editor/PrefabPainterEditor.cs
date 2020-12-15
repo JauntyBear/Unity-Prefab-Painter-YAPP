@@ -192,7 +192,10 @@ namespace Yapp
                     splineModule.OnInspectorGUI();
 
                     // spawn
-                    spawnModule.OnInspectorGUI();
+                    if (editorTarget.splineSettings.spawnMechanism == SplineSettings.SpawnMechanism.Manual)
+                    {
+                        spawnModule.OnInspectorGUI();
+                    }
 
                     /// Prefabs
                     this.prefabModule.OnInspectorGUI();

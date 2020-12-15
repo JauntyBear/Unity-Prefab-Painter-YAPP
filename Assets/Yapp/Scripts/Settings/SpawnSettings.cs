@@ -8,7 +8,6 @@ namespace Yapp
         public enum AutoSimulationType
         {
             None,
-            Once,
             Continuous
         }
 
@@ -23,16 +22,5 @@ namespace Yapp
         /// </summary>
         public float autoSimulationHeightOffset = 1f;
 
-        /// <summary>
-        /// The number of seconds that physics is applied automatically
-        /// </summary>
-        [Range(0, 10000)]
-        public int autoSimulationStepCountMax = 1000;
-
-        /// <summary>
-        /// The number of physics steps to perform in a single simulation step. lower = smoother, higher = faster
-        /// </summary>
-        [Range(1, 50)]
-        public int autoSimulationStepIterations = 1;
     }
 }

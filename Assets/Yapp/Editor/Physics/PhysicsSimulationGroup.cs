@@ -5,17 +5,19 @@ using System.Linq;
 
 namespace Yapp
 {
-    public class PhysicsSimulation : ScriptableObject
+    public class PhysicsSimulationGroup : ScriptableObject
     {
         private PhysicsSettings physicsSettings;
 
         private SimulatedBody[] simulatedBodies;
-
+         
         private List<Rigidbody> generatedRigidbodies;
         private List<Collider> generatedColliders;
         private List<Collider> nonConvexColliders;
 
         private Transform[] simulatedGameObjects = null;
+
+        private bool initialForceApplied;
 
         public void ApplySettings(PhysicsSettings physicsSettings)
         {
@@ -23,51 +25,7 @@ namespace Yapp
 
         }
 
-        #region Simulate Once
-        public void RunSimulationOnce(Transform[] gameObjects)
-        {
-
-            this.simulatedGameObjects = gameObjects;
-
-            PreProcessSimulation();
-
-            simulatedBodies = simulatedGameObjects.Select(rb => new SimulatedBody(rb, physicsSettings.forceAngleInDegrees, physicsSettings.randomizeForceAngle)).ToArray();
-
-            SimulateOnce(simulatedBodies);
-
-            PostProcessSimulation();
-        }
-
-        private void SimulateOnce(SimulatedBody[] simulatedBodies)
-        {
-            // apply force if necessary
-            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Initial)
-            {
-                ApplyForce();
-            }
-
-            // Run simulation for maxIteration frames, or until all child rigidbodies are sleeping
-            Physics.autoSimulation = false;
-            for (int i = 0; i < physicsSettings.maxIterations; i++)
-            {
-                // apply force if necessary
-                if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Continuous)
-                {
-                    ApplyForce();
-                }
-
-                Physics.Simulate(Time.fixedDeltaTime);
-
-                if (simulatedBodies.All(body => body.rigidbody.IsSleeping()))
-                {
-                    break;
-                }
-            }
-            Physics.autoSimulation = true;
-        }
-        #endregion Simulate Once
-
-        private void ApplyForce()
+        public void ApplyForce()
         {
             // Add force to bodies
             foreach (SimulatedBody body in simulatedBodies)
@@ -75,7 +33,7 @@ namespace Yapp
                 float randomForceAmount = Random.Range(physicsSettings.forceMinMax.x, physicsSettings.forceMinMax.y);
                 float forceAngle = body.forceAngle;
                 Vector3 forceDir = new Vector3(Mathf.Sin(forceAngle), 0, Mathf.Cos(forceAngle));
-                body.rigidbody.AddForce(forceDir * randomForceAmount, ForceMode.Impulse);
+                body.rigidbody.AddForce(forceDir * randomForceAmount, ForceMode.Impulse); 
             }
         }
 
@@ -86,13 +44,7 @@ namespace Yapp
 
         public void StartSimulation(Transform[] gameObjects)
         {
-            if (physicsSettings.simulationRunning)
-            {
-                Debug.Log("Simulation already running");
-                return;
-            }
-            
-            Debug.Log("Simulation started");
+            Debug.Log("Simulation objects added: " + gameObjects.Length);
 
             this.simulatedGameObjects = gameObjects;
 
@@ -101,24 +53,10 @@ namespace Yapp
 
             simulatedBodies = gameObjects.Select(rb => new SimulatedBody(rb, physicsSettings.forceAngleInDegrees, physicsSettings.randomizeForceAngle)).ToArray();
 
-            physicsSettings.simulationRunning = true;
-            physicsSettings.simulationStepCount = 0;
-            simulationStopTriggered = false;
-
-            // Run simulation for maxIteration frames, or until all child rigidbodies are sleeping
-            Physics.autoSimulation = false;
-
-            // apply force if necessary
-            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Initial)
-            {
-                ApplyForce();
-            }
-
-            EditorCoroutines.Execute(SimulateContinuously());
-
+            PhysicsSimulator.RegisterGroup(this); 
         }
 
-        private void PreProcessSimulation()
+        public void PreProcessSimulation()
         {
             nonConvexColliders = new List<Collider>();
 
@@ -184,6 +122,11 @@ namespace Yapp
 
         }
 
+        public void CleanUp()
+        {
+            PostProcessSimulation();
+        }
+
 
         public void StopSimulation()
         {
@@ -193,48 +136,20 @@ namespace Yapp
 
         }
 
-        private void PerformSimulateStep(SimulatedBody[] simulatedBodies)
+        public void PerformSimulateStep()
         {
+            // apply initial force if necessary
+            if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Initial && !initialForceApplied)
+            {
+                ApplyForce();
 
+                initialForceApplied = true;
+            }
             // apply force if necessary
             if (physicsSettings.forceApplyType == PhysicsSettings.ForceApplyType.Continuous)
             {
                 ApplyForce();
             }
-
-            Physics.Simulate(Time.fixedDeltaTime);
-
-        }
-
-        IEnumerator SimulateContinuously()
-        {
-
-            while (!simulationStopTriggered && physicsSettings.IsStepCountValid())
-            {
-
-                for (int i = 0; i < physicsSettings.simulationStepIterations; i++)
-                {
-                    physicsSettings.simulationStepCount++;
-
-                    PerformSimulateStep(simulatedBodies);
-
-                    // in batch process skip if the max count is already reached
-                    if (!physicsSettings.IsStepCountValid())
-                        break;
-                }
-
-                yield return 0;
-            }
-
-            Physics.autoSimulation = true;
-
-            PostProcessSimulation();
-
-            physicsSettings.simulationRunning = false;
-
-            Debug.Log("Simulation stopped");
-
-
         }
         #endregion Simulate Continuously
 
@@ -255,8 +170,8 @@ namespace Yapp
                     rb.mass = 1;
 
                     generatedRigidbodies.Add(rb);
-
                 }
+
                 if (!child.GetComponent<Collider>())
                 {
                     MeshCollider collider = child.gameObject.AddComponent<MeshCollider>();

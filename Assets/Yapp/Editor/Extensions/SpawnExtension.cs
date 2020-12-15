@@ -11,8 +11,6 @@ namespace Yapp
 
         SerializedProperty autoSimulationType;
         SerializedProperty autoSimulationHeightOffset;
-        SerializedProperty autoSimulationStepCountMax;
-        SerializedProperty autoSimulationStepIterations;
 
         #endregion Properties
 
@@ -29,8 +27,6 @@ namespace Yapp
 
             autoSimulationType = editor.FindProperty(x => x.spawnSettings.autoSimulationType);
             autoSimulationHeightOffset = editor.FindProperty(x => x.spawnSettings.autoSimulationHeightOffset);
-            autoSimulationStepCountMax = editor.FindProperty(x => x.spawnSettings.autoSimulationStepCountMax);
-            autoSimulationStepIterations = editor.FindProperty(x => x.spawnSettings.autoSimulationStepIterations);
         }
 
         public void OnInspectorGUI()
@@ -45,8 +41,6 @@ namespace Yapp
                 EditorGUI.indentLevel++;
                 {
                     EditorGUILayout.PropertyField(autoSimulationHeightOffset, new GUIContent("Height Offset"));
-                    EditorGUILayout.PropertyField(autoSimulationStepCountMax, new GUIContent("Step Count Max", "Maximum number of simulation steps to perform"));
-                    EditorGUILayout.PropertyField(autoSimulationStepIterations, new GUIContent("Step Iterations", "Number of physics steps to perform in a single simulation step. lower = smoother, higher = faster"));
                 }
                 EditorGUI.indentLevel--;
             }

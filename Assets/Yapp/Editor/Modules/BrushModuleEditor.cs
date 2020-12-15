@@ -29,7 +29,7 @@ namespace Yapp
         VegetationStudioProIntegration vegetationStudioProIntegration;
         #endregion Integration to external applications
 
-#pragma warning disable 0414
+        #pragma warning disable 0414
         PrefabPainterEditor editor;
         #pragma warning restore 0414
          
@@ -43,6 +43,8 @@ namespace Yapp
         /// + mouse got released
         /// </summary>
         private bool needsPhysicsApplied = false;
+
+        private List<GameObject> autoPhysicsCollection = new List<GameObject>();
 
         public BrushModuleEditor(PrefabPainterEditor editor)
         {
@@ -158,10 +160,15 @@ namespace Yapp
             brushComponent.Layout(guiInfo);
 
             // auto physics
-            bool applyAutoPhysics = needsPhysicsApplied && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None && Event.current.type == EventType.MouseUp;
+            bool applyAutoPhysics = needsPhysicsApplied 
+                && autoPhysicsCollection.Count > 0
+                && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None 
+                && Event.current.type == EventType.MouseUp;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(editorTarget.container, editorTarget.spawnSettings.autoSimulationType, editorTarget.spawnSettings.autoSimulationStepCountMax, editorTarget.spawnSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(editorTarget.physicsSettings, autoPhysicsCollection, editorTarget.spawnSettings.autoSimulationType);
+                
+                autoPhysicsCollection.Clear();
             }
 
         }
@@ -311,6 +318,7 @@ namespace Yapp
 
                 Undo.RegisterCreatedObjectUndo(instance, "Instantiate Prefab");
 
+                autoPhysicsCollection.Add(instance);
             }
 
         }

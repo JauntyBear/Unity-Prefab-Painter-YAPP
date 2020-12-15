@@ -745,7 +745,7 @@ namespace Yapp
             bool applyAutoPhysics = needsPhysicsApplied && editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None;
             if (applyAutoPhysics)
             {
-                AutoPhysicsSimulation.ApplyPhysics(editorTarget.container, editorTarget.spawnSettings.autoSimulationType, editorTarget.spawnSettings.autoSimulationStepCountMax, editorTarget.spawnSettings.autoSimulationStepIterations);
+                AutoPhysicsSimulation.ApplyPhysics(editorTarget.physicsSettings, editorTarget.container, editorTarget.spawnSettings.autoSimulationType);
             }
 
         }

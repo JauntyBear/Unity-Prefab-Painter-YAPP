@@ -32,21 +32,16 @@ namespace Yapp
 
         #endregion Public Editor Fields
 
-        #region Simulate Continuously
-        public bool simulationRunning = false;
-        public int simulationStepCount = 0;
+        /// <summary>
+        /// The time in seconds for which the physics simulator should run
+        /// </summary>
+        [Range(1,60)]
+        public float simulationTime = 3f;
 
+        /// <summary>
+        /// The number of physics iterations iterations that should run per frame
+        /// </summary>
         [Range(1,1000)]
-        public int simulationStepIterations = 1;
-
-        [Range(1,10000)]
-        public int simulationStepCountMax = 1000;
-        #endregion Simulate Continuously
-
-        public bool IsStepCountValid()
-        {
-            return simulationStepCount <= simulationStepCountMax;
-        }
-
+        public int simulationSteps = 1;
     }
 }
