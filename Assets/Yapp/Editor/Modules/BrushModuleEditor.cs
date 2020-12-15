@@ -318,7 +318,10 @@ namespace Yapp
 
                 Undo.RegisterCreatedObjectUndo(instance, "Instantiate Prefab");
 
-                autoPhysicsCollection.Add(instance);
+                if (editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None)
+                {
+                    autoPhysicsCollection.Add(instance);
+                }
             }
 
         }

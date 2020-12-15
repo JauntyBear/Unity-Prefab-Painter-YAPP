@@ -71,12 +71,12 @@ namespace Yapp
             GUILayout.BeginHorizontal();
 
             // colorize the button differently in case the physics is running, so that the user gets an indicator that the physics have to be stopped
-            GUI.color = PhysicsSimulator.IsActive() ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
+            // GUI.color = PhysicsSimulator.IsActive() ? GUIStyles.PhysicsRunningButtonBackgroundColor : GUIStyles.DefaultBackgroundColor;
             if (GUILayout.Button("Start"))
             {
                 StartSimulation();
             }
-            GUI.color = GUIStyles.DefaultBackgroundColor;
+            // GUI.color = GUIStyles.DefaultBackgroundColor;
 
             if (GUILayout.Button("Stop"))
             {
