@@ -352,8 +352,8 @@ namespace Yapp
                 // y depends on the terrain height
                 Vector3 terrainPosition = new Vector3(x, position.y, z);
 
-                // get terrain y position
-                float y = Terrain.activeTerrain.SampleHeight(terrainPosition);
+                // get terrain y position and add Terrain Transform Y-Position
+                float y = Terrain.activeTerrain.SampleHeight(terrainPosition) + Terrain.activeTerrain.GetPosition().y;
 
                 // create position vector
                 Vector3 prefabPosition = new Vector3( x, y, z);
