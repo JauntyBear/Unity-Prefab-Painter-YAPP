@@ -14,7 +14,7 @@ namespace Yapp
 
 
         public PrefabTemplateCollection templateCollection;
-        private PrefabSettingsTemplate defaultTemplate = new PrefabSettingsTemplate();
+        private PrefabSettingsTemplate defaultTemplate = ScriptableObject.CreateInstance<PrefabSettingsTemplate>();
 
         public PrefabModuleEditor(PrefabPainterEditor editor)
         {

@@ -74,6 +74,17 @@ namespace Yapp
                 new GUIContent( "Interaction", "Brush interaction on the container children"),
                 new GUIContent( "Operations", "Operations on the container"),
             };
+
+            // subscribe to scene gui changes
+            SceneView.duringSceneGui -= OnSceneGUI;
+            SceneView.duringSceneGui += OnSceneGUI;
+
+        }
+
+        public void OnDisable()
+		{
+            // unsubscribe from scene gui changes
+            SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         public PrefabPainter GetPainter()
@@ -262,8 +273,13 @@ namespace Yapp
             GUILayout.Box("", separatorStyle);
         }
 
-        private void OnSceneGUI()
+        private void OnSceneGUI( SceneView sceneView)
         {
+            // perform method only when the mouse is really in the sceneview; the scene view would register other events as well
+            var isMouseInSceneView = new Rect(0, 0, sceneView.position.width, sceneView.position.height).Contains(Event.current.mousePosition);
+            if (!isMouseInSceneView)
+                return;            
+
             this.editorTarget = target as PrefabPainter;
 
             if (this.editorTarget == null)
@@ -288,7 +304,6 @@ namespace Yapp
                     break;
             }
 
-            SceneView.RepaintAll();
         }
 
         public static void ShowGuiInfo(string[] texts)
