@@ -74,6 +74,7 @@ namespace Yapp
         /// <summary>
         /// Interaction
         /// </summary>
+        [HideInInspector]
         public InteractionSettings interactionSettings = new InteractionSettings();
 
         /// <summary>
