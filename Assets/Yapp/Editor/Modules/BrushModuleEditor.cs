@@ -272,26 +272,31 @@ namespace Yapp
             }
 
             // rotation
-            Quaternion newRotation;
+            Quaternion alignedRotation = Quaternion.identity;
+            Quaternion objectRotation;
+
+            if (this.editorTarget.brushSettings.alignToTerrain)
+            {
+                alignedRotation = Quaternion.FromToRotation(Vector3.up, normal);
+            }
+
             if (prefabSettings.randomRotation)
             {
-                
-                float rotationX = Random.Range( prefabSettings.rotationMinX, prefabSettings.rotationMaxX);
-                float rotationY = Random.Range( prefabSettings.rotationMinY, prefabSettings.rotationMaxY);
-                float rotationZ = Random.Range( prefabSettings.rotationMinZ, prefabSettings.rotationMaxZ);
 
-                newRotation = Quaternion.Euler( rotationX, rotationY, rotationZ);
+                float rotationX = Random.Range(prefabSettings.rotationMinX, prefabSettings.rotationMaxX);
+                float rotationY = Random.Range(prefabSettings.rotationMinY, prefabSettings.rotationMaxY);
+                float rotationZ = Random.Range(prefabSettings.rotationMinZ, prefabSettings.rotationMaxZ);
 
-            }
-            else if (this.editorTarget.brushSettings.alignToTerrain)
-            {
-                newRotation = Quaternion.FromToRotation(Vector3.up, normal);
+                objectRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
             }
             else
             {
-                newRotation = Quaternion.Euler(prefabSettings.rotationOffset);
-                //rotation = Quaternion.identity;
+                objectRotation = Quaternion.Euler(prefabSettings.rotationOffset);
             }
+
+            // combine terrain aligned rotation and object rotation
+            Quaternion newRotation = alignedRotation * objectRotation;
+
 
             ///
             /// create instance and apply position / rotation / scale
