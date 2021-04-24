@@ -23,9 +23,6 @@ namespace Yapp
         // how long have we been running
         static float activeTime = 0f;
 
-        // we need to disable auto simulation to manually tick physics
-        static bool cachedAutoSimulation;
-
         static bool active = false;
 
         static List<PhysicsSimulationGroup> groupRegistry = new List<PhysicsSimulationGroup>();
@@ -79,8 +76,6 @@ namespace Yapp
                 //// Normally avoid Find functions, but this is editor time and only happens once
                 //workList = Object.FindObjectsOfType<Rigidbody>();
 
-                // we will need to ensure autoSimulation is off to manually tick physics
-                cachedAutoSimulation = Physics.autoSimulation;
                 activeTime = 0f;
 
                 //// make sure that all rigidbodies are awake so they will actively settle against changed geometry.
@@ -101,8 +96,6 @@ namespace Yapp
 
         public static void Stop()
         {
-            Physics.autoSimulation = cachedAutoSimulation;
-
             active = false;
 
             if (groupRegistry.Count > 0)
@@ -126,38 +119,48 @@ namespace Yapp
         {
             if (active)
             {
- 
-                foreach ( PhysicsSimulationGroup group in groupRegistry)
+
+                // save original setting
+                bool prevAutoSimulation = Physics.autoSimulation;
+
+                try
                 {
-                    group.PerformSimulateStep(); 
-                }
-
-                activeTime += Time.deltaTime;
-
-                // make sure we are not autosimulating
-                Physics.autoSimulation = false;
-
-                // see if all our 
-                //bool allSleeping = true;
-                //foreach (Rigidbody body in workList)
-                //{
-                //    if (body != null)
-                //    {
-                //        allSleeping &= body.IsSleeping();
-                //    }
-                //} 
-
-                if (/*allSleeping ||*/ activeTime >= timeToSettle)
-                {
-
-                    Stop();
-                }
-                else
-                {
-                    for (int i = 0; i < simulationSteps; i++)
+                    foreach (PhysicsSimulationGroup group in groupRegistry)
                     {
-                        Physics.Simulate(Time.deltaTime);
+                        group.PerformSimulateStep();
                     }
+
+                    activeTime += Time.deltaTime;
+
+                    // make sure we are not autosimulating
+                    Physics.autoSimulation = false;
+
+                    // see if all our 
+                    //bool allSleeping = true;
+                    //foreach (Rigidbody body in workList)
+                    //{
+                    //    if (body != null)
+                    //    {
+                    //        allSleeping &= body.IsSleeping();
+                    //    }
+                    //} 
+
+                    if (/*allSleeping ||*/ activeTime >= timeToSettle)
+                    {
+
+                        Stop();
+                    }
+                    else
+                    {
+                        for (int i = 0; i < simulationSteps; i++)
+                        {
+                            Physics.Simulate(Time.deltaTime);
+                        }
+                    }
+
+                } finally {
+                    // restore original setting
+                    Physics.autoSimulation = prevAutoSimulation;
                 }
             }
 
