@@ -422,6 +422,9 @@ namespace Yapp
         /// </summary>
         private void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal)
         {
+            if (!Terrain.activeTerrain)
+                return;
+
             GameObject container = editorTarget.container as GameObject;
 
             float brushSize = editorTarget.brushSettings.brushSize;
