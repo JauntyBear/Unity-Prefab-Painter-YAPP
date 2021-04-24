@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -96,8 +96,9 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 44822e13d05ec7640a136244f00399cf, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -117,6 +118,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -187,6 +190,7 @@ MonoBehaviour:
     alignToTerrain: 0
     distribution: 0
     poissonDiscSize: 1
+    poissonDiscRaycastOffset: 100
     fallOffCurve:
       serializedVersion: 2
       m_Curve:
@@ -265,12 +269,13 @@ MonoBehaviour:
     slopeMax: 90
     slopeMaxLimit: 90
     allowOverlap: 0
-    autoPhysicsType: 0
-    autoPhysicsHeightOffset: 1
-    autoPhysicsTime: 3
     spawnToVSPro: 0
+  spawnSettings:
+    autoSimulationType: 0
+    autoSimulationHeightOffset: 1
   prefabSettingsList:
-  - prefab: {fileID: 1500891991828590, guid: 8d06961c7055fbe4d9d9620cfdb319fa, type: 3}
+  - templateName: 
+    prefab: {fileID: 1500891991828590, guid: 8d06961c7055fbe4d9d9620cfdb319fa, type: 3}
     active: 1
     probability: 1
     positionOffset: {x: 0, y: 1.6, z: 0}
@@ -293,10 +298,10 @@ MonoBehaviour:
     forceMinMax: {x: 0, y: 0}
     forceAngleInDegrees: 0
     randomizeForceAngle: 0
-    simulationRunning: 0
-    simulationStepCount: 0
-    simulationStepCountMax: -1
+    simulationTime: 3
+    simulationSteps: 1
   splineSettings:
+    spawnMechanism: 0
     curveResolution: 0
     loop: 0
     separation: 0
@@ -315,6 +320,10 @@ MonoBehaviour:
     dirty: 0
     prefabInstances: []
     controlPoints: []
+  interactionSettings:
+    interactionType: 0
+    antiGravityStrength: 30
+    magnetStrength: 10
 --- !u!4 &574884259
 Transform:
   m_ObjectHideFlags: 0
@@ -362,11 +371,12 @@ MonoBehaviour:
   container: {fileID: 330283373}
   mode: 0
   brushSettings:
-    brushSize: 18.589996
+    brushSize: 16.589996
     brushRotation: 350
     alignToTerrain: 0
     distribution: 1
-    poissonDiscSize: 7.13
+    poissonDiscSize: 1.75
+    poissonDiscRaycastOffset: 100
     fallOffCurve:
       serializedVersion: 2
       m_Curve:
@@ -445,15 +455,16 @@ MonoBehaviour:
     slopeMax: 25.714308
     slopeMaxLimit: 90
     allowOverlap: 0
-    autoPhysicsType: 0
-    autoPhysicsHeightOffset: 1
-    autoPhysicsTime: 3
     spawnToVSPro: 0
+  spawnSettings:
+    autoSimulationType: 0
+    autoSimulationHeightOffset: 1
   prefabSettingsList:
-  - prefab: {fileID: 1414477670954642, guid: 626b903f2d0f0594389f3c7eef789aba, type: 3}
+  - templateName: 
+    prefab: {fileID: 1414477670954642, guid: 626b903f2d0f0594389f3c7eef789aba, type: 3}
     active: 0
     probability: 1
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 0, y: 1, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     randomRotation: 0
     rotationMinX: 0
@@ -467,10 +478,11 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1440074246936570, guid: b44914f1863d89944975413951b5cb2b, type: 3}
+  - templateName: 
+    prefab: {fileID: 1440074246936570, guid: b44914f1863d89944975413951b5cb2b, type: 3}
     active: 0
     probability: 1
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 0, y: 1, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     randomRotation: 0
     rotationMinX: 212.51619
@@ -484,10 +496,11 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1483845257301048, guid: 43e4df84b5be7e441899b04e412a3d66, type: 3}
+  - templateName: 
+    prefab: {fileID: 1483845257301048, guid: 43e4df84b5be7e441899b04e412a3d66, type: 3}
     active: 1
     probability: 1
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 0, y: 1, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     randomRotation: 1
     rotationMinX: 0
@@ -501,10 +514,11 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1929132347765138, guid: 33fa12decdc1b854d8a53d2ccbfc2c83, type: 3}
+  - templateName: 
+    prefab: {fileID: 1929132347765138, guid: 33fa12decdc1b854d8a53d2ccbfc2c83, type: 3}
     active: 0
     probability: 1
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 0, y: 1, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     randomRotation: 0
     rotationMinX: 0
@@ -524,10 +538,10 @@ MonoBehaviour:
     forceMinMax: {x: 0, y: 0}
     forceAngleInDegrees: 0
     randomizeForceAngle: 0
-    simulationRunning: 0
-    simulationStepCount: 0
-    simulationStepCountMax: -1
+    simulationTime: 3
+    simulationSteps: 1
   splineSettings:
+    spawnMechanism: 0
     curveResolution: 7
     loop: 0
     separation: 1
@@ -544,39 +558,12 @@ MonoBehaviour:
     reusePrefabs: 1
     debug: 0
     dirty: 0
-    prefabInstances:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    prefabInstances: []
     controlPoints: []
+  interactionSettings:
+    interactionType: 0
+    antiGravityStrength: 30
+    magnetStrength: 10
 --- !u!4 &769128219
 Transform:
   m_ObjectHideFlags: 0
@@ -622,6 +609,102 @@ Transform:
   m_Father: {fileID: 1460711809}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1083551348
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1083551352}
+  - component: {fileID: 1083551351}
+  - component: {fileID: 1083551350}
+  - component: {fileID: 1083551349}
+  m_Layer: 0
+  m_Name: Sphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!135 &1083551349
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083551348}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1083551350
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083551348}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 742000cee1937d441aadd12468aaf8ef, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1083551351
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083551348}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1083551352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083551348}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 292.29, y: 7.2, z: 61.65}
+  m_LocalScale: {x: 15, y: 15, z: 15}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1148919015
 GameObject:
   m_ObjectHideFlags: 0
@@ -659,7 +742,7 @@ Terrain:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1148919015}
   m_Enabled: 1
-  serializedVersion: 5
+  serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 38ab48daa4defb045819e67fd1dba3db, type: 2}
   m_TreeDistance: 2000
   m_TreeBillboardDistance: 50
@@ -674,6 +757,7 @@ Terrain:
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
+  m_StaticShadowCaster: 0
   m_ReflectionProbeUsage: 1
   m_MaterialTemplate: {fileID: 2100000, guid: 3d07d28a91edf1c47ae08dfdce320ca6, type: 2}
   m_BakeLightProbesForTrees: 1
@@ -682,6 +766,7 @@ Terrain:
   m_ScaleInLightmap: 0.0512
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
+  m_RenderingLayerMask: 1
   m_AllowAutoConnect: 0
 --- !u!4 &1148919018
 Transform:
@@ -764,6 +849,7 @@ MonoBehaviour:
     alignToTerrain: 0
     distribution: 0
     poissonDiscSize: 7.13
+    poissonDiscRaycastOffset: 100
     fallOffCurve:
       serializedVersion: 2
       m_Curve:
@@ -842,12 +928,13 @@ MonoBehaviour:
     slopeMax: 25.714308
     slopeMaxLimit: 90
     allowOverlap: 0
-    autoPhysicsType: 0
-    autoPhysicsHeightOffset: 1
-    autoPhysicsTime: 3
     spawnToVSPro: 0
+  spawnSettings:
+    autoSimulationType: 0
+    autoSimulationHeightOffset: 1
   prefabSettingsList:
-  - prefab: {fileID: 1414477670954642, guid: 626b903f2d0f0594389f3c7eef789aba, type: 3}
+  - templateName: 
+    prefab: {fileID: 1414477670954642, guid: 626b903f2d0f0594389f3c7eef789aba, type: 3}
     active: 0
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -864,7 +951,8 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1440074246936570, guid: b44914f1863d89944975413951b5cb2b, type: 3}
+  - templateName: 
+    prefab: {fileID: 1440074246936570, guid: b44914f1863d89944975413951b5cb2b, type: 3}
     active: 0
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -881,7 +969,8 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1483845257301048, guid: 43e4df84b5be7e441899b04e412a3d66, type: 3}
+  - templateName: 
+    prefab: {fileID: 1483845257301048, guid: 43e4df84b5be7e441899b04e412a3d66, type: 3}
     active: 1
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -898,7 +987,8 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1929132347765138, guid: 33fa12decdc1b854d8a53d2ccbfc2c83, type: 3}
+  - templateName: 
+    prefab: {fileID: 1929132347765138, guid: 33fa12decdc1b854d8a53d2ccbfc2c83, type: 3}
     active: 0
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -921,10 +1011,10 @@ MonoBehaviour:
     forceMinMax: {x: 0, y: 0}
     forceAngleInDegrees: 0
     randomizeForceAngle: 0
-    simulationRunning: 0
-    simulationStepCount: 0
-    simulationStepCountMax: -1
+    simulationTime: 3
+    simulationSteps: 1
   splineSettings:
+    spawnMechanism: 0
     curveResolution: 7
     loop: 0
     separation: 1
@@ -974,6 +1064,10 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     controlPoints: []
+  interactionSettings:
+    interactionType: 0
+    antiGravityStrength: 30
+    magnetStrength: 10
 --- !u!4 &1460711809
 Transform:
   m_ObjectHideFlags: 0
@@ -1014,8 +1108,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468827735}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -1064,6 +1159,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1468827737
@@ -1239,6 +1335,7 @@ MonoBehaviour:
     alignToTerrain: 1
     distribution: 1
     poissonDiscSize: 1
+    poissonDiscRaycastOffset: 100
     fallOffCurve:
       serializedVersion: 2
       m_Curve:
@@ -1317,12 +1414,13 @@ MonoBehaviour:
     slopeMax: 90
     slopeMaxLimit: 90
     allowOverlap: 0
-    autoPhysicsType: 0
-    autoPhysicsHeightOffset: 1
-    autoPhysicsTime: 3
     spawnToVSPro: 0
+  spawnSettings:
+    autoSimulationType: 0
+    autoSimulationHeightOffset: 1
   prefabSettingsList:
-  - prefab: {fileID: 1768314851929904, guid: 852d20fafefd96d48a9ae55088ff0c06, type: 3}
+  - templateName: 
+    prefab: {fileID: 1768314851929904, guid: 852d20fafefd96d48a9ae55088ff0c06, type: 3}
     active: 1
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -1339,7 +1437,8 @@ MonoBehaviour:
     scaleMax: 1.5
     assetGUID: 
     vspro_VegetationItemID: 
-  - prefab: {fileID: 1242699101873380, guid: 59015672deb3e31468375618280af6ef, type: 3}
+  - templateName: 
+    prefab: {fileID: 1242699101873380, guid: 59015672deb3e31468375618280af6ef, type: 3}
     active: 1
     probability: 1
     positionOffset: {x: 0, y: 0, z: 0}
@@ -1362,10 +1461,10 @@ MonoBehaviour:
     forceMinMax: {x: 0, y: 0}
     forceAngleInDegrees: 0
     randomizeForceAngle: 0
-    simulationRunning: 0
-    simulationStepCount: 0
-    simulationStepCountMax: -1
+    simulationTime: 3
+    simulationSteps: 1
   splineSettings:
+    spawnMechanism: 0
     curveResolution: 0
     loop: 0
     separation: 0
@@ -1384,6 +1483,10 @@ MonoBehaviour:
     dirty: 0
     prefabInstances: []
     controlPoints: []
+  interactionSettings:
+    interactionType: 0
+    antiGravityStrength: 30
+    magnetStrength: 10
 --- !u!4 &1840661335
 Transform:
   m_ObjectHideFlags: 0
@@ -1398,4 +1501,100 @@ Transform:
   - {fileID: 1552582811}
   m_Father: {fileID: 0}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1921880909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1921880913}
+  - component: {fileID: 1921880912}
+  - component: {fileID: 1921880911}
+  - component: {fileID: 1921880910}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1921880910
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921880909}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1921880911
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921880909}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 742000cee1937d441aadd12468aaf8ef, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1921880912
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921880909}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1921880913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921880909}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 297.5, y: 2.59, z: 96.7}
+  m_LocalScale: {x: 20, y: 1, z: 20}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

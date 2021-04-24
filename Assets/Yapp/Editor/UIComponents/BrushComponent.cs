@@ -235,7 +235,8 @@ namespace Yapp
             switch (brushSettings.distribution)
             {
                 case BrushSettings.Distribution.Center: // fallthrough
-                case BrushSettings.Distribution.Poisson:
+                case BrushSettings.Distribution.Poisson_Any: // fallthrough
+                case BrushSettings.Distribution.Poisson_Terrain:
                     // inner disc
                     Handles.color = innerColor;
                     Handles.DrawSolidDisc(position, normal, radius);

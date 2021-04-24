@@ -9,8 +9,14 @@ namespace Yapp
     {
         public enum Distribution
         {
+            [InspectorName("Center")]
             Center,
-            Poisson,
+
+            [InspectorName("Poisson (Any Collider)")]
+            Poisson_Any,
+
+            [InspectorName("Poisson (Terrain Only)")]
+            Poisson_Terrain,
             FallOff,
             FallOff2d
         }
@@ -28,6 +34,11 @@ namespace Yapp
         /// The smaller, the more discs will be inside the brush
         /// </summary>
         public float poissonDiscSize = 1.0f;
+
+        /// <summary>
+        /// If any collider (not only terrain) is used for the raycast, then this will used as offset from which the ray will be cast against the collider
+        /// </summary>
+        public float poissonDiscRaycastOffset = 100f;
 
         /// <summary>
         /// Falloff curve

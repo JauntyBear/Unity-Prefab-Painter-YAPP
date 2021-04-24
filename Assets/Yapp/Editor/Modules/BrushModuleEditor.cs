@@ -18,6 +18,7 @@ namespace Yapp
         SerializedProperty alignToTerrain;
         SerializedProperty distribution;
         SerializedProperty poissonDiscSize;
+        SerializedProperty poissonDiscRaycastOffset;
         SerializedProperty fallOffCurve;
         SerializedProperty fallOff2dCurveX;
         SerializedProperty fallOff2dCurveZ;
@@ -58,6 +59,7 @@ namespace Yapp
             alignToTerrain = editor.FindProperty(x => x.brushSettings.alignToTerrain);
             distribution = editor.FindProperty(x => x.brushSettings.distribution);
             poissonDiscSize = editor.FindProperty(x => x.brushSettings.poissonDiscSize);
+            poissonDiscRaycastOffset = editor.FindProperty(x => x.brushSettings.poissonDiscRaycastOffset);
             fallOffCurve = editor.FindProperty(x => x.brushSettings.fallOffCurve);
             fallOff2dCurveX = editor.FindProperty(x => x.brushSettings.fallOff2dCurveX);
             fallOff2dCurveZ = editor.FindProperty(x => x.brushSettings.fallOff2dCurveZ);
@@ -87,10 +89,16 @@ namespace Yapp
             {
                 case BrushSettings.Distribution.Center:
                     break;
-                case BrushSettings.Distribution.Poisson:
-                    //EditorGUI.indentLevel++;
+                case BrushSettings.Distribution.Poisson_Any:
+                    EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(poissonDiscSize, new GUIContent("Poisson Disc Size"));
-                    //EditorGUI.indentLevel--;
+                    EditorGUILayout.PropertyField(poissonDiscRaycastOffset, new GUIContent("Raycast Offset", "If any collider (not only terrain) is used for the raycast, then this will used as offset from which the ray will be cast against the collider"));
+                    EditorGUI.indentLevel--;
+                    break;
+                case BrushSettings.Distribution.Poisson_Terrain:
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(poissonDiscSize, new GUIContent("Poisson Disc Size"));
+                    EditorGUI.indentLevel--;
                     break;
                 case BrushSettings.Distribution.FallOff:
                     EditorGUILayout.PropertyField(curveSamplePoints, new GUIContent("Curve Sample Points"));
@@ -187,8 +195,11 @@ namespace Yapp
                 case BrushSettings.Distribution.Center:
                     AddPrefabs_Center(hit.point, hit.normal);
                     break;
-                case BrushSettings.Distribution.Poisson:
-                    AddPrefabs_Poisson(hit.point, hit.normal);
+                case BrushSettings.Distribution.Poisson_Any:
+                    AddPrefabs_Poisson_Any(hit.point, hit.normal);
+                    break;
+                case BrushSettings.Distribution.Poisson_Terrain:
+                    AddPrefabs_Poisson_Terrain(hit.point, hit.normal);
                     break;
                 case BrushSettings.Distribution.FallOff:
                     Debug.Log("Not implemented yet: " + editorTarget.brushSettings.distribution);
@@ -332,9 +343,9 @@ namespace Yapp
         }
 
         /// <summary>
-        /// Add prefabs, mode Center
+        /// Add prefabs, mode Poisson
         /// </summary>
-        private void AddPrefabs_Poisson(Vector3 position, Vector3 normal)
+        private void AddPrefabs_Poisson_Any(Vector3 position, Vector3 normal)
         {
             GameObject container = editorTarget.container as GameObject;
 
@@ -354,14 +365,26 @@ namespace Yapp
                 float x = position.x + sample.x - brushRadius;
                 float z = position.z + sample.y - brushRadius;
 
-                // y depends on the terrain height
-                Vector3 terrainPosition = new Vector3(x, position.y, z);
+                float y = position.y + editorTarget.brushSettings.poissonDiscRaycastOffset;
+                Vector3 currentPosition = new Vector3(x, y, z);
 
-                // get terrain y position and add Terrain Transform Y-Position
-                float y = Terrain.activeTerrain.SampleHeight(terrainPosition) + Terrain.activeTerrain.GetPosition().y;
+				// TODO: raycast hit against layer
+				//       see https://docs.unity3d.com/ScriptReference/Physics.Raycast.html
+				if (Physics.Raycast(currentPosition, Vector3.down, out RaycastHit raycastHitDown, Mathf.Infinity))
+				{
+					y = raycastHitDown.point.y;
+				}
+				else if (Physics.Raycast(currentPosition, Vector3.up, out RaycastHit raycastHitUp, Mathf.Infinity))
+				{
+					y = raycastHitUp.point.y;
+				}
+				else
+				{
+					continue;
+				}
 
-                // create position vector
-                Vector3 prefabPosition = new Vector3( x, y, z);
+				// create position vector
+				Vector3 prefabPosition = new Vector3( x, y, z);
 
                 // auto physics height offset
                 prefabPosition = ApplyAutoPhysicsHeightOffset(prefabPosition);
@@ -391,12 +414,73 @@ namespace Yapp
                 {
                     AddNewPrefab(prefabPosition, normal);
                 }
-                
-
             }
-
-           
         }
+
+        /// <summary>
+        /// Add prefabs, mode Poisson
+        /// </summary>
+        private void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal)
+        {
+            GameObject container = editorTarget.container as GameObject;
+
+            float brushSize = editorTarget.brushSettings.brushSize;
+            float brushRadius = brushSize / 2.0f;
+            float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
+
+            PoissonDiscSampler sampler = new PoissonDiscSampler(brushSize, brushSize, discRadius);
+
+            foreach (Vector2 sample in sampler.Samples())
+            {
+
+                // brush is currenlty a disc => ensure the samples are within the disc
+                if (Vector2.Distance(sample, new Vector2(brushRadius, brushRadius)) > brushRadius)
+                    continue;
+
+                // x/z come from the poisson sample 
+                float x = position.x + sample.x - brushRadius;
+                float z = position.z + sample.y - brushRadius;
+
+                // y depends on the terrain height
+                Vector3 terrainPosition = new Vector3(x, position.y, z);
+
+                // get terrain y position and add Terrain Transform Y-Position
+                float y = Terrain.activeTerrain.SampleHeight(terrainPosition) + Terrain.activeTerrain.GetPosition().y;
+
+                // create position vector
+                Vector3 prefabPosition = new Vector3(x, y, z);
+
+                // auto physics height offset
+                prefabPosition = ApplyAutoPhysicsHeightOffset(prefabPosition);
+
+                // check if a prefab already exists within the brush
+                bool prefabExists = false;
+
+                // check overlap
+                if (!editorTarget.brushSettings.allowOverlap)
+                {
+                    foreach (Transform child in container.transform)
+                    {
+                        float dist = Vector3.Distance(prefabPosition, child.transform.position);
+
+                        // check against a single poisson disc
+                        if (dist <= discRadius)
+                        {
+                            prefabExists = true;
+                            break;
+                        }
+
+                    }
+                }
+
+                // add prefab
+                if (!prefabExists)
+                {
+                    AddNewPrefab(prefabPosition, normal);
+                }
+            }
+        }
+        
 
         /// <summary>
         /// Add additional height offset if auto physics is enabled
