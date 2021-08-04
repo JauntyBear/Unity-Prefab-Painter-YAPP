@@ -38,7 +38,6 @@ namespace Yapp
         }
 
         #region Simulate Continuously
-        private bool simulationStopTriggered = false;
 
         Dictionary<Collider, HideFlags> colliderFlagsMap = null;
 
@@ -125,15 +124,6 @@ namespace Yapp
         public void CleanUp()
         {
             PostProcessSimulation();
-        }
-
-
-        public void StopSimulation()
-        {
-            simulationStopTriggered = true;
-
-            Debug.Log("Simulation stopp triggered");
-
         }
 
         public void PerformSimulateStep()
