@@ -2,7 +2,9 @@
     "name": "com.rowlan.yapp.editor",
     "rootNamespace": "com.rowlan.yapp",
     "references": [
-        "com.rowlan.yapp.runtime"
+        "com.rowlan.yapp.runtime",
+        "AwesomeTechnologies.VegetationStudioPro.Editor",
+        "AwesomeTechnologies.VegetationStudioPro.Runtime"
     ],
     "includePlatforms": [
         "Editor"
