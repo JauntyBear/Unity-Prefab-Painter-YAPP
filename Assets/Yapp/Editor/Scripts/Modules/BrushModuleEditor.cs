@@ -312,12 +312,15 @@ namespace Rowlan.Yapp
                 objectRotation = Quaternion.Euler(prefabSettings.rotationOffset);
             }
 
+            // additionally consider brush rotation
+            Quaternion brushRotation = Quaternion.Euler(0f, editorTarget.brushSettings.brushRotation, 0f);
+
             // combine terrain aligned rotation and object rotation
-            Quaternion newRotation = alignedRotation * objectRotation;
+            Quaternion newRotation = alignedRotation * objectRotation * brushRotation;
 
             // scale to brush size
             // this uses world bounds and happens after the rotation
-            if( editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
+            if ( editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
             {
                 Quaternion prevRotation = prefab.transform.rotation;
                 {

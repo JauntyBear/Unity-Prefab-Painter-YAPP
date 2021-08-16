@@ -247,9 +247,16 @@ namespace Rowlan.Yapp
                     Handles.DrawWireDisc(position, normal, radius);
 
                     // center line / normal
-                    float lineLength = radius * 0.5f;
-                    Vector3 lineStart = position;
-                    Vector3 lineEnd = position + normal * lineLength;
+                    float lineLength = radius;
+
+                    // create perpendicular vector to normal
+                    Vector3 perpendicular = Vector3.Cross(normal, Vector3.right);
+
+                    // rotate perpendicular vector by brush rotation
+                    perpendicular = Quaternion.AngleAxis(brushSettings.brushRotation, Vector3.up) * perpendicular;
+
+                    Vector3 lineStart = position - perpendicular * lineLength;
+                    Vector3 lineEnd = position + perpendicular * lineLength;
                     Handles.DrawLine(lineStart, lineEnd);
 
                     break;
@@ -258,7 +265,7 @@ namespace Rowlan.Yapp
 
                     // use same curve for x and z
                     AnimationCurve fallOffCurve = brushSettings.fallOffCurve;
-                    DrawCurveBrushSamplePoints( brushSettings, position, normal, innerColor, outerColor, fallOffCurve, fallOffCurve);
+                    DrawCurveBrushSamplePoints(brushSettings, position, normal, innerColor, outerColor, fallOffCurve, fallOffCurve);
 
                     // alternate version: draw rings
                     // DrawCurveBrushSampleRings(position, normal, radius, innerColor, outerColor);
@@ -273,10 +280,27 @@ namespace Rowlan.Yapp
                     break;
             }
 
+            // draw rotation
+            switch (brushSettings.distribution)
+            {
+                case BrushSettings.Distribution.Center: // fallthrough
+                case BrushSettings.Distribution.ScaleToBrushSize: // fallthrough
+
+                    // center line / normal
+                    float lineLength = radius;
+                    Vector3 lineStart = position;
+                    Vector3 lineEnd = position + normal * lineLength;
+                    Handles.DrawLine(lineStart, lineEnd);
+                    break;
+
+                case BrushSettings.Distribution.Poisson_Any: // fallthrough
+                case BrushSettings.Distribution.Poisson_Terrain:
+                case BrushSettings.Distribution.FallOff:
+                case BrushSettings.Distribution.FallOff2d:
+                    break;
+            }
 
         }
-
-
 
         /// <summary>
         /// Draw rings with alpha value set to the curve value
