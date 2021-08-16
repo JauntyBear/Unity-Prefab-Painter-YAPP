@@ -12,11 +12,15 @@ namespace Rowlan.Yapp
             [InspectorName("Center")]
             Center,
 
+            [InspectorName("Center (Fit World Bounds)")]
+            ScaleToBrushSize,
+
             [InspectorName("Poisson (Any Collider)")]
             Poisson_Any,
 
             [InspectorName("Poisson (Terrain Only)")]
             Poisson_Terrain,
+
             FallOff,
             FallOff2d
         }

@@ -89,6 +89,8 @@ namespace Rowlan.Yapp
             {
                 case BrushSettings.Distribution.Center:
                     break;
+                case BrushSettings.Distribution.ScaleToBrushSize:
+                    break;
                 case BrushSettings.Distribution.Poisson_Any:
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(poissonDiscSize, new GUIContent("Poisson Disc Size"));
@@ -195,6 +197,9 @@ namespace Rowlan.Yapp
                 case BrushSettings.Distribution.Center:
                     AddPrefabs_Center(hit.point, hit.normal);
                     break;
+                case BrushSettings.Distribution.ScaleToBrushSize:
+                    AddPrefabs_Center(hit.point, hit.normal);
+                    break;
                 case BrushSettings.Distribution.Poisson_Any:
                     AddPrefabs_Poisson_Any(hit.point, hit.normal);
                     break;
@@ -277,6 +282,8 @@ namespace Rowlan.Yapp
             Vector3 newLocalScale = prefabSettings.prefab.transform.localScale;
 
             // size
+            // please note that the scale might be change later again (scale to brush size)
+            // which should happen after the rotation
             if (prefabSettings.changeScale)
             {
                 newLocalScale = Vector3.one * Random.Range(prefabSettings.scaleMin, prefabSettings.scaleMax);
@@ -307,6 +314,38 @@ namespace Rowlan.Yapp
 
             // combine terrain aligned rotation and object rotation
             Quaternion newRotation = alignedRotation * objectRotation;
+
+            // scale to brush size
+            // this uses world bounds and happens after the rotation
+            if( editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
+            {
+                float brushSize = editorTarget.brushSettings.brushSize;
+
+                Quaternion prevRotation = prefab.transform.rotation;
+                {
+                    // we need to rotate the gameobject now in order to calculate the world bounds
+                    prefab.transform.rotation = newRotation;
+
+                    if (BoundsUtils.GetBounds(prefab.transform, out Bounds localBounds, out Bounds worldBounds))
+                    {
+                        Vector3 prefabScale = prefab.transform.localScale;
+
+                        float scaleFactorX = brushSize / worldBounds.size.x;
+                        float scaleFactorY = brushSize / worldBounds.size.y;
+                        float scaleFactorZ = brushSize / worldBounds.size.z;
+
+                        float scaleFactorXYZ = Mathf.Min(scaleFactorX, scaleFactorY, scaleFactorZ);
+
+                        newLocalScale = prefabScale * scaleFactorXYZ;
+
+                    }
+                    else
+                    {
+                        Debug.LogError("Can't get bounds from " + prefab.name);
+                    }
+                }
+                prefab.transform.rotation = prevRotation;
+            }
 
 
             ///
