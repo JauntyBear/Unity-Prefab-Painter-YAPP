@@ -253,12 +253,12 @@ namespace Rowlan.Yapp
                     Vector3 perpendicular = Vector3.Cross(normal, Vector3.right);
 
                     // rotate perpendicular vector by brush rotation
-                    perpendicular = Quaternion.AngleAxis(brushSettings.brushRotation, Vector3.up) * perpendicular;
+                    perpendicular = Quaternion.AngleAxis(brushSettings.brushRotation, normal) * perpendicular;
 
                     Vector3 lineStart = position - perpendicular * lineLength;
                     Vector3 lineEnd = position + perpendicular * lineLength;
-                    Handles.DrawLine(lineStart, lineEnd);
 
+                    Handles.DrawLine(lineStart, lineEnd);
                     break;
 
                 case BrushSettings.Distribution.FallOff:
@@ -290,6 +290,7 @@ namespace Rowlan.Yapp
                     float lineLength = radius;
                     Vector3 lineStart = position;
                     Vector3 lineEnd = position + normal * lineLength;
+
                     Handles.DrawLine(lineStart, lineEnd);
                     break;
 
