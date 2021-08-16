@@ -229,14 +229,20 @@ namespace Rowlan.Yapp
                     prefabSettings.probability = EditorGUILayout.Slider("Probability", prefabSettings.probability, 0, 1);
 
                     // scale
-                    prefabSettings.changeScale = EditorGUILayout.Toggle("Change Scale", prefabSettings.changeScale);
-
-                    if (prefabSettings.changeScale)
+                    if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
                     {
-                        prefabSettings.scaleMin = EditorGUILayout.FloatField("Scale Min", prefabSettings.scaleMin);
-                        prefabSettings.scaleMax = EditorGUILayout.FloatField("Scale Max", prefabSettings.scaleMax);
+                        // use the brush scale, hide the change scale option
                     }
+                    else
+                    {
+                        prefabSettings.changeScale = EditorGUILayout.Toggle("Change Scale", prefabSettings.changeScale);
 
+                        if (prefabSettings.changeScale)
+                        {
+                            prefabSettings.scaleMin = EditorGUILayout.FloatField("Scale Min", prefabSettings.scaleMin);
+                            prefabSettings.scaleMax = EditorGUILayout.FloatField("Scale Max", prefabSettings.scaleMax);
+                        }
+                    }
                     // position
                     prefabSettings.positionOffset = EditorGUILayout.Vector3Field("Position Offset", prefabSettings.positionOffset);
 

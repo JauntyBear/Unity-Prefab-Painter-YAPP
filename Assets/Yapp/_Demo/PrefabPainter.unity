@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -661,7 +661,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 742000cee1937d441aadd12468aaf8ef, type: 2}
+  - {fileID: 2100000, guid: af30aa324fd85af43b8cdddd40193695, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -759,7 +759,7 @@ Terrain:
   m_DrawTreesAndFoliage: 1
   m_StaticShadowCaster: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 3d07d28a91edf1c47ae08dfdce320ca6, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: cd6382066682df6498a3576a2921d8e9, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -1554,7 +1554,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 742000cee1937d441aadd12468aaf8ef, type: 2}
+  - {fileID: 2100000, guid: af30aa324fd85af43b8cdddd40193695, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
