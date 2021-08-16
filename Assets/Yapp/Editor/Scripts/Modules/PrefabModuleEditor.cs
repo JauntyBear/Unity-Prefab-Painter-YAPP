@@ -192,7 +192,7 @@ namespace Rowlan.Yapp
 
                         }
 
-                        // right alin the buttons
+                        // right align the buttons
                         GUILayout.FlexibleSpace();
 
                         if (GUILayout.Button("Add", EditorStyles.miniButton))
@@ -248,7 +248,31 @@ namespace Rowlan.Yapp
 
                     // rotation
                     prefabSettings.rotationOffset = EditorGUILayout.Vector3Field("Rotation Offset", prefabSettings.rotationOffset);
-                    prefabSettings.randomRotation = EditorGUILayout.Toggle("Random Rotation", prefabSettings.randomRotation);
+                    GUILayout.BeginHorizontal();
+                    {
+                        prefabSettings.randomRotation = EditorGUILayout.Toggle("Random Rotation", prefabSettings.randomRotation);
+
+                        // right align the buttons
+                        GUILayout.FlexibleSpace();
+
+                        if ( GUILayout.Button("X", EditorStyles.miniButton)) {
+                            QuickRotationSetting(prefabSettings, 1f, 0f, 0f);
+                        }
+                        if (GUILayout.Button("Y", EditorStyles.miniButton))
+                        {
+                            QuickRotationSetting(prefabSettings, 0f, 1f, 0f);
+                        }
+                        if (GUILayout.Button("Z", EditorStyles.miniButton))
+                        {
+                            QuickRotationSetting(prefabSettings, 0f, 0f, 1f);
+                        }
+                        if (GUILayout.Button("XYZ", EditorStyles.miniButton))
+                        {
+                            QuickRotationSetting(prefabSettings, 1f, 1f, 1f);
+                        }
+
+                    }
+                    GUILayout.EndHorizontal();
 
                     // rotation limits
                     if (prefabSettings.randomRotation)
@@ -287,6 +311,19 @@ namespace Rowlan.Yapp
             prefabSettings.prefab = prefab;
 
             editor.newDraggedPrefabs.Add(prefabSettings);
+
+        }
+
+        private void QuickRotationSetting(PrefabSettings prefabSettings, float x, float y, float z)
+        {
+            prefabSettings.randomRotation = true;
+
+            prefabSettings.rotationMinX = 0f * x;
+            prefabSettings.rotationMaxX = 360f * x;
+            prefabSettings.rotationMinY = 0f * y;
+            prefabSettings.rotationMaxY = 360f * y;
+            prefabSettings.rotationMinZ = 0f * z;
+            prefabSettings.rotationMaxZ = 360f * z;
 
         }
 
