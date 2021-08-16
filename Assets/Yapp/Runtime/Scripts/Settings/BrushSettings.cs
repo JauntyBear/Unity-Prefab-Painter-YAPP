@@ -12,7 +12,7 @@ namespace Rowlan.Yapp
             [InspectorName("Center")]
             Center,
 
-            [InspectorName("Center (Fit Bounds)")]
+            [InspectorName("Center (Fit World Bounds)")]
             ScaleToBrushSize,
 
             [InspectorName("Poisson (Any Collider)")]
