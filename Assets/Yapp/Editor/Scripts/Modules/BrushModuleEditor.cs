@@ -319,30 +319,24 @@ namespace Rowlan.Yapp
             // this uses world bounds and happens after the rotation
             if( editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
             {
-                float brushSize = editorTarget.brushSettings.brushSize;
-
                 Quaternion prevRotation = prefab.transform.rotation;
                 {
                     // we need to rotate the gameobject now in order to calculate the world bounds
                     prefab.transform.rotation = newRotation;
 
-                    if (BoundsUtils.GetBounds(prefab.transform, out Bounds localBounds, out Bounds worldBounds))
-                    {
-                        Vector3 prefabScale = prefab.transform.localScale;
+                    float brushSize = editorTarget.brushSettings.brushSize;
+                    Bounds worldBounds = BoundsUtils.CalculateBounds(prefab);
 
-                        float scaleFactorX = brushSize / worldBounds.size.x;
-                        float scaleFactorY = brushSize / worldBounds.size.y;
-                        float scaleFactorZ = brushSize / worldBounds.size.z;
+                    Vector3 prefabScale = prefab.transform.localScale;
 
-                        float scaleFactorXYZ = Mathf.Min(scaleFactorX, scaleFactorY, scaleFactorZ);
+                    float scaleFactorX = brushSize / worldBounds.size.x;
+                    float scaleFactorY = brushSize / worldBounds.size.y;
+                    float scaleFactorZ = brushSize / worldBounds.size.z;
 
-                        newLocalScale = prefabScale * scaleFactorXYZ;
+                    float scaleFactorXYZ = Mathf.Min(scaleFactorX, scaleFactorY, scaleFactorZ);
 
-                    }
-                    else
-                    {
-                        Debug.LogError("Can't get bounds from " + prefab.name);
-                    }
+                    newLocalScale = prefabScale * scaleFactorXYZ;
+
                 }
                 prefab.transform.rotation = prevRotation;
             }
