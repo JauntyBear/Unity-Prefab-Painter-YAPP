@@ -27,8 +27,17 @@ namespace Rowlan.Yapp
 
         public float brushSize = 2.0f;
 
+        /// <summary>
+        /// Brush rotation for placement
+        /// In single placement mode this acts as global prefab angle (but overwritten eg by random rotation). Set to 0 if you don't want it
+        /// </summary>
         [Range(0, 360)]
         public int brushRotation = 0;
+
+        /// <summary>
+        /// Show rotation indicator on brush
+        /// </summary>
+        public bool brushRotationGuide = true;
 
         public bool alignToTerrain = false;
         public Distribution distribution = Distribution.Center;

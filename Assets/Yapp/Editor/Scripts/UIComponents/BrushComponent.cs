@@ -246,19 +246,23 @@ namespace Rowlan.Yapp
                     Handles.color = outerColor;
                     Handles.DrawWireDisc(position, normal, radius);
 
-                    // center line / normal
-                    float lineLength = radius;
+                    // guide (rotation line)
+                    if (brushSettings.brushRotationGuide)
+                    {
+                        // center line / normal
+                        float lineLength = radius;
 
-                    // create perpendicular vector to normal
-                    Vector3 perpendicular = Vector3.Cross(normal, Vector3.right);
+                        // create perpendicular vector to normal
+                        Vector3 perpendicular = Vector3.Cross(normal, Vector3.right);
 
-                    // rotate perpendicular vector by brush rotation
-                    perpendicular = Quaternion.AngleAxis(brushSettings.brushRotation, normal) * perpendicular;
+                        // rotate perpendicular vector by brush rotation
+                        perpendicular = Quaternion.AngleAxis(brushSettings.brushRotation, normal) * perpendicular;
 
-                    Vector3 lineStart = position - perpendicular * lineLength;
-                    Vector3 lineEnd = position + perpendicular * lineLength;
+                        Vector3 lineStart = position - perpendicular * lineLength;
+                        Vector3 lineEnd = position + perpendicular * lineLength;
 
-                    Handles.DrawLine(lineStart, lineEnd);
+                        Handles.DrawLine(lineStart, lineEnd);
+                    }
                     break;
 
                 case BrushSettings.Distribution.FallOff:

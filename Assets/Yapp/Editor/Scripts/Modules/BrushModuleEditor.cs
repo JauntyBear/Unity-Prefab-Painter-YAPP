@@ -14,6 +14,7 @@ namespace Rowlan.Yapp
 
         SerializedProperty brushSize;
         SerializedProperty brushRotation;
+        SerializedProperty brushRotationGuide;
         SerializedProperty allowOverlap;
         SerializedProperty alignToTerrain;
         SerializedProperty distribution;
@@ -55,6 +56,7 @@ namespace Rowlan.Yapp
 
             brushSize = editor.FindProperty( x => x.brushSettings.brushSize);
             brushRotation = editor.FindProperty(x => x.brushSettings.brushRotation);
+            brushRotationGuide = editor.FindProperty(x => x.brushSettings.brushRotationGuide);
 
             alignToTerrain = editor.FindProperty(x => x.brushSettings.alignToTerrain);
             distribution = editor.FindProperty(x => x.brushSettings.distribution);
@@ -78,7 +80,20 @@ namespace Rowlan.Yapp
             EditorGUILayout.LabelField("Brush settings", GUIStyles.BoxTitleStyle);
 
             EditorGUILayout.PropertyField(brushSize, new GUIContent("Brush Size"));
-            EditorGUILayout.PropertyField(brushRotation, new GUIContent("Brush Rotation"));
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.PropertyField(brushRotation, new GUIContent("Brush Rotation"));
+                if (GUILayout.Button("Reset", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
+                {
+                    brushRotation.intValue = 0;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel++;
+            {
+                EditorGUILayout.PropertyField(brushRotationGuide, new GUIContent("Guide"));
+            }
+            EditorGUI.indentLevel--;
 
             EditorGUILayout.PropertyField(alignToTerrain, new GUIContent("Align To Terrain"));
             EditorGUILayout.PropertyField(allowOverlap, new GUIContent("Allow Overlap", "Center Mode: Check against brush size.\nPoisson Mode: Check against Poisson Disc size"));
