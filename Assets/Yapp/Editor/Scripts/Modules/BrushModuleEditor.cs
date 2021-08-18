@@ -202,6 +202,11 @@ namespace Rowlan.Yapp
 
             if (IsFluent())
             {
+                if( !brushDistribution.HasPreviewPrefab())
+                {
+                    brushDistribution.CreatePreviewPrefab();
+                }
+
                 brushDistribution.UpdatePreviewPrefab(raycastHit.point, raycastHit.normal);
             }
 

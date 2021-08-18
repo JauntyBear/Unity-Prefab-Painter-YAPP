@@ -19,6 +19,11 @@ namespace Rowlan.Yapp
 
         }
 
+        public bool HasPreviewPrefab()
+        {
+            return previewPrefab != null;
+        }
+
         public void CreatePreviewPrefab()
         {
             if (!this.editorTarget.HasPrefab())
