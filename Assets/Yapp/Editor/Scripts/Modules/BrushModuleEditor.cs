@@ -14,7 +14,9 @@ namespace Rowlan.Yapp
 
         SerializedProperty brushSize;
         SerializedProperty brushRotation;
-        SerializedProperty brushRotationGuide;
+        SerializedProperty sizeGuide;
+        SerializedProperty normalGuide;
+        SerializedProperty rotationGuide;
         SerializedProperty allowOverlap;
         SerializedProperty alignToTerrain;
         SerializedProperty layerMask;
@@ -57,7 +59,10 @@ namespace Rowlan.Yapp
 
             brushSize = editor.FindProperty( x => x.brushSettings.brushSize);
             brushRotation = editor.FindProperty(x => x.brushSettings.brushRotation);
-            brushRotationGuide = editor.FindProperty(x => x.brushSettings.brushRotationGuide);
+
+            sizeGuide = editor.FindProperty(x => x.brushSettings.sizeGuide);
+            normalGuide = editor.FindProperty(x => x.brushSettings.normalGuide);
+            rotationGuide = editor.FindProperty(x => x.brushSettings.rotationGuide);
 
             alignToTerrain = editor.FindProperty(x => x.brushSettings.alignToTerrain);
             distribution = editor.FindProperty(x => x.brushSettings.distribution);
@@ -91,11 +96,21 @@ namespace Rowlan.Yapp
                 }
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUI.indentLevel++;
+
+            EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.PropertyField(brushRotationGuide, new GUIContent("Guide"));
+                EditorGUILayout.PrefixLabel("Brush Visual");
+
+                GUILayout.Label("Size", GUILayout.ExpandWidth(false));
+                EditorGUILayout.PropertyField(sizeGuide, GUIContent.none, GUILayout.Width(20));
+
+                GUILayout.Label("Normal", GUILayout.ExpandWidth(false));
+                EditorGUILayout.PropertyField(normalGuide, GUIContent.none, GUILayout.Width(20));
+
+                GUILayout.Label("Rotation", GUILayout.ExpandWidth(false));
+                EditorGUILayout.PropertyField(rotationGuide, GUIContent.none, GUILayout.Width(20));
             }
-            EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.PropertyField(alignToTerrain, new GUIContent("Align To Terrain"));
             EditorGUILayout.PropertyField(allowOverlap, new GUIContent("Allow Overlap", "Center Mode: Check against brush size.\nPoisson Mode: Check against Poisson Disc size"));

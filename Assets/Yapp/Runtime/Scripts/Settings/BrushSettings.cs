@@ -35,9 +35,19 @@ namespace Rowlan.Yapp
         public int brushRotation = 0;
 
         /// <summary>
-        /// Show rotation indicator on brush
+        /// Brush size
         /// </summary>
-        public bool brushRotationGuide = true;
+        public bool sizeGuide = true;
+
+        /// <summary>
+        /// Brush normal
+        /// </summary>
+        public bool normalGuide = true;
+
+        /// <summary>
+        /// Brush rotation
+        /// </summary>
+        public bool rotationGuide = false;
 
         public bool alignToTerrain = false;
         public Distribution distribution = Distribution.Center;

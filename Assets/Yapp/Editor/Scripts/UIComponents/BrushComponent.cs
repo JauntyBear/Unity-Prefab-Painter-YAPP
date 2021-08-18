@@ -236,16 +236,20 @@ namespace Rowlan.Yapp
                 case BrushSettings.Distribution.ScaleToBrushSize: // fallthrough
                 case BrushSettings.Distribution.Poisson_Any: // fallthrough
                 case BrushSettings.Distribution.Poisson_Terrain:
-                    // inner disc
-                    Handles.color = innerColor;
-                    Handles.DrawSolidDisc(position, normal, radius);
 
-                    // outer circle
-                    Handles.color = outerColor;
-                    Handles.DrawWireDisc(position, normal, radius);
+                    if (brushSettings.sizeGuide)
+                    {
+                        // inner disc
+                        Handles.color = innerColor;
+                        Handles.DrawSolidDisc(position, normal, radius);
+
+                        // outer circle
+                        Handles.color = outerColor;
+                        Handles.DrawWireDisc(position, normal, radius);
+                    }
 
                     // guide (rotation line)
-                    if (brushSettings.brushRotationGuide)
+                    if (brushSettings.rotationGuide)
                     {
                         // center line / normal
                         float lineLength = radius;
@@ -259,6 +263,7 @@ namespace Rowlan.Yapp
                         Vector3 lineStart = position - perpendicular * lineLength;
                         Vector3 lineEnd = position + perpendicular * lineLength;
 
+                        Handles.color = outerColor;
                         Handles.DrawLine(lineStart, lineEnd);
                     }
                     break;
@@ -288,12 +293,16 @@ namespace Rowlan.Yapp
                 case BrushSettings.Distribution.Center: // fallthrough
                 case BrushSettings.Distribution.ScaleToBrushSize: // fallthrough
 
-                    // center line / normal
-                    float lineLength = radius;
-                    Vector3 lineStart = position;
-                    Vector3 lineEnd = position + normal * lineLength;
+                    if (brushSettings.normalGuide)
+                    {
+                        // center line / normal
+                        float lineLength = radius;
+                        Vector3 lineStart = position;
+                        Vector3 lineEnd = position + normal * lineLength;
 
-                    Handles.DrawLine(lineStart, lineEnd);
+                        Handles.color = outerColor;
+                        Handles.DrawLine(lineStart, lineEnd);
+                    }
                     break;
 
                 case BrushSettings.Distribution.Poisson_Any: // fallthrough
