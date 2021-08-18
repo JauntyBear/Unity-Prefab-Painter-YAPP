@@ -15,7 +15,8 @@ namespace Rowlan.Yapp
         public enum LayerValue
         {
             Nothing = 0,
-            Everything = int.MaxValue
+            Everything = int.MaxValue,
+            IgnoreRaycast = 2,
         }
     }
 }

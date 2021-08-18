@@ -228,7 +228,7 @@ namespace Rowlan.Yapp
 
         }
         
-        private bool IsFluent()
+        public bool IsFluent()
         {
             return editorTarget.brushSettings.distribution == BrushSettings.Distribution.Fluent;
         }

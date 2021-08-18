@@ -52,6 +52,11 @@ namespace Rowlan.Yapp
 
             previewPrefab.prefabInstance.name = "Preview Prefab [Yapp Temp]";
 
+            if (brushModuleEditor.IsFluent())
+            {   
+                // TODO: disable preview for now, it causes conflicts with raycast
+                previewPrefab.prefabInstance.SetActive(false);
+            }
         }
 
         public void UpdatePreviewPrefab(Vector3 position, Vector3 normal)
