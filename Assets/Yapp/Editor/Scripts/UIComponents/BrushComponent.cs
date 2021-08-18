@@ -28,7 +28,10 @@ namespace Rowlan.Yapp
 
             Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
-            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, brushSettings.layerMask))
+            // create layer mask without ignore raycast on which the preview gameobject is
+            LayerMask layerMask = LayerUtils.GetPreviewLayerMask(brushSettings.layerMask);
+
+            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 mouseHit = hit;
 
@@ -385,7 +388,11 @@ namespace Rowlan.Yapp
 
                     // y via raycast down
                     RaycastHit hit;
-                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, brushSettings.layerMask))
+
+                    // create layer mask without ignore raycast on which the preview gameobject is
+                    LayerMask layerMask = LayerUtils.GetPreviewLayerMask(brushSettings.layerMask);
+
+                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, layerMask))
                     {
                         // set y position depending on the terrain
                         discPosition.y = hit.point.y;
@@ -460,7 +467,11 @@ namespace Rowlan.Yapp
 
                     // y via raycast down
                     RaycastHit hit;
-                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, brushSettings.layerMask))
+
+                    // create layer mask without ignore raycast on which the preview gameobject is
+                    LayerMask layerMask = LayerUtils.GetPreviewLayerMask(brushSettings.layerMask);
+
+                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, layerMask))
                     {
                         // set y position depending on the terrain
                         discPosition.y = hit.point.y;

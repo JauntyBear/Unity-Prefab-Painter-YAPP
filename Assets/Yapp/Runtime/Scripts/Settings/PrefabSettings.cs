@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Rowlan.Yapp
@@ -16,7 +17,7 @@ namespace Rowlan.Yapp
         /// The prefab which should be instanted and placed at the brush position
         /// </summary>
         [HideInInspector]
-        public GameObject prefab;
+        public GameObject prefab = null;
 
         /// <summary>
         /// Whether the prefab is used or not
@@ -109,6 +110,8 @@ namespace Rowlan.Yapp
         [HideInInspector]
         public string vspro_VegetationItemID = null;
 
+        public Quaternion instanceRotation = Quaternion.identity;
+
         /// <summary>
         /// Apply the settings of the template to the current prefab settings
         /// </summary>
@@ -131,11 +134,27 @@ namespace Rowlan.Yapp
             scaleMin = template.scaleMin;
             scaleMax = template.scaleMax;
 
+            UpdateInstanceData();
+
         }
 
         public PrefabSettings Clone()
         {
             return (PrefabSettings)this.MemberwiseClone();
         }
+
+        /// <summary>
+        /// Set the data depending on the settings when an instance is created.
+        /// We don't want to eg have consistent random rotation while the prefab is being moved around.
+        /// </summary>
+        public void UpdateInstanceData()
+        {
+            float rotationX = Random.Range(rotationMinX, rotationMaxX);
+            float rotationY = Random.Range(rotationMinY, rotationMaxY);
+            float rotationZ = Random.Range(rotationMinZ, rotationMaxZ);
+
+            instanceRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
+        }
+
     }
 }

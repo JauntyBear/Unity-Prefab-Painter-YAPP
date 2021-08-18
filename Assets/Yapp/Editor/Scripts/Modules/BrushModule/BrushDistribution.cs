@@ -52,11 +52,10 @@ namespace Rowlan.Yapp
 
             previewPrefab.prefabInstance.name = "Preview Prefab [Yapp Temp]";
 
-            if (brushModuleEditor.IsFluent())
-            {   
-                // TODO: disable preview for now, it causes conflicts with raycast
-                previewPrefab.prefabInstance.SetActive(false);
-            }
+            // set the layer index for the preview prefab. we need to ignore it in the brush raycast or else there'd be an endless loop
+            // with the preview prefab coming close to the camera consistently
+            previewPrefab.prefabInstance.layer = (int) LayerUtils.LayerIndex.IgnoreRaycast;
+
         }
 
         public void UpdatePreviewPrefab(Vector3 position, Vector3 normal)
@@ -69,6 +68,12 @@ namespace Rowlan.Yapp
             previewPrefab.prefabInstance.transform.position = appliedTransform.position;
             previewPrefab.prefabInstance.transform.rotation = appliedTransform.rotation;
             previewPrefab.prefabInstance.transform.localScale = appliedTransform.scale;
+
+            // toggle visibility depending on shift key
+            /*
+            bool visible = Event.current.shift;
+            previewPrefab.prefabInstance.SetActive(visible);
+            */
         }
 
         public void DestroyPreviewPrefab()
@@ -163,12 +168,7 @@ namespace Rowlan.Yapp
 
             if (prefabSettings.randomRotation)
             {
-
-                float rotationX = Random.Range(prefabSettings.rotationMinX, prefabSettings.rotationMaxX);
-                float rotationY = Random.Range(prefabSettings.rotationMinY, prefabSettings.rotationMaxY);
-                float rotationZ = Random.Range(prefabSettings.rotationMinZ, prefabSettings.rotationMaxZ);
-
-                objectRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
+                objectRotation = prefabSettings.instanceRotation;
             }
             else
             {

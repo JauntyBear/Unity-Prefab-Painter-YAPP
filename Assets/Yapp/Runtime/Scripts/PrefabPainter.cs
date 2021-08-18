@@ -116,7 +116,7 @@ namespace Rowlan.Yapp
             float weight;
             float totalSum = 0;
 
-            foreach (var item in prefabSettingsList)
+            foreach (PrefabSettings item in prefabSettingsList)
             {
                 if (!item.active)
                     continue;
@@ -128,7 +128,7 @@ namespace Rowlan.Yapp
             float random = Random.value;
             float bound = 0f;
 
-            foreach (var item in prefabSettingsList)
+            foreach (PrefabSettings item in prefabSettingsList)
             {
                 if (!item.active)
                     continue;
@@ -141,7 +141,12 @@ namespace Rowlan.Yapp
                 bound += weight / totalSum;
 
                 if (bound >= random)
+                {
+                    // create eg rotation data for this instance
+                    item.UpdateInstanceData();
+
                     return item;
+                }
             }
 
             return null;

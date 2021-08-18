@@ -89,7 +89,7 @@ namespace Rowlan.Yapp
         /// <summary>
         /// Layer mask for the brush raycast
         /// </summary>
-        public LayerMask layerMask = (int) LayerUtils.LayerValue.Everything;
+        public LayerMask layerMask = (int) LayerUtils.LayerIndex.Everything;
 
         /// <summary>
         /// Optionally spawn into the Persistent Storage of Vegetation Studio Pro
