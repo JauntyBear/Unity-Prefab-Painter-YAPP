@@ -98,6 +98,11 @@ namespace Rowlan.Yapp
 
         }
 
+        public bool HasPrefab()
+        {
+            return prefabSettingsList.Count > 0;
+        }
+
         /// <summary>
         /// Get a random active prefab setting from the prefab settings list, depending on the probability.
         /// </summary>
@@ -105,7 +110,7 @@ namespace Rowlan.Yapp
         public PrefabSettings GetRandomWeightedPrefab()
         {
 
-            if (prefabSettingsList.Count == 0)
+            if (!HasPrefab())
                 return null;
 
             float weight;

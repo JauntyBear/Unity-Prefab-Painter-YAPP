@@ -237,9 +237,17 @@ namespace Rowlan.Yapp
 
             switch (editorTarget.brushSettings.distribution)
             {
-                case BrushSettings.Distribution.Center:  // fallthrough
-                case BrushSettings.Distribution.Fluent:
+                case BrushSettings.Distribution.Center:
+                    // create a prefab
+                    brushDistribution.CreatePreviewPrefab();
+                    // add prefab
                     brushDistribution.AddPrefabs_Center(hit.point, hit.normal);
+                    break;
+
+                case BrushSettings.Distribution.Fluent:
+                    // use preview prefab
+                    brushDistribution.AddPrefabs_Center(hit.point, hit.normal);
+                    // create next preview prefab
                     brushDistribution.CreatePreviewPrefab();
                     break;
                 case BrushSettings.Distribution.Poisson_Any:

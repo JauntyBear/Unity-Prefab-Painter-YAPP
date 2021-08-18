@@ -21,6 +21,9 @@ namespace Rowlan.Yapp
 
         public void CreatePreviewPrefab()
         {
+            if (!this.editorTarget.HasPrefab())
+                return;
+
             if (previewPrefab != null)
                 DestroyPreviewPrefab();
 
