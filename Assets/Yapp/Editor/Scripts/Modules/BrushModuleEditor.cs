@@ -14,6 +14,7 @@ namespace Rowlan.Yapp
 
         SerializedProperty brushSize;
         SerializedProperty brushRotation;
+        SerializedProperty prefabPreview;
         SerializedProperty sizeGuide;
         SerializedProperty normalGuide;
         SerializedProperty rotationGuide;
@@ -68,7 +69,10 @@ namespace Rowlan.Yapp
             rotationGuide = editor.FindProperty(x => x.brushSettings.rotationGuide);
 
             alignToTerrain = editor.FindProperty(x => x.brushSettings.alignToTerrain);
+
             distribution = editor.FindProperty(x => x.brushSettings.distribution);
+            prefabPreview = editor.FindProperty(x => x.brushSettings.prefabPreview);
+
             poissonDiscSize = editor.FindProperty(x => x.brushSettings.poissonDiscSize);
             poissonDiscRaycastOffset = editor.FindProperty(x => x.brushSettings.poissonDiscRaycastOffset);
             fallOffCurve = editor.FindProperty(x => x.brushSettings.fallOffCurve);
@@ -148,6 +152,8 @@ namespace Rowlan.Yapp
                     EditorGUILayout.PropertyField(fallOff2dCurveZ, new GUIContent("FallOff Z"));
                     break;
             }
+
+            EditorGUILayout.PropertyField(prefabPreview, new GUIContent("Prefab Preview", "Show preview of prefab"));
 
             // TODO: how to create a minmaxslider with propertyfield?
             EditorGUILayout.BeginHorizontal();
@@ -290,13 +296,13 @@ namespace Rowlan.Yapp
            
         }
 
-        public void PersistPrefab(PrefabSettings prefabSettings, Vector3 position, Quaternion rotation, Vector3 scale)
+        public void PersistPrefab(PrefabSettings prefabSettings, PrefabTransform prefabTransform)
         {
 
             // spawn item to vs pro
             if (editorTarget.brushSettings.spawnToVSPro)
             {
-                vegetationStudioProIntegration.AddNewPrefab( prefabSettings, position, rotation, scale);
+                vegetationStudioProIntegration.AddNewPrefab( prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
             }
             // spawn item to scene
             else
@@ -305,9 +311,9 @@ namespace Rowlan.Yapp
                 // new prefab
                 GameObject instance = PrefabUtility.InstantiatePrefab( prefabSettings.prefab) as GameObject;
 
-                instance.transform.position = position;
-                instance.transform.rotation = rotation;
-                instance.transform.localScale = scale;
+                instance.transform.position = prefabTransform.position;
+                instance.transform.rotation = prefabTransform.rotation;
+                instance.transform.localScale = prefabTransform.scale;
 
                 // attach as child of container
                 instance.transform.parent = editorTarget.container.transform;

@@ -27,7 +27,6 @@ namespace Rowlan.Yapp
             // allow only 1 instance per bush size
             GameObject container = editorTarget.container as GameObject;
 
-
             // check if a prefab already exists within the brush
             bool prefabExists = false;
 
@@ -56,15 +55,8 @@ namespace Rowlan.Yapp
             }
         }
 
-        private void AddNewPrefab(Vector3 position, Vector3 normal)
+        private PrefabTransform CreateAppliedTransform(PrefabSettings prefabSettings, Vector3 position, Vector3 normal)
         {
-
-            GameObject container = editorTarget.container as GameObject;
-
-            PrefabSettings prefabSettings = this.editorTarget.GetPrefabSettings();
-
-            GameObject prefab = prefabSettings.prefab;
-
             ///
             /// Calculate position / rotation / scale
             /// 
@@ -121,6 +113,8 @@ namespace Rowlan.Yapp
             // this uses world bounds and happens after the rotation
             if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
             {
+                GameObject prefab = prefabSettings.prefab;
+
                 Quaternion prevRotation = prefab.transform.rotation;
                 {
                     // we need to rotate the gameobject now in order to calculate the world bounds
@@ -143,12 +137,21 @@ namespace Rowlan.Yapp
                 prefab.transform.rotation = prevRotation;
             }
 
+            PrefabTransform prefabTransform = new PrefabTransform( newPosition, newRotation, newLocalScale);
 
-            ///
-            /// create instance and apply position / rotation / scale
-            /// 
-            brushModuleEditor.PersistPrefab( prefabSettings, newPosition, newRotation, newLocalScale);
+            return prefabTransform;
 
+        }
+
+        private void AddNewPrefab(Vector3 position, Vector3 normal)
+        {
+
+            PrefabSettings prefabSettings = this.editorTarget.GetPrefabSettings();
+
+            PrefabTransform appliedTransform = CreateAppliedTransform(prefabSettings, position, normal);
+
+            // create instance and apply position / rotation / scale
+            brushModuleEditor.PersistPrefab( prefabSettings, appliedTransform);
 
         }
 

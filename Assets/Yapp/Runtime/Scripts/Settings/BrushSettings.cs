@@ -34,6 +34,8 @@ namespace Rowlan.Yapp
         [Range(0, 360)]
         public int brushRotation = 0;
 
+        public bool prefabPreview = false;
+
         /// <summary>
         /// Brush size
         /// </summary>
