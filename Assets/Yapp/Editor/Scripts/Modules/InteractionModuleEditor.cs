@@ -215,5 +215,17 @@ namespace Rowlan.Yapp
                 transform.position += direction * magnetFactor * (attract ? 1 : -1);
             }
         }
+
+        public void OnEnable()
+        {
+        }
+
+        public void OnDisable()
+        {
+        }
+
+        public void ModeChanged(PrefabPainter.Mode mode)
+        {
+        }
     }
 }

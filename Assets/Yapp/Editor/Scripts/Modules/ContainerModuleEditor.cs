@@ -35,5 +35,18 @@ namespace Rowlan.Yapp
         public void OnSceneGUI()
         {
         }
+
+        public void OnEnable()
+        {
+        }
+
+        public void OnDisable()
+        {
+        }
+
+        public void ModeChanged(PrefabPainter.Mode mode)
+        {
+        }
+
     }
 }

@@ -229,7 +229,7 @@ namespace Rowlan.Yapp
                     prefabSettings.probability = EditorGUILayout.Slider("Probability", prefabSettings.probability, 0, 1);
 
                     // scale
-                    if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
+                    if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.Fluent)
                     {
                         // use the brush scale, hide the change scale option
                     }
@@ -327,5 +327,16 @@ namespace Rowlan.Yapp
 
         }
 
+        public void OnEnable()
+        {
+        }
+
+        public void OnDisable()
+        {
+        }
+
+        public void ModeChanged(PrefabPainter.Mode mode)
+        {
+        }
     }
 }

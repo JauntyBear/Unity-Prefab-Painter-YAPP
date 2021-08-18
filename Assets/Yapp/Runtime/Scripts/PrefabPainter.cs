@@ -142,7 +142,7 @@ namespace Rowlan.Yapp
             return null;
         }
 
-        public PrefabSettings GetPrefabSettings()
+        public PrefabSettings CreatePrefabSettings()
         {
 
             PrefabSettings selectedItem = GetRandomWeightedPrefab();

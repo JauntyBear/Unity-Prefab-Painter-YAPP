@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Rowlan.Yapp.PrefabPainter;
 
 namespace Rowlan.Yapp
 {
@@ -13,6 +14,12 @@ namespace Rowlan.Yapp
         void OnInspectorGUI();
 
         void OnSceneGUI();
+
+        void OnEnable();
+
+        void OnDisable();
+
+        void ModeChanged(Mode mode);
 
     }
 }

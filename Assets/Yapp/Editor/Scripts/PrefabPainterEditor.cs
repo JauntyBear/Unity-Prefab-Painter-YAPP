@@ -79,10 +79,19 @@ namespace Rowlan.Yapp
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
 
+            brushModule.OnEnable();
+            splineModule.OnEnable();
+            interactionModule.OnEnable();
+            containerModule.OnEnable();
         }
 
         public void OnDisable()
 		{
+            brushModule.OnDisable();
+            splineModule.OnDisable();
+            interactionModule.OnDisable();
+            containerModule.OnDisable();
+
             // unsubscribe from scene gui changes
             SceneView.duringSceneGui -= OnSceneGUI;
         }
@@ -173,7 +182,14 @@ namespace Rowlan.Yapp
 
                 EditorGUILayout.BeginHorizontal();
 
-                mode.intValue = GUILayout.Toolbar(mode.intValue, modeButtons);
+                EditorGUI.BeginChangeCheck();
+                {
+                    mode.intValue = GUILayout.Toolbar(mode.intValue, modeButtons);
+                } 
+                if(EditorGUI.EndChangeCheck())
+                {
+                    brushModule.ModeChanged( (PrefabPainter.Mode) mode.intValue);
+                }
 
                 EditorGUILayout.EndHorizontal();
 

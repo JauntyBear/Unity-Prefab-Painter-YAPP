@@ -10,11 +10,64 @@ namespace Rowlan.Yapp
         private BrushModuleEditor brushModuleEditor;
         private PrefabPainter editorTarget;
 
+        private PreviewPrefab previewPrefab;
+
         public BrushDistribution(BrushModuleEditor brushModuleEditor)
         {
             this.brushModuleEditor = brushModuleEditor;
             this.editorTarget = brushModuleEditor.GetPainter();
 
+        }
+
+        public void CreatePreviewPrefab()
+        {
+            if (previewPrefab != null)
+                DestroyPreviewPrefab();
+
+            previewPrefab = new PreviewPrefab();
+
+            previewPrefab.prefabSettings = this.editorTarget.CreatePrefabSettings();
+            previewPrefab.prefabInstance = PrefabUtility.InstantiatePrefab(previewPrefab.prefabSettings.prefab) as GameObject;
+
+            // attach as root
+            // as child of container it would be removed on "clear"
+            // as child of editortarget it would show navigation handles
+            // => root it is
+            previewPrefab.prefabInstance.transform.parent = null;
+
+            // move to bottom
+            previewPrefab.prefabInstance.transform.SetAsLastSibling();
+
+            // hide in hierarchy
+            // TODO: activate. leaving it visible for the time being
+            // previewPrefab.prefabInstance.hideFlags = HideFlags.HideInHierarchy;
+
+            previewPrefab.prefabInstance.name = "Preview Prefab [Yapp Temp]";
+
+        }
+
+        public void UpdatePreviewPrefab(Vector3 position, Vector3 normal)
+        {
+            if (previewPrefab == null)
+                return;
+
+            PrefabTransform appliedTransform = CreateAppliedTransform(previewPrefab.prefabSettings, position, normal);
+
+            previewPrefab.prefabInstance.transform.position = appliedTransform.position;
+            previewPrefab.prefabInstance.transform.rotation = appliedTransform.rotation;
+            previewPrefab.prefabInstance.transform.localScale = appliedTransform.scale;
+        }
+
+        public void DestroyPreviewPrefab()
+        {
+            if (previewPrefab == null)
+                return;
+
+            PrefabPainter.DestroyImmediate(previewPrefab.prefabInstance);
+
+            previewPrefab.prefabInstance = null;
+            previewPrefab.prefabSettings = null;
+            previewPrefab = null;
         }
 
         /// <summary>
@@ -37,6 +90,10 @@ namespace Rowlan.Yapp
 
                 foreach (Transform child in container.transform)
                 {
+                    // ignore the preview
+                    if (previewPrefab != null && child.gameObject == previewPrefab.prefabInstance)
+                        continue;
+
                     float dist = Vector3.Distance(position, child.transform.position);
 
                     // check against the brush
@@ -51,7 +108,9 @@ namespace Rowlan.Yapp
 
             if (!prefabExists)
             {
-                AddNewPrefab(position, normal);
+                PrefabSettings prefabSettings = previewPrefab.prefabSettings;
+
+                AddNewPrefab(prefabSettings, position, normal);
             }
         }
 
@@ -111,7 +170,7 @@ namespace Rowlan.Yapp
 
             // scale to brush size
             // this uses world bounds and happens after the rotation
-            if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.ScaleToBrushSize)
+            if (editorTarget.brushSettings.distribution == BrushSettings.Distribution.Fluent)
             {
                 GameObject prefab = prefabSettings.prefab;
 
@@ -143,11 +202,8 @@ namespace Rowlan.Yapp
 
         }
 
-        private void AddNewPrefab(Vector3 position, Vector3 normal)
+        private void AddNewPrefab(PrefabSettings prefabSettings, Vector3 position, Vector3 normal)
         {
-
-            PrefabSettings prefabSettings = this.editorTarget.GetPrefabSettings();
-
             PrefabTransform appliedTransform = CreateAppliedTransform(prefabSettings, position, normal);
 
             // create instance and apply position / rotation / scale
@@ -226,7 +282,9 @@ namespace Rowlan.Yapp
                 // add prefab
                 if (!prefabExists)
                 {
-                    AddNewPrefab(prefabPosition, normal);
+                    PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+
+                    AddNewPrefab(prefabSettings, prefabPosition, normal);
                 }
             }
         }
@@ -293,7 +351,9 @@ namespace Rowlan.Yapp
                 // add prefab
                 if (!prefabExists)
                 {
-                    AddNewPrefab(prefabPosition, normal);
+                    PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+
+                    AddNewPrefab(prefabSettings, prefabPosition, normal);
                 }
             }
         }

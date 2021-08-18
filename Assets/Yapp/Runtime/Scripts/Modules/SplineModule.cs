@@ -354,7 +354,7 @@ namespace Rowlan.Yapp
                 }
 
                 // get settings for the prefab to instantiate
-                PrefabSettings prefabSettings = prefabPainter.GetPrefabSettings();
+                PrefabSettings prefabSettings = prefabPainter.CreatePrefabSettings();
 
                 // check if we have settings at all
                 if (prefabSettings == null)

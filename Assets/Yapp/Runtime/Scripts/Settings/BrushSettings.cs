@@ -12,8 +12,8 @@ namespace Rowlan.Yapp
             [InspectorName("Center")]
             Center,
 
-            [InspectorName("Center (Brush Size Scale)")]
-            ScaleToBrushSize,
+            [InspectorName("Fluent (with Preview)")]
+            Fluent,
 
             [InspectorName("Poisson (Any Collider)")]
             Poisson_Any,
@@ -34,8 +34,6 @@ namespace Rowlan.Yapp
         [Range(0, 360)]
         public int brushRotation = 0;
 
-        public bool prefabPreview = false;
-
         /// <summary>
         /// Brush size
         /// </summary>
@@ -52,6 +50,7 @@ namespace Rowlan.Yapp
         public bool rotationGuide = false;
 
         public bool alignToTerrain = false;
+
         public Distribution distribution = Distribution.Center;
 
         /// <summary>

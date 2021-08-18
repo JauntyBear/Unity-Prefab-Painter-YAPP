@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Rowlan.Yapp
 {
+    /// <summary>
+    /// Container class for tranform data of a prefab
+    /// </summary>
     public class PrefabTransform
     {
         public Vector3 position = Vector3.zero;

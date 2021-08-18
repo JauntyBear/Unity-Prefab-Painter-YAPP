@@ -14,7 +14,6 @@ namespace Rowlan.Yapp
 
         SerializedProperty brushSize;
         SerializedProperty brushRotation;
-        SerializedProperty prefabPreview;
         SerializedProperty sizeGuide;
         SerializedProperty normalGuide;
         SerializedProperty rotationGuide;
@@ -71,7 +70,6 @@ namespace Rowlan.Yapp
             alignToTerrain = editor.FindProperty(x => x.brushSettings.alignToTerrain);
 
             distribution = editor.FindProperty(x => x.brushSettings.distribution);
-            prefabPreview = editor.FindProperty(x => x.brushSettings.prefabPreview);
 
             poissonDiscSize = editor.FindProperty(x => x.brushSettings.poissonDiscSize);
             poissonDiscRaycastOffset = editor.FindProperty(x => x.brushSettings.poissonDiscRaycastOffset);
@@ -127,9 +125,8 @@ namespace Rowlan.Yapp
 
             switch (editorTarget.brushSettings.distribution)
             {
-                case BrushSettings.Distribution.Center:
-                    break;
-                case BrushSettings.Distribution.ScaleToBrushSize:
+                case BrushSettings.Distribution.Center: // fallthrough
+                case BrushSettings.Distribution.Fluent:
                     break;
                 case BrushSettings.Distribution.Poisson_Any:
                     EditorGUI.indentLevel++;
@@ -153,8 +150,6 @@ namespace Rowlan.Yapp
                     break;
             }
 
-            EditorGUILayout.PropertyField(prefabPreview, new GUIContent("Prefab Preview", "Show preview of prefab"));
-
             // TODO: how to create a minmaxslider with propertyfield?
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Slope");
@@ -175,8 +170,6 @@ namespace Rowlan.Yapp
             GUILayout.EndVertical();
 
         }
-
-
 
         public void OnSceneGUI()
         {
@@ -207,6 +200,11 @@ namespace Rowlan.Yapp
                 }
             }
 
+            if (IsFluent())
+            {
+                brushDistribution.UpdatePreviewPrefab(raycastHit.point, raycastHit.normal);
+            }
+
             // info for the scene gui; used to be dynamic and showing number of prefabs (currently is static until refactoring is done)
             string[] guiInfo = new string[] { "Add prefabs: shift + drag mouse\nRemove prefabs: shift + ctrl + drag mouse\nBrush size: ctrl + mousewheel, Brush rotation: ctrl + shift + mousewheel" };
             brushComponent.Layout(guiInfo);
@@ -225,7 +223,10 @@ namespace Rowlan.Yapp
 
         }
         
-
+        private bool IsFluent()
+        {
+            return editorTarget.brushSettings.distribution == BrushSettings.Distribution.Fluent;
+        }
 
         #region Paint Prefabs
 
@@ -236,11 +237,10 @@ namespace Rowlan.Yapp
 
             switch (editorTarget.brushSettings.distribution)
             {
-                case BrushSettings.Distribution.Center:
+                case BrushSettings.Distribution.Center:  // fallthrough
+                case BrushSettings.Distribution.Fluent:
                     brushDistribution.AddPrefabs_Center(hit.point, hit.normal);
-                    break;
-                case BrushSettings.Distribution.ScaleToBrushSize:
-                    brushDistribution.AddPrefabs_Center(hit.point, hit.normal);
+                    brushDistribution.CreatePreviewPrefab();
                     break;
                 case BrushSettings.Distribution.Poisson_Any:
                     brushDistribution.AddPrefabs_Poisson_Any(hit.point, hit.normal);
@@ -334,6 +334,27 @@ namespace Rowlan.Yapp
             return editorTarget;
         }
 
+        public void OnEnable()
+        {
+            brushDistribution.CreatePreviewPrefab();
+        }
+
+        public void OnDisable()
+        {
+            brushDistribution.DestroyPreviewPrefab();
+        }
+
+        public void ModeChanged(PrefabPainter.Mode mode)
+        {
+            if(mode == PrefabPainter.Mode.Brush)
+            {
+                brushDistribution.CreatePreviewPrefab();
+            }
+            else
+            {
+                brushDistribution.DestroyPreviewPrefab();
+            }
+        }
     }
 
 }

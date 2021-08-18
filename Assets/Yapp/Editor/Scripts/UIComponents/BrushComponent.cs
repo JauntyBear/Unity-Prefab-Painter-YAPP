@@ -233,7 +233,7 @@ namespace Rowlan.Yapp
             switch (brushSettings.distribution)
             {
                 case BrushSettings.Distribution.Center: // fallthrough
-                case BrushSettings.Distribution.ScaleToBrushSize: // fallthrough
+                case BrushSettings.Distribution.Fluent: // fallthrough
                 case BrushSettings.Distribution.Poisson_Any: // fallthrough
                 case BrushSettings.Distribution.Poisson_Terrain:
 
@@ -291,7 +291,7 @@ namespace Rowlan.Yapp
             switch (brushSettings.distribution)
             {
                 case BrushSettings.Distribution.Center: // fallthrough
-                case BrushSettings.Distribution.ScaleToBrushSize: // fallthrough
+                case BrushSettings.Distribution.Fluent:
 
                     if (brushSettings.normalGuide)
                     {
