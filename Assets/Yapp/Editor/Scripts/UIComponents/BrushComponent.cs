@@ -28,9 +28,7 @@ namespace Rowlan.Yapp
 
             Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
-            // TODO: raycast hit against layer
-            //       see https://docs.unity3d.com/ScriptReference/Physics.Raycast.html
-            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity))
+            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, brushSettings.layerMask))
             {
                 mouseHit = hit;
 
@@ -377,10 +375,8 @@ namespace Rowlan.Yapp
                     Vector3 discPosition = new Vector3(xPosition, yPosition, zPosition);
 
                     // y via raycast down
-                    // TODO: raycast hit against layer
-                    //       see https://docs.unity3d.com/ScriptReference/Physics.Raycast.html
                     RaycastHit hit;
-                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity))
+                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, brushSettings.layerMask))
                     {
                         // set y position depending on the terrain
                         discPosition.y = hit.point.y;
@@ -454,10 +450,8 @@ namespace Rowlan.Yapp
                     discPosition += position; // move back to position
 
                     // y via raycast down
-                    // TODO: raycast hit against layer
-                    //       see https://docs.unity3d.com/ScriptReference/Physics.Raycast.html
                     RaycastHit hit;
-                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity))
+                    if (Physics.Raycast(discPosition, Vector3.down, out hit, Mathf.Infinity, brushSettings.layerMask))
                     {
                         // set y position depending on the terrain
                         discPosition.y = hit.point.y;

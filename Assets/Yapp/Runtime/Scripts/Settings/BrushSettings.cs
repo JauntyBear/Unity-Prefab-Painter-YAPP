@@ -76,6 +76,11 @@ namespace Rowlan.Yapp
         public bool allowOverlap = false;
 
         /// <summary>
+        /// Layer mask for the brush raycast
+        /// </summary>
+        public LayerMask layerMask = (int) LayerUtils.LayerValue.Everything;
+
+        /// <summary>
         /// Optionally spawn into the Persistent Storage of Vegetation Studio Pro
         /// </summary>
         public bool spawnToVSPro = false;

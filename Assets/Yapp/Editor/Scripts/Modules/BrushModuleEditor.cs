@@ -17,6 +17,7 @@ namespace Rowlan.Yapp
         SerializedProperty brushRotationGuide;
         SerializedProperty allowOverlap;
         SerializedProperty alignToTerrain;
+        SerializedProperty layerMask;
         SerializedProperty distribution;
         SerializedProperty poissonDiscSize;
         SerializedProperty poissonDiscRaycastOffset;
@@ -67,6 +68,7 @@ namespace Rowlan.Yapp
             fallOff2dCurveZ = editor.FindProperty(x => x.brushSettings.fallOff2dCurveZ);
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
+            layerMask = editor.FindProperty(x => x.brushSettings.layerMask);
 
             // initialize integrated applications
             vegetationStudioProIntegration = new VegetationStudioProIntegration( editor);
@@ -97,6 +99,7 @@ namespace Rowlan.Yapp
 
             EditorGUILayout.PropertyField(alignToTerrain, new GUIContent("Align To Terrain"));
             EditorGUILayout.PropertyField(allowOverlap, new GUIContent("Allow Overlap", "Center Mode: Check against brush size.\nPoisson Mode: Check against Poisson Disc size"));
+            EditorGUILayout.PropertyField(layerMask, new GUIContent("Layer Mask", "Layer mask for the brush raycast"));
 
             EditorGUILayout.PropertyField(distribution, new GUIContent("Distribution"));
 
