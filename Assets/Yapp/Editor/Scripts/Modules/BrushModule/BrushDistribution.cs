@@ -69,11 +69,12 @@ namespace Rowlan.Yapp
             previewPrefab.prefabInstance.transform.rotation = appliedTransform.rotation;
             previewPrefab.prefabInstance.transform.localScale = appliedTransform.scale;
 
-            // toggle visibility depending on shift key
             /*
-            bool visible = Event.current.shift;
+            // toggle visibility depending on shift key
+            bool visible = !(Event.current.shift && Event.current.control);
             previewPrefab.prefabInstance.SetActive(visible);
             */
+            
         }
 
         public void DestroyPreviewPrefab()
