@@ -12,6 +12,12 @@ namespace Rowlan.Yapp
 
         private PreviewPrefab previewPrefab;
 
+        /// <summary>
+        /// Use either the actual preview gameobject as preview or use it in combination with DrawMesh
+        /// TODO: decide which way to go. If the latter, then we could drop the check for layer (because of collider etc)
+        /// </summary>
+        private bool useInstanceAsPreview = false;
+
         public BrushDistribution(BrushModuleEditor brushModuleEditor)
         {
             this.brushModuleEditor = brushModuleEditor;
@@ -74,7 +80,22 @@ namespace Rowlan.Yapp
             bool visible = !(Event.current.shift && Event.current.control);
             previewPrefab.prefabInstance.SetActive(visible);
             */
+
+            if(useInstanceAsPreview)
+            {
+                // nothing to do
+            }
+            else
+            {
+                // hide the preview instance
+                previewPrefab.prefabInstance.SetActive(false);
+
+                // use DrawMesh to render the instance
+                MeshUtils.RenderGameObject(previewPrefab.prefabInstance, 0);
+            }
             
+
+
         }
 
         public void DestroyPreviewPrefab()
