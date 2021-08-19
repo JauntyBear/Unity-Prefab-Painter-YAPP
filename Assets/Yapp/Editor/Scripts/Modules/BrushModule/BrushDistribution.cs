@@ -16,7 +16,7 @@ namespace Rowlan.Yapp
         /// Use either the actual preview gameobject as preview or use it in combination with DrawMesh
         /// TODO: decide which way to go. If the latter, then we could drop the check for layer (because of collider etc)
         /// </summary>
-        private bool useInstanceAsPreview = false;
+        private bool useInstanceAsPreview = true;
 
         public BrushDistribution(BrushModuleEditor brushModuleEditor)
         {
@@ -60,7 +60,7 @@ namespace Rowlan.Yapp
 
             // set the layer index for the preview prefab. we need to ignore it in the brush raycast or else there'd be an endless loop
             // with the preview prefab coming close to the camera consistently
-            previewPrefab.prefabInstance.layer = (int) LayerUtils.LayerIndex.IgnoreRaycast;
+            LayerUtils.SetLayer(previewPrefab.prefabInstance.transform, (int)LayerUtils.LayerIndex.IgnoreRaycast);
 
         }
 

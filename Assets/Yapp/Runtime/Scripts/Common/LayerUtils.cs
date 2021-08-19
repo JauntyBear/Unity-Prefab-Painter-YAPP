@@ -9,7 +9,7 @@ namespace Rowlan.Yapp
     /// </summary>
     public class LayerUtils
     {
-        /// <summary>
+        /// <summary> 
         /// Specific layer values
         /// </summary>
         public enum LayerIndex
@@ -33,5 +33,21 @@ namespace Rowlan.Yapp
         {
             return layerMask & (int) ~(1 << (int) PreviewLayerIndex);
         }
+
+        /// <summary>
+        /// Set the layer on parent and recursively on all children
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="layer"></param>
+        public static void SetLayer( Transform parent, int layer)
+        {
+            parent.gameObject.layer = layer;
+
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                SetLayer(parent.GetChild(i), layer);
+            }
+        }
+
     }
 }
