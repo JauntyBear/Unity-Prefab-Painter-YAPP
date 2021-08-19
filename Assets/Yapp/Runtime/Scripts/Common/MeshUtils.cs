@@ -9,7 +9,7 @@ namespace Rowlan.Yapp
 
         /// <summary>
         /// Render a game object using DrawMesh.
-        /// Thanks Lennart!
+        /// TODO: this doesn't consider submeshes (eg leaves on naturemanufacture trees)
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="sourceLODLevel"></param>
