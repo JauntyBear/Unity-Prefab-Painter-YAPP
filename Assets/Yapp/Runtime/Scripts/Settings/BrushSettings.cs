@@ -9,11 +9,11 @@ namespace Rowlan.Yapp
     {
         public enum Distribution
         {
-            [InspectorName("Center")]
-            Center,
-
             [InspectorName("Fluent (with Preview)")]
             Fluent,
+
+            [InspectorName("Center")]
+            Center,
 
             [InspectorName("Poisson (Any Collider)")]
             Poisson_Any,
@@ -51,7 +51,7 @@ namespace Rowlan.Yapp
 
         public bool alignToTerrain = false;
 
-        public Distribution distribution = Distribution.Center;
+        public Distribution distribution = Distribution.Fluent;
 
         /// <summary>
         /// The size of a disc in the poisson distribution.
