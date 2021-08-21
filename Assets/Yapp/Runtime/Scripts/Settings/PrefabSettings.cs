@@ -160,6 +160,9 @@ namespace Rowlan.Yapp
             float rotationZ = Random.Range(rotationMinZ, rotationMaxZ);
 
             instanceRotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
+
+            // don't keep the brush offset
+            brushOffsetUp = 0f;
         }
 
     }
