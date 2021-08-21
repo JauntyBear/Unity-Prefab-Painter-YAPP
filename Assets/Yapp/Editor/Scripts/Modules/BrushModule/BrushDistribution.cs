@@ -68,7 +68,15 @@ namespace Rowlan.Yapp
             if (!HasPreviewPrefab())
                 return Vector3.zero;
 
-            return previewPrefab.prefabInstance.transform.up * previewPrefab.prefabSettings.brushOffsetUp;
+            Bounds bounds = BoundsUtils.CalculateBounds(previewPrefab.prefabInstance.transform.gameObject);
+
+            // the offset is in mouse wheel dimensions. we don't want the full offset
+            // plates should have finer granularity than huge rocks
+            float offsetReduction = bounds.size.y / 100f; // 1/100 is just arbitrary. let's see how that turns out during usage, might change later
+
+            float offsetUp = previewPrefab.prefabSettings.brushOffsetUp * offsetReduction;
+
+            return previewPrefab.prefabInstance.transform.up * offsetUp;
         }
 
         public void UpdatePreviewPrefab(Vector3 position, Vector3 normal)

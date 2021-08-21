@@ -214,10 +214,8 @@ namespace Rowlan.Yapp
                     {
                         PrefabSettings previewPrefabSettings = brushDistribution.GetPreviewPrefabSettings();
 
-                        // the mouse wheel delta value is a bit too much => reduce it
-                        float wheelOffsetFactor = 0.2f;
-
-                        previewPrefabSettings.brushOffsetUp += Event.current.delta.y * wheelOffsetFactor;
+                        // the delta value will be modified (reduced) in the offset calculation; it might be too much as it is
+                        previewPrefabSettings.brushOffsetUp += Event.current.delta.y;
 
                         Event.current.Use();
                     }
