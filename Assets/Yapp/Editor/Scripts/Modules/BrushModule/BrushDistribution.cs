@@ -12,12 +12,6 @@ namespace Rowlan.Yapp
 
         private PreviewPrefab previewPrefab;
 
-        /// <summary>
-        /// Use either the actual preview gameobject as preview or use it in combination with DrawMesh
-        /// TODO: decide which way to go. If the latter, then we could drop the check for layer (because of collider etc)
-        /// </summary>
-        private bool useInstanceAsPreview = true;
-
         public BrushDistribution(BrushModuleEditor brushModuleEditor)
         {
             this.brushModuleEditor = brushModuleEditor;
@@ -81,7 +75,7 @@ namespace Rowlan.Yapp
             previewPrefab.prefabInstance.SetActive(visible);
             */
 
-            if(useInstanceAsPreview)
+            if(ApplicationSettings.useInstanceAsPreview)
             {
                 // nothing to do
             }

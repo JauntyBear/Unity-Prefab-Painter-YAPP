@@ -31,7 +31,14 @@ namespace Rowlan.Yapp
         /// <returns></returns>
         public static LayerMask GetPreviewLayerMask( LayerMask layerMask)
         {
-            return layerMask & (int) ~(1 << (int) PreviewLayerIndex);
+            if (ApplicationSettings.useInstanceAsPreview)
+            {
+                return layerMask & (int)~(1 << (int)PreviewLayerIndex);
+            }
+            else
+            {
+                return layerMask;
+            }
         }
 
         /// <summary>
