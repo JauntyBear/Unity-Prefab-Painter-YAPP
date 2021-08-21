@@ -113,6 +113,12 @@ namespace Rowlan.Yapp
         public Quaternion instanceRotation = Quaternion.identity;
 
         /// <summary>
+        /// Additional offset which will be applied along the up axis of the prefab.
+        /// This is used to make corrections in the up axis while the preview prefab is being moved in fluent mode
+        /// </summary>
+        public float brushOffsetUp = 0f;
+
+        /// <summary>
         /// Apply the settings of the template to the current prefab settings
         /// </summary>
         /// <param name="template"></param>

@@ -58,6 +58,19 @@ namespace Rowlan.Yapp
 
         }
 
+        public PrefabSettings GetPreviewPrefabSettings()
+        {
+            return previewPrefab.prefabSettings;
+        }
+
+        public Vector3 CalculateBrushOffsetUp()
+        {
+            if (!HasPreviewPrefab())
+                return Vector3.zero;
+
+            return previewPrefab.prefabInstance.transform.up * previewPrefab.prefabSettings.brushOffsetUp;
+        }
+
         public void UpdatePreviewPrefab(Vector3 position, Vector3 normal)
         {
             if (previewPrefab == null)
@@ -65,7 +78,7 @@ namespace Rowlan.Yapp
 
             PrefabTransform appliedTransform = CreateAppliedTransform(previewPrefab.prefabSettings, position, normal);
 
-            previewPrefab.prefabInstance.transform.position = appliedTransform.position;
+            previewPrefab.prefabInstance.transform.position = appliedTransform.position + CalculateBrushOffsetUp();
             previewPrefab.prefabInstance.transform.rotation = appliedTransform.rotation;
             previewPrefab.prefabInstance.transform.localScale = appliedTransform.scale;
 
@@ -87,9 +100,6 @@ namespace Rowlan.Yapp
                 // use DrawMesh to render the instance
                 MeshUtils.RenderGameObject(previewPrefab.prefabInstance, 0);
             }
-            
-
-
         }
 
         public void DestroyPreviewPrefab()
@@ -157,7 +167,10 @@ namespace Rowlan.Yapp
             // get new position
             Vector3 newPosition = position;
 
-            // add offset
+            // add offset of brush in up direction
+            newPosition += CalculateBrushOffsetUp();
+
+            // add offset of prefab settings
             newPosition += prefabSettings.positionOffset;
 
             // auto physics height offset

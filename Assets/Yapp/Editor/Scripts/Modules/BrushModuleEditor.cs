@@ -207,11 +207,32 @@ namespace Rowlan.Yapp
                     brushDistribution.CreatePreviewPrefab();
                 }
 
+                // alt + mousewheel = modify height of preview prefab in transform up direction
+                if (Event.current.modifiers == EventModifiers.Alt)
+                {
+                    if (Event.current.isScrollWheel)
+                    {
+                        PrefabSettings previewPrefabSettings = brushDistribution.GetPreviewPrefabSettings();
+
+                        // the mouse wheel delta value is a bit too much => reduce it
+                        float wheelOffsetFactor = 0.2f;
+
+                        previewPrefabSettings.brushOffsetUp += Event.current.delta.y * wheelOffsetFactor;
+
+                        Event.current.Use();
+                    }
+                }
+
                 brushDistribution.UpdatePreviewPrefab(raycastHit.point, raycastHit.normal);
             }
 
             // info for the scene gui; used to be dynamic and showing number of prefabs (currently is static until refactoring is done)
-            string[] guiInfo = new string[] { "Add prefabs: shift + drag mouse\nRemove prefabs: shift + ctrl + drag mouse\nBrush size: ctrl + mousewheel, Brush rotation: ctrl + shift + mousewheel" };
+            string[] guiInfo = new string[] { 
+                "Add prefabs: shift + drag mouse"
+                +"\nRemove prefabs: shift + ctrl + drag mouse" +
+                "\nBrush size: ctrl + mousewheel, Brush rotation: ctrl + shift + mousewheel"
+                };
+
             brushComponent.Layout(guiInfo);
 
             // auto physics
