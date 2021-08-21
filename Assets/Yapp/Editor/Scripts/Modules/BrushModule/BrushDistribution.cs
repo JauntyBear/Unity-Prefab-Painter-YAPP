@@ -78,7 +78,7 @@ namespace Rowlan.Yapp
 
             PrefabTransform appliedTransform = CreateAppliedTransform(previewPrefab.prefabSettings, position, normal);
 
-            previewPrefab.prefabInstance.transform.position = appliedTransform.position + CalculateBrushOffsetUp();
+            previewPrefab.prefabInstance.transform.position = appliedTransform.position;
             previewPrefab.prefabInstance.transform.rotation = appliedTransform.rotation;
             previewPrefab.prefabInstance.transform.localScale = appliedTransform.scale;
 
