@@ -50,6 +50,36 @@ namespace Rowlan.Yapp
             }
         }
 
+        private static GUIStyle _separatorStyle;
+        public static GUIStyle SeparatorStyle
+        {
+            get
+            {
+                if (_separatorStyle == null)
+                {
+                    _separatorStyle = new GUIStyle("box");
+                    _separatorStyle.normal.background = CreateColorPixel(Color.gray);
+                    _separatorStyle.stretchWidth = true;
+                    _separatorStyle.border = new RectOffset(0, 0, 0, 0);
+                    _separatorStyle.fixedHeight = 1f;
+                }
+                return _separatorStyle;
+            }
+        }
+
+        /// <summary>
+        /// Creates a 1x1 texture
+        /// </summary>
+        /// <param name="Background">Color of the texture</param>
+        /// <returns></returns>
+        public static Texture2D CreateColorPixel(Color color)
+        {
+            Texture2D texture = new Texture2D(1, 1);
+            texture.SetPixel(0, 0, color);
+            texture.Apply();
+            return texture;
+        }
+
         public static Color DefaultBackgroundColor = GUI.backgroundColor;
         public static Color ErrorBackgroundColor = new Color( 1f,0f,0f,0.7f); // red tone
 

@@ -277,16 +277,11 @@ namespace Rowlan.Yapp
             GUI.backgroundColor = GUIStyles.DefaultBackgroundColor;
         }
 
-        public void addGUISeparator()
+        public void AddGUISeparator( float topSpace, float bottomSpace)
         {
-            // space
-            GUILayout.Space(10);
-
-            // separator line
-            GUIStyle separatorStyle = new GUIStyle(GUI.skin.box);
-            separatorStyle.stretchWidth = true;
-            separatorStyle.fixedHeight = 2;
-            GUILayout.Box("", separatorStyle);
+            GUILayout.Space(topSpace);
+            GUILayout.Box("", GUIStyles.SeparatorStyle);
+            GUILayout.Space(bottomSpace);
         }
 
         private void OnSceneGUI( SceneView sceneView)

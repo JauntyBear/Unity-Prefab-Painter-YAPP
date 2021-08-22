@@ -161,8 +161,8 @@ namespace Rowlan.Yapp
 
                 for (int i = 0; i < editorTarget.prefabSettingsList.Count; i++)
                 {
-                    if (i > 0)
-                        editor.addGUISeparator();
+                    // horizontal separator
+                    editor.AddGUISeparator( i == 0 ? 0f : 10f, 10f);
 
                     PrefabSettings prefabSettings = this.editorTarget.prefabSettingsList[i];
 
