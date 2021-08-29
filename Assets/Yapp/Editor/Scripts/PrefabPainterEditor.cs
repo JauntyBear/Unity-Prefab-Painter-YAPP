@@ -29,6 +29,7 @@ namespace Rowlan.Yapp
         private SelectionExtension selectionModule;
         private ToolsExtension toolsModule;
         private SpawnExtension spawnModule;
+        private FilterExtension filterModule;
 
         private BrushModuleEditor brushModule;
         private SplineModuleEditor splineModule;
@@ -65,6 +66,7 @@ namespace Rowlan.Yapp
             this.selectionModule = new SelectionExtension(this);
             this.toolsModule = new ToolsExtension(this);
             this.spawnModule = new SpawnExtension(this);
+            this.filterModule = new FilterExtension(this);
 
             modeButtons = new GUIContent[]
             {
@@ -208,6 +210,9 @@ namespace Rowlan.Yapp
 
                     // spawn
                     spawnModule.OnInspectorGUI();
+
+                    // filter
+                    filterModule.OnInspectorGUI();
 
                     /// Prefabs
                     this.prefabModule.OnInspectorGUI();

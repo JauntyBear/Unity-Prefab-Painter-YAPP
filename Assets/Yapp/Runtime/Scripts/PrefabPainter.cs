@@ -40,6 +40,9 @@ namespace Rowlan.Yapp
         [HideInInspector]
         public SpawnSettings spawnSettings = new SpawnSettings();
 
+        [HideInInspector]
+        public FilterSettings filterSettings = new FilterSettings();
+
         /// <summary>
         /// The prefab that will be instantiated
         /// </summary>
