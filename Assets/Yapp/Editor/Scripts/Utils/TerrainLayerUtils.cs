@@ -65,14 +65,16 @@ namespace Rowlan.Yapp
 
                             Texture previewTexture = textures[textureIndex];
 
-                            if (isInclude)
-                                TextureSelectionStyle.normal.background = CreateColorPixel(Color.green);
-                            else if (isExclude)
-                                TextureSelectionStyle.normal.background = CreateColorPixel(Color.red);
-                            else
-                                TextureSelectionStyle.normal.background = CreateColorPixel(Color.gray);
+                            GUIStyle style = GUIStyles.TextureSelectionStyleUnselected;
 
-                            if (GUILayout.Button(previewTexture, TextureSelectionStyle, GUILayout.Width(approxSize), GUILayout.Height(approxSize)))
+                            if (isInclude)
+                                style = GUIStyles.TextureSelectionStyleInclude;
+                            else if (isExclude)
+                                style = GUIStyles.TextureSelectionStyleExclude;
+                            else
+                                style = GUIStyles.TextureSelectionStyleUnselected;
+
+                            if (GUILayout.Button(previewTexture, style, GUILayout.Width(approxSize), GUILayout.Height(approxSize)))
                             {
 
                                 if (isInclude || isExclude)
@@ -129,37 +131,6 @@ namespace Rowlan.Yapp
             return terrain.terrainData.terrainLayers[layerIndex];
         }
 
-        /// <summary>
-        /// Used for include, exclude and unselected texture border
-        /// </summary>
-        private static GUIStyle _textureSelectionStyle;
-        public static GUIStyle TextureSelectionStyle
-        {
-            get
-            {
-                if (_textureSelectionStyle == null)
-                {
-                    _textureSelectionStyle = new GUIStyle("label");
-                    _textureSelectionStyle.normal.background = CreateColorPixel(Color.gray);
-                    _textureSelectionStyle.stretchWidth = true;
-                    _textureSelectionStyle.border = new RectOffset(1, 1, 1, 1);
-                }
-                return _textureSelectionStyle;
-            }
-        }
-
-        /// <summary>
-        /// Creates a 1x1 texture
-        /// </summary>
-        /// <param name="Background">Color of the texture</param>
-        /// <returns></returns>
-        public static Texture2D CreateColorPixel(Color color)
-        {
-            Texture2D texture = new Texture2D(1, 1);
-            texture.SetPixel(0, 0, color);
-            texture.Apply();
-            return texture;
-        }
     }
 
 }

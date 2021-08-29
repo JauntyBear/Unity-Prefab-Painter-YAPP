@@ -68,6 +68,53 @@ namespace Rowlan.Yapp
         }
 
         /// <summary>
+        /// Used for include, exclude and unselected texture border
+        /// </summary>
+        private static GUIStyle _textureSelectionStyleUnselected;
+        public static GUIStyle TextureSelectionStyleUnselected
+        {
+            get
+            {
+                if (_textureSelectionStyleUnselected == null)
+                {
+                    _textureSelectionStyleUnselected = new GUIStyle("label");
+                    _textureSelectionStyleUnselected.normal.background = CreateColorPixel(Color.gray);
+                    _textureSelectionStyleUnselected.stretchWidth = true;
+                    _textureSelectionStyleUnselected.border = new RectOffset(1, 1, 1, 1);
+                }
+                return _textureSelectionStyleUnselected;
+            }
+        }
+
+        private static GUIStyle _textureSelectionStyleInclude;
+        public static GUIStyle TextureSelectionStyleInclude
+        {
+            get
+            {
+                if (_textureSelectionStyleInclude == null)
+                {
+                    _textureSelectionStyleInclude = new GUIStyle(TextureSelectionStyleUnselected);
+                    _textureSelectionStyleInclude.normal.background = CreateColorPixel(Color.green);
+                }
+                return _textureSelectionStyleInclude;
+            }
+        }
+
+        private static GUIStyle _textureSelectionStyleExclude;
+        public static GUIStyle TextureSelectionStyleExclude
+        {
+            get
+            {
+                if (_textureSelectionStyleExclude == null)
+                {
+                    _textureSelectionStyleExclude = new GUIStyle(TextureSelectionStyleUnselected);
+                    _textureSelectionStyleExclude.normal.background = CreateColorPixel(Color.red);
+                }
+                return _textureSelectionStyleExclude;
+            }
+        }
+
+        /// <summary>
         /// Creates a 1x1 texture
         /// </summary>
         /// <param name="Background">Color of the texture</param>
