@@ -323,7 +323,7 @@ namespace Rowlan.Yapp
             // remove gameobjects
             foreach( Transform transform in removeList)
             {
-                PrefabPainter.DestroyImmediate(transform.gameObject);
+                Undo.DestroyObjectImmediate(transform.gameObject);
             }
            
         }
