@@ -211,6 +211,27 @@ namespace Rowlan.Yapp
             Gizmos.DrawSphere( p6, sphereSize);
             Gizmos.DrawSphere( p7, sphereSize);
 
+// note: 2019 doesn't support linethickness
+#if UNITY_2019
+
+            // draw line: horizontal top
+            Handles.DrawLine(p0, p1);
+            Handles.DrawLine(p2, p3);
+            Handles.DrawLine(p0, p2);
+            Handles.DrawLine(p1, p3);
+
+            // draw line: horizontal bottom
+            Handles.DrawLine(p4, p5);
+            Handles.DrawLine(p6, p7);
+            Handles.DrawLine(p4, p6);
+            Handles.DrawLine(p5, p7);
+
+            // draw line: vertical
+            Handles.DrawLine(p0, p4);
+            Handles.DrawLine(p1, p5);
+            Handles.DrawLine(p2, p6);
+            Handles.DrawLine(p3, p7);
+#else
             // draw line: horizontal top
             Handles.DrawLine(p0, p1, lineThickness);
             Handles.DrawLine(p2, p3, lineThickness);
@@ -228,7 +249,7 @@ namespace Rowlan.Yapp
             Handles.DrawLine(p1, p5, lineThickness);
             Handles.DrawLine(p2, p6, lineThickness);
             Handles.DrawLine(p3, p7, lineThickness);
-
+#endif
         }
 
         private void DrawBoundsSphere(Bounds localBounds, Bounds worldBounds)
