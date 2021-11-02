@@ -8,5 +8,12 @@
     "Editor Tools"
   ],
   "category": "Scripts",
-  "type": "tool"
+  "type": "tool",
+  "samples": [
+    {
+      "displayName": "YAPP Demo",
+      "description": "Demo scene with prefabs for toying around",
+      "path": "_Demo"
+    }
+  ]  
 }
