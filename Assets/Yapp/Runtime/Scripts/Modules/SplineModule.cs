@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Rowlan.Yapp
 {
@@ -378,7 +381,11 @@ namespace Rowlan.Yapp
                 // create instance if we don't have one yet
                 if( instance == null)
                 {
-                    instance = GameObject.Instantiate(prefabSettings.prefab);
+                    // instantiate gameobject clone (lose reference to prefab
+                    //instance = GameObject.Instantiate(prefabSettings.prefab);
+
+                    // instantiate prefab
+                    instance = PrefabUtility.InstantiatePrefab(prefabSettings.prefab) as GameObject;
 
                     prefabPainter.splineSettings.prefabInstances.Add(instance);
                 }
