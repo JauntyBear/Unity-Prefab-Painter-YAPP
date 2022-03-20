@@ -1,6 +1,6 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
-
 
 namespace Rowlan.Yapp
 {
@@ -167,7 +167,10 @@ namespace Rowlan.Yapp
                 }
 
                 // draw brush gizmo
-                DrawBrush( brushSettings, hit.point, hit.normal, radius, brushMode);
+                if (Event.current.type == EventType.Repaint)
+                {
+                    DrawBrush(brushSettings, hit.point, hit.normal, radius, brushMode);
+                }
 
             }
 
@@ -310,6 +313,36 @@ namespace Rowlan.Yapp
 
                 case BrushSettings.Distribution.Poisson_Any: // fallthrough
                 case BrushSettings.Distribution.Poisson_Terrain:
+
+                    if (brushSettings.normalGuide)
+                    {
+                        // center line / normal
+                        float lineLength = radius;
+                        Vector3 lineStart = position;
+                        Vector3 lineEnd = position + normal * lineLength;
+
+                        Handles.color = outerColor;
+                        Handles.DrawLine(lineStart, lineEnd);
+                    }
+
+                    float brushSize = brushSettings.brushSize;
+                    float brushRadius = brushSize / 2.0f;
+                    float discRadius = brushSettings.poissonDiscSize / 2;
+
+                    IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, false);
+
+                    foreach (Vector2 sample in samples)
+                    {
+                        float x = position.x + sample.x - brushRadius;
+                        float z = position.z + sample.y - brushRadius;
+                        float y = position.y;
+
+                        Vector3 samplePosition = new Vector3(x, y, z);
+
+                        Handles.DrawWireDisc(samplePosition, normal, discRadius * 0.5f);
+                    }
+                    break;
+
                 case BrushSettings.Distribution.FallOff:
                 case BrushSettings.Distribution.FallOff2d:
                     break;
