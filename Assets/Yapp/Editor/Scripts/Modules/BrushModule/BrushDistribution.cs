@@ -272,14 +272,10 @@ namespace Rowlan.Yapp
             float brushRadius = brushSize / 2.0f;
             float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
 
-            PoissonDiscSampler sampler = new PoissonDiscSampler(brushSize, brushSize, discRadius);
+            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, true);
 
-            foreach (Vector2 sample in sampler.Samples())
+            foreach (Vector2 sample in samples)
             {
-
-                // brush is currenlty a disc => ensure the samples are within the disc
-                if (Vector2.Distance(sample, new Vector2(brushRadius, brushRadius)) > brushRadius)
-                    continue;
 
                 // x/z come from the poisson sample 
                 float x = position.x + sample.x - brushRadius;
@@ -353,14 +349,10 @@ namespace Rowlan.Yapp
             float brushRadius = brushSize / 2.0f;
             float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
 
-            PoissonDiscSampler sampler = new PoissonDiscSampler(brushSize, brushSize, discRadius);
+            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, true);
 
-            foreach (Vector2 sample in sampler.Samples())
+            foreach (Vector2 sample in samples)
             {
-
-                // brush is currenlty a disc => ensure the samples are within the disc
-                if (Vector2.Distance(sample, new Vector2(brushRadius, brushRadius)) > brushRadius)
-                    continue;
 
                 // x/z come from the poisson sample 
                 float x = position.x + sample.x - brushRadius;
