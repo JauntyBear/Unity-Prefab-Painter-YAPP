@@ -160,7 +160,7 @@ namespace Rowlan.Yapp
             vegetationStudioProIntegration.OnInspectorGUI();
 
             // consistency check
-            float minDiscSize = 0.01f;
+            float minDiscSize = PoissonDiscSampleProvider.MIN_DISC_SIZE;
             if( poissonDiscSize.floatValue < minDiscSize)
             {
                 Debug.LogError("Poisson Disc Size is too small. Setting it to " + minDiscSize);
