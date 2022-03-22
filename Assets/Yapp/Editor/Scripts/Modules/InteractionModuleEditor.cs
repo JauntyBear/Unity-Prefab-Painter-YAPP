@@ -294,6 +294,8 @@ namespace Rowlan.Yapp
                 if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
                     continue;
 
+                Undo.RegisterCompleteObjectUndo(transform, "Change size");
+
                 transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);
             }
         }
