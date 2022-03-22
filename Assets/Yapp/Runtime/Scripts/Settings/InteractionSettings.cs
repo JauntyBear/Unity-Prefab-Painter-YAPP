@@ -12,6 +12,7 @@ namespace Rowlan.Yapp
         {
             AntiGravity,
             Magnet,
+            AdjustSize
         }
 
         #region Public Editor Fields
@@ -29,6 +30,12 @@ namespace Rowlan.Yapp
         /// </summary>
         [Range(0,100)]
         public int magnetStrength = 10;
+
+        /// <summary>
+        /// Some arbitrary adjust strength from 0..100
+        /// </summary>
+        [Range(0,100)]
+        public float adjustSizeStrength = 10;
 
         #endregion Public Editor Fields
 

@@ -4,13 +4,14 @@ using static Rowlan.Yapp.BrushComponent;
 
 namespace Rowlan.Yapp
 {
-    public class InteractionModuleEditor: ModuleEditorI
+    public class InteractionModuleEditor : ModuleEditorI
     {
         #region Properties
 
         SerializedProperty interactionType;
         SerializedProperty antiGravityStrength;
         SerializedProperty magnetStrength;
+        SerializedProperty adjustSizeStrength;
 
         #endregion Properties
 
@@ -37,6 +38,7 @@ namespace Rowlan.Yapp
             interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
             antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
             magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
+            adjustSizeStrength = editor.FindProperty(x => x.interactionSettings.adjustSizeStrength);
 
         }
 
@@ -61,7 +63,7 @@ namespace Rowlan.Yapp
             GUILayout.EndVertical();
 
 
-            if (interactionType.enumValueIndex == (int) InteractionSettings.InteractionType.AntiGravity)
+            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.AntiGravity)
             {
 
                 GUILayout.BeginVertical("box");
@@ -85,6 +87,19 @@ namespace Rowlan.Yapp
                 GUILayout.EndVertical();
             }
 
+            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.AdjustSize)
+            {
+                EditorGUILayout.HelpBox(new GUIContent("Shift = Grow, Ctrl+Shift = Shrink"));
+
+                GUILayout.BeginVertical("box");
+
+                EditorGUILayout.LabelField("Adjust", GUIStyles.BoxTitleStyle);
+
+                EditorGUILayout.PropertyField(adjustSizeStrength, new GUIContent("Strength", "Strength of the size adjustment"));
+
+                GUILayout.EndVertical();
+            }
+
         }
 
         public void OnSceneGUI()
@@ -93,7 +108,7 @@ namespace Rowlan.Yapp
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
             if (brushComponent.DrawBrush(editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
-                if( editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
+                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
                 {
                     switch (brushMode)
                     {
@@ -108,7 +123,7 @@ namespace Rowlan.Yapp
                             break;
                     }
 
-                 }
+                }
 
                 if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
                 {
@@ -136,9 +151,35 @@ namespace Rowlan.Yapp
                             break;
 
                     }
-
                 }
 
+
+                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AdjustSize)
+                {
+                    switch (brushMode)
+                    {
+                        case BrushMode.ShiftPressed:
+
+                            Grow(raycastHit);
+
+                            needsPhysicsApplied = false;
+
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+
+                        case BrushMode.ShiftCtrlPressed:
+
+                            Shrink(raycastHit);
+
+                            needsPhysicsApplied = false;
+
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+
+                    }
+                }
             }
 
             // TODO: change text
@@ -180,7 +221,7 @@ namespace Rowlan.Yapp
             }
         }
 
-        private void Attract( RaycastHit hit)
+        private void Attract(RaycastHit hit)
         {
             Magnet(hit, true);
         }
@@ -195,7 +236,7 @@ namespace Rowlan.Yapp
         /// </summary>
         /// <param name="hit"></param>
         /// <param name="attract"></param>
-        private void Magnet( RaycastHit hit, bool attract)
+        private void Magnet(RaycastHit hit, bool attract)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
             float magnetFactor = editorTarget.interactionSettings.magnetStrength / 1000f;
@@ -207,7 +248,7 @@ namespace Rowlan.Yapp
                 Vector3 distance = hit.point - transform.position;
 
                 // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize /2f)
+                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
                     continue;
 
                 Vector3 direction = distance.normalized;
@@ -226,6 +267,35 @@ namespace Rowlan.Yapp
 
         public void ModeChanged(PrefabPainter.Mode mode)
         {
+        }
+
+        private void Grow(RaycastHit hit)
+        {
+            ChangeSize(hit, true);
+        }
+
+        private void Shrink(RaycastHit hit)
+        {
+            ChangeSize(hit, false);
+        }
+
+        private void ChangeSize(RaycastHit hit, bool grow)
+        {
+            // just some arbitrary value depending on the magnet strength which ranges from 0..100
+            float adjustFactor = editorTarget.interactionSettings.adjustSizeStrength / 1000f;
+
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+
+            foreach (Transform transform in containerChildren)
+            {
+                Vector3 distance = hit.point - transform.position;
+
+                // only those within the brush
+                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
+                    continue;
+
+                transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);
+            }
         }
     }
 }
