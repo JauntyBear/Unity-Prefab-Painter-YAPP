@@ -40,8 +40,6 @@ namespace Rowlan.Yapp
 
             if (layerFilterEnabled.boolValue)
             {
-                EditorGUILayout.HelpBox("Feature is work in progress, not finished yet!", MessageType.Warning); // TODO: remove
-
                 TerrainLayerUtils.ShowTerrainLayersSelection("Layers", Terrain.activeTerrain, editorTarget.filterSettings.includes, editorTarget.filterSettings.excludes);
             }
 
