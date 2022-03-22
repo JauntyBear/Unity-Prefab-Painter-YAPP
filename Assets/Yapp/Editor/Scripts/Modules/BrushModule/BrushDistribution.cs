@@ -12,11 +12,14 @@ namespace Rowlan.Yapp
 
         private PreviewPrefab previewPrefab;
 
+        private FilterEvaluator filterEvaluator;
+
         public BrushDistribution(BrushModuleEditor brushModuleEditor)
         {
             this.brushModuleEditor = brushModuleEditor;
             this.editorTarget = brushModuleEditor.GetPainter();
 
+            this.filterEvaluator = new FilterEvaluator();
         }
 
         public bool HasPreviewPrefab()
@@ -158,11 +161,22 @@ namespace Rowlan.Yapp
                 }
             }
 
+            // create position vector
+            Vector3 prefabPosition = new Vector3(position.x, position.y, position.z);
+
+            //// auto physics height offset is moved to AddNewPrefab
+            // prefabPosition = ApplyAutoPhysicsHeightOffset(prefabPosition);
+
             if (!prefabExists)
             {
-                PrefabSettings prefabSettings = previewPrefab.prefabSettings;
+                bool isInFilter = filterEvaluator.IsInFilter(position, editorTarget.filterSettings);
 
-                AddNewPrefab(prefabSettings, position, normal);
+                if (isInFilter)
+                {
+                    PrefabSettings prefabSettings = previewPrefab.prefabSettings;
+
+                    AddNewPrefab(prefabSettings, prefabPosition, normal);
+                }
             }
         }
 
@@ -276,7 +290,6 @@ namespace Rowlan.Yapp
 
             foreach (Vector2 sample in samples)
             {
-
                 // x/z come from the poisson sample 
                 float x = position.x + sample.x - brushRadius;
                 float z = position.z + sample.y - brushRadius;
@@ -328,9 +341,14 @@ namespace Rowlan.Yapp
                 // add prefab
                 if (!prefabExists)
                 {
-                    PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+                    bool isInFilter = filterEvaluator.IsInFilter(prefabPosition, editorTarget.filterSettings);
 
-                    AddNewPrefab(prefabSettings, prefabPosition, normal);
+                    if (isInFilter)
+                    {
+                        PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+
+                        AddNewPrefab(prefabSettings, prefabPosition, normal);
+                    }
                 }
             }
         }
@@ -340,7 +358,11 @@ namespace Rowlan.Yapp
         /// </summary>
         public void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal)
         {
-            if (!Terrain.activeTerrain)
+            //if (!Terrain.activeTerrain)
+            //    return;
+
+            Terrain terrain = TerrainManager.Instance.GetTerrain(position);
+            if (!terrain)
                 return;
 
             GameObject container = editorTarget.container as GameObject;
@@ -362,7 +384,7 @@ namespace Rowlan.Yapp
                 Vector3 terrainPosition = new Vector3(x, position.y, z);
 
                 // get terrain y position and add Terrain Transform Y-Position
-                float y = Terrain.activeTerrain.SampleHeight(terrainPosition) + Terrain.activeTerrain.GetPosition().y;
+                float y = terrain.SampleHeight(terrainPosition) + terrain.GetPosition().y;
 
                 // create position vector
                 Vector3 prefabPosition = new Vector3(x, y, z);
@@ -393,9 +415,14 @@ namespace Rowlan.Yapp
                 // add prefab
                 if (!prefabExists)
                 {
-                    PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+                    bool isInFilter = filterEvaluator.IsInFilter(prefabPosition, editorTarget.filterSettings);
 
-                    AddNewPrefab(prefabSettings, prefabPosition, normal);
+                    if (isInFilter)
+                    {
+                        PrefabSettings prefabSettings = this.editorTarget.CreatePrefabSettings();
+
+                        AddNewPrefab(prefabSettings, prefabPosition, normal);
+                    }
                 }
             }
         }
