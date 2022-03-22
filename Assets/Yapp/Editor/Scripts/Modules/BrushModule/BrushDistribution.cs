@@ -358,9 +358,6 @@ namespace Rowlan.Yapp
         /// </summary>
         public void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal)
         {
-            //if (!Terrain.activeTerrain)
-            //    return;
-
             Terrain terrain = TerrainManager.Instance.GetTerrain(position);
             if (!terrain)
                 return;
