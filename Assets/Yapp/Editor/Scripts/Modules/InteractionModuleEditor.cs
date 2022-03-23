@@ -11,7 +11,7 @@ namespace Rowlan.Yapp
         SerializedProperty interactionType;
         SerializedProperty antiGravityStrength;
         SerializedProperty magnetStrength;
-        SerializedProperty adjustSizeStrength;
+        SerializedProperty changeScaleStrength;
 
         #endregion Properties
 
@@ -38,7 +38,7 @@ namespace Rowlan.Yapp
             interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
             antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
             magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
-            adjustSizeStrength = editor.FindProperty(x => x.interactionSettings.adjustSizeStrength);
+            changeScaleStrength = editor.FindProperty(x => x.interactionSettings.changeScaleStrength);
 
         }
 
@@ -87,15 +87,15 @@ namespace Rowlan.Yapp
                 GUILayout.EndVertical();
             }
 
-            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.AdjustSize)
+            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.ChangeScale)
             {
                 EditorGUILayout.HelpBox(new GUIContent("Shift = Grow, Ctrl+Shift = Shrink"));
 
                 GUILayout.BeginVertical("box");
 
-                EditorGUILayout.LabelField("Adjust", GUIStyles.BoxTitleStyle);
+                EditorGUILayout.LabelField("Change Scale", GUIStyles.BoxTitleStyle);
 
-                EditorGUILayout.PropertyField(adjustSizeStrength, new GUIContent("Strength", "Strength of the size adjustment"));
+                EditorGUILayout.PropertyField(changeScaleStrength, new GUIContent("Strength", "Strength of the scale adjustment"));
 
                 GUILayout.EndVertical();
             }
@@ -154,7 +154,7 @@ namespace Rowlan.Yapp
                 }
 
 
-                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AdjustSize)
+                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.ChangeScale)
                 {
                     switch (brushMode)
                     {
@@ -271,18 +271,18 @@ namespace Rowlan.Yapp
 
         private void Grow(RaycastHit hit)
         {
-            ChangeSize(hit, true);
+            ChangeScale(hit, true);
         }
 
         private void Shrink(RaycastHit hit)
         {
-            ChangeSize(hit, false);
+            ChangeScale(hit, false);
         }
 
-        private void ChangeSize(RaycastHit hit, bool grow)
+        private void ChangeScale(RaycastHit hit, bool grow)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float adjustFactor = editorTarget.interactionSettings.adjustSizeStrength / 1000f;
+            float adjustFactor = editorTarget.interactionSettings.changeScaleStrength / 1000f;
 
             Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
 
