@@ -12,7 +12,8 @@ namespace Rowlan.Yapp
         {
             AntiGravity,
             Magnet,
-            ChangeScale
+            ChangeScale,
+            SetScale
         }
 
         #region Public Editor Fields
@@ -36,6 +37,12 @@ namespace Rowlan.Yapp
         /// </summary>
         [Range(0,100)]
         public float changeScaleStrength = 10;
+
+        /// <summary>
+        /// Some arbitrary strength from 0..10
+        /// </summary>
+        [Range(0, 10)]
+        public float setScaleValue = 1;
 
         #endregion Public Editor Fields
 

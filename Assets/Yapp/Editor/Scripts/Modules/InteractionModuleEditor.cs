@@ -12,6 +12,7 @@ namespace Rowlan.Yapp
         SerializedProperty antiGravityStrength;
         SerializedProperty magnetStrength;
         SerializedProperty changeScaleStrength;
+        SerializedProperty setScaleValue;
 
         #endregion Properties
 
@@ -39,6 +40,7 @@ namespace Rowlan.Yapp
             antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
             magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
             changeScaleStrength = editor.FindProperty(x => x.interactionSettings.changeScaleStrength);
+            setScaleValue = editor.FindProperty(x => x.interactionSettings.setScaleValue);
 
         }
 
@@ -96,6 +98,17 @@ namespace Rowlan.Yapp
                 EditorGUILayout.LabelField("Change Scale", GUIStyles.BoxTitleStyle);
 
                 EditorGUILayout.PropertyField(changeScaleStrength, new GUIContent("Strength", "Strength of the scale adjustment"));
+
+                GUILayout.EndVertical();
+            }
+
+            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.SetScale)
+            {
+                GUILayout.BeginVertical("box");
+
+                EditorGUILayout.LabelField("Set Scale", GUIStyles.BoxTitleStyle);
+
+                EditorGUILayout.PropertyField(setScaleValue, new GUIContent("Value", "The scale value to set"));
 
                 GUILayout.EndVertical();
             }
@@ -171,6 +184,23 @@ namespace Rowlan.Yapp
                         case BrushMode.ShiftCtrlPressed:
 
                             Shrink(raycastHit);
+
+                            needsPhysicsApplied = false;
+
+                            // don't consume event; mustn't be consumed during layout or repaint
+                            //Event.current.Use();
+                            break;
+
+                    }
+                }
+
+                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.SetScale)
+                {
+                    switch (brushMode)
+                    {
+                        case BrushMode.ShiftPressed:
+
+                            SetScale(raycastHit);
 
                             needsPhysicsApplied = false;
 
@@ -294,9 +324,30 @@ namespace Rowlan.Yapp
                 if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
                     continue;
 
-                Undo.RegisterCompleteObjectUndo(transform, "Change size");
+                Undo.RegisterCompleteObjectUndo(transform, "Change scale");
 
                 transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);
+            }
+        }
+
+        private void SetScale(RaycastHit hit)
+        {
+            float scaleValue = editorTarget.interactionSettings.setScaleValue;
+            Vector3 scaleVector = new Vector3(scaleValue, scaleValue, scaleValue);
+
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+
+            foreach (Transform transform in containerChildren)
+            {
+                Vector3 distance = hit.point - transform.position;
+
+                // only those within the brush
+                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
+                    continue;
+
+                Undo.RegisterCompleteObjectUndo(transform, "Set scale");
+
+                transform.localScale = scaleVector;
             }
         }
     }
