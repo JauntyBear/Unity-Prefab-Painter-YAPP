@@ -278,7 +278,7 @@ namespace Rowlan.Yapp
         /// <summary>
         /// Add prefabs, mode Poisson
         /// </summary>
-        public void AddPrefabs_Poisson_Any(Vector3 position, Vector3 normal)
+        public void AddPrefabs_Poisson_Any(Vector3 position, Vector3 normal, bool forceNewDistribution)
         {
             GameObject container = editorTarget.container as GameObject;
 
@@ -286,7 +286,7 @@ namespace Rowlan.Yapp
             float brushRadius = brushSize / 2.0f;
             float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
 
-            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, true);
+            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, forceNewDistribution);
 
             foreach (Vector2 sample in samples)
             {
@@ -356,7 +356,7 @@ namespace Rowlan.Yapp
         /// <summary>
         /// Add prefabs, mode Poisson
         /// </summary>
-        public void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal)
+        public void AddPrefabs_Poisson_Terrain(Vector3 position, Vector3 normal, bool forceNewDistribution)
         {
             Terrain terrain = TerrainManager.Instance.GetTerrain(position);
             if (!terrain)
@@ -368,7 +368,7 @@ namespace Rowlan.Yapp
             float brushRadius = brushSize / 2.0f;
             float discRadius = editorTarget.brushSettings.poissonDiscSize / 2;
 
-            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, true);
+            IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, forceNewDistribution);
 
             foreach (Vector2 sample in samples)
             {

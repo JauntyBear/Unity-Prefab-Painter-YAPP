@@ -357,21 +357,25 @@ namespace Rowlan.Yapp
                         Handles.DrawLine(lineStart, lineEnd);
                     }
 
-                    float brushSize = brushSettings.brushSize;
-                    float brushRadius = brushSize / 2.0f;
-                    float discRadius = brushSettings.poissonDiscSize / 2;
-
-                    IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, false);
-
-                    foreach (Vector2 sample in samples)
+                    if (brushSettings.poissonDiscsVisible)
                     {
-                        float x = position.x + sample.x - brushRadius;
-                        float z = position.z + sample.y - brushRadius;
-                        float y = position.y;
+                        float brushSize = brushSettings.brushSize;
+                        float brushRadius = brushSize / 2.0f;
+                        float discRadius = brushSettings.poissonDiscSize / 2;
 
-                        Vector3 samplePosition = new Vector3(x, y, z);
+                        // draw brush, but don't randomize the discs while drawing
+                        IEnumerable<Vector2> samples = PoissonDiscSampleProvider.Instance.Samples(brushSize, brushSize, discRadius, false);
 
-                        Handles.DrawWireDisc(samplePosition, normal, discRadius * 0.5f);
+                        foreach (Vector2 sample in samples)
+                        {
+                            float x = position.x + sample.x - brushRadius;
+                            float z = position.z + sample.y - brushRadius;
+                            float y = position.y;
+
+                            Vector3 samplePosition = new Vector3(x, y, z);
+
+                            Handles.DrawWireDisc(samplePosition, normal, discRadius * 0.5f);
+                        }
                     }
                     break;
 

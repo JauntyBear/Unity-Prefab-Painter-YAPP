@@ -23,6 +23,8 @@ namespace Rowlan.Yapp
         SerializedProperty distribution;
         SerializedProperty poissonDiscSize;
         SerializedProperty poissonDiscRaycastOffset;
+        SerializedProperty poissonDiscsRandomized;
+        SerializedProperty poissonDiscsVisible;
         SerializedProperty fallOffCurve;
         SerializedProperty fallOff2dCurveX;
         SerializedProperty fallOff2dCurveZ;
@@ -73,6 +75,8 @@ namespace Rowlan.Yapp
 
             poissonDiscSize = editor.FindProperty(x => x.brushSettings.poissonDiscSize);
             poissonDiscRaycastOffset = editor.FindProperty(x => x.brushSettings.poissonDiscRaycastOffset);
+            poissonDiscsRandomized = editor.FindProperty(x => x.brushSettings.poissonDiscsRandomized);
+            poissonDiscsVisible = editor.FindProperty(x => x.brushSettings.poissonDiscsVisible);
             fallOffCurve = editor.FindProperty(x => x.brushSettings.fallOffCurve);
             fallOff2dCurveX = editor.FindProperty(x => x.brushSettings.fallOff2dCurveX);
             fallOff2dCurveZ = editor.FindProperty(x => x.brushSettings.fallOff2dCurveZ);
@@ -132,11 +136,15 @@ namespace Rowlan.Yapp
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(poissonDiscSize, new GUIContent("Poisson Disc Size"));
                     EditorGUILayout.PropertyField(poissonDiscRaycastOffset, new GUIContent("Raycast Offset", "If any collider (not only terrain) is used for the raycast, then this will used as offset from which the ray will be cast against the collider"));
+                    EditorGUILayout.PropertyField(poissonDiscsRandomized, new GUIContent("Discs Randomized", "New distribution per click or always use the same distribution"));
+                    EditorGUILayout.PropertyField(poissonDiscsVisible, new GUIContent("Discs Visible", "Show poisson discs"));
                     EditorGUI.indentLevel--;
                     break;
                 case BrushSettings.Distribution.Poisson_Terrain:
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(poissonDiscSize, new GUIContent("Poisson Disc Size"));
+                    EditorGUILayout.PropertyField(poissonDiscsRandomized, new GUIContent("Discs Randomized", "New distribution per click or always use the same distribution"));
+                    EditorGUILayout.PropertyField(poissonDiscsVisible, new GUIContent("Discs Visible", "Show poisson discs"));
                     EditorGUI.indentLevel--;
                     break;
                 case BrushSettings.Distribution.FallOff:
@@ -275,10 +283,10 @@ namespace Rowlan.Yapp
                     brushDistribution.CreatePreviewPrefab();
                     break;
                 case BrushSettings.Distribution.Poisson_Any:
-                    brushDistribution.AddPrefabs_Poisson_Any(hit.point, hit.normal);
+                    brushDistribution.AddPrefabs_Poisson_Any(hit.point, hit.normal, editorTarget.brushSettings.poissonDiscsRandomized);
                     break;
                 case BrushSettings.Distribution.Poisson_Terrain:
-                    brushDistribution.AddPrefabs_Poisson_Terrain(hit.point, hit.normal);
+                    brushDistribution.AddPrefabs_Poisson_Terrain(hit.point, hit.normal, editorTarget.brushSettings.poissonDiscsRandomized);
                     break;
                 case BrushSettings.Distribution.FallOff:
                     Debug.Log("Not implemented yet: " + editorTarget.brushSettings.distribution);

@@ -45,7 +45,7 @@ namespace Rowlan.Yapp
 		/// <param name="discRadius"></param>
 		/// <param name="forceNew"></param>
 		/// <returns></returns>
-		public IEnumerable<Vector2> Samples( float brushSize, float brushRadius, float discRadius, bool forceNew)
+		public IEnumerable<Vector2> Samples( float brushSize, float brushRadius, float discRadius, bool forceNewDistribution)
         {
 			if (discRadius < MIN_DISC_SIZE)
 			{
@@ -53,7 +53,7 @@ namespace Rowlan.Yapp
 				discRadius = MIN_DISC_SIZE;
 			}
 
-			bool createNewList = forceNew || sampler == null || sampleParameters.HasChanged(brushSize, brushRadius, discRadius);
+			bool createNewList = forceNewDistribution || sampler == null || sampleParameters.HasChanged(brushSize, brushRadius, discRadius);
 
 			if ( createNewList)
             {

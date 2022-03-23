@@ -65,6 +65,16 @@ namespace Rowlan.Yapp
         public float poissonDiscRaycastOffset = 100f;
 
         /// <summary>
+        /// New distribution per click or keep the distribution always the same
+        /// </summary>
+        public bool poissonDiscsRandomized = true;
+
+        /// <summary>
+        /// Visualize the poisson discs
+        /// </summary>
+        public bool poissonDiscsVisible = false;
+
+        /// <summary>
         /// Falloff curve
         /// </summary>
         public AnimationCurve fallOffCurve = AnimationCurve.Linear(1, 1, 1, 1);
