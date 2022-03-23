@@ -144,7 +144,7 @@ namespace Rowlan.Yapp
 
                 editor.SetDefaultBackgroundColor();
 
-                if (GUILayout.Button("New", EditorStyles.miniButton, GUILayout.Width(40)))
+                if (GUILayout.Button("New", EditorStyles.miniButton, GUILayout.Width(50)))
                 {
                     GameObject newContainer = new GameObject();
 
@@ -159,7 +159,7 @@ namespace Rowlan.Yapp
 
                 }
 
-                if (GUILayout.Button("Clear", EditorStyles.miniButton, GUILayout.Width(40)))
+                if (GUILayout.Button("Clear", EditorStyles.miniButton, GUILayout.Width(50)))
                 {
                     if(container != null)
                     {
