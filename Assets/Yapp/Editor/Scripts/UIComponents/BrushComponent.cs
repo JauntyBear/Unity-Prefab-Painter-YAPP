@@ -19,7 +19,7 @@ namespace Rowlan.Yapp
 
         private bool mousePressed = false;
 
-        public bool DrawBrush(BrushSettings brushSettings, out BrushMode brushMode, out RaycastHit mouseHit)
+        public bool DrawBrush( PrefabPainter.Mode mode, BrushSettings brushSettings, out BrushMode brushMode, out RaycastHit mouseHit)
         {
             brushMode = BrushMode.None;
             mouseHit = new RaycastHit();
@@ -169,7 +169,7 @@ namespace Rowlan.Yapp
                 // draw brush gizmo
                 if (Event.current.type == EventType.Repaint)
                 {
-                    DrawBrush(brushSettings, hit.point, hit.normal, radius, brushMode);
+                    DrawBrush(mode, brushSettings, hit.point, hit.normal, radius, brushMode);
                 }
 
             }
@@ -206,7 +206,7 @@ namespace Rowlan.Yapp
         }
 
 
-        private void DrawBrush(BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, BrushMode brushMode)
+        private void DrawBrush(PrefabPainter.Mode mode, BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, BrushMode brushMode)
         {
             // set default colors
             Color innerColor = GUIStyles.BrushNoneInnerColor;
@@ -233,7 +233,39 @@ namespace Rowlan.Yapp
                     break;
             }
 
+            switch (mode)
+            {
+                case PrefabPainter.Mode.Brush:
+                    DrawPaintBrush(brushSettings, position, normal, radius, innerColor, outerColor);
+                    break;
 
+                case PrefabPainter.Mode.Interaction:
+                    DrawInteractionBrush(brushSettings, position, normal, radius, innerColor, outerColor);
+                    break;
+
+                case PrefabPainter.Mode.Spline:
+                case PrefabPainter.Mode.Container:
+                default:
+                    Debug.LogError($"Not supported $mode");
+                    break;
+            }
+
+
+        }
+
+        private void DrawInteractionBrush(BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, Color innerColor, Color outerColor)
+        {
+            // inner disc
+            Handles.color = innerColor;
+            Handles.DrawSolidDisc(position, normal, radius);
+
+            // outer circle
+            Handles.color = outerColor;
+            Handles.DrawWireDisc(position, normal, radius);
+        }
+
+        private void DrawPaintBrush(BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, Color innerColor, Color outerColor)
+        {
 
             // consider distribution
             switch (brushSettings.distribution)
@@ -347,7 +379,6 @@ namespace Rowlan.Yapp
                 case BrushSettings.Distribution.FallOff2d:
                     break;
             }
-
         }
 
         /// <summary>

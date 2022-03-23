@@ -175,7 +175,7 @@ namespace Rowlan.Yapp
         {
 
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
-            if ( brushComponent.DrawBrush(editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
+            if ( brushComponent.DrawBrush(editorTarget.mode, editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
                 switch( brushMode)
                 {
