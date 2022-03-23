@@ -309,6 +309,7 @@ namespace Rowlan.Yapp
             ChangeScale(hit, false);
         }
 
+        // TODO: check performance; currently invoked multiple times in the editor loop
         private void ChangeScale(RaycastHit hit, bool grow)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
@@ -330,6 +331,7 @@ namespace Rowlan.Yapp
             }
         }
 
+        // TODO: check performance; currently invoked multiple times in the editor loop
         private void SetScale(RaycastHit hit)
         {
             float scaleValue = editorTarget.interactionSettings.setScaleValue;
