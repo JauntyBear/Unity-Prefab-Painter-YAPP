@@ -323,6 +323,14 @@ namespace Rowlan.Yapp
         {
 
             MeshRenderer mesh_renderer = prefab.GetComponent<MeshRenderer>();
+
+            if(mesh_renderer == null)
+            {
+                Debug.LogError("No mesh render attached to " + prefab.name);
+                return 0f;
+            }
+
+
             MeshFilter meshFilter = mesh_renderer.GetComponent<MeshFilter>();
             Mesh mesh = meshFilter.sharedMesh;
 
