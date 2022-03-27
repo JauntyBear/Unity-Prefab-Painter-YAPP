@@ -271,15 +271,25 @@ namespace Rowlan.Yapp
                             QuickRotationSetting(prefabSettings, 1f, 1f, 1f);
                         }
 
+                        if (GUILayout.Button(prefabSettings.rotationRange.GetDisplayName(), EditorStyles.miniButton))
+                        {
+                            prefabSettings.rotationRange = prefabSettings.rotationRange.GetNext();
+                        }
+
+
                     }
                     GUILayout.EndHorizontal();
 
                     // rotation limits
                     if (prefabSettings.randomRotation)
                     {
-                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit X", ref prefabSettings.rotationMinX, ref prefabSettings.rotationMaxX, 0, 360);
-                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit Y", ref prefabSettings.rotationMinY, ref prefabSettings.rotationMaxY, 0, 360);
-                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit Z", ref prefabSettings.rotationMinZ, ref prefabSettings.rotationMaxZ, 0, 360);
+
+                        float min = prefabSettings.rotationRange.GetMinimum();
+                        float max = prefabSettings.rotationRange.GetMaximum();
+
+                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit X", ref prefabSettings.rotationMinX, ref prefabSettings.rotationMaxX, min, max);
+                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit Y", ref prefabSettings.rotationMinY, ref prefabSettings.rotationMaxY, min, max);
+                        EditorGuiUtilities.MinMaxEditor("  Rotation Limit Z", ref prefabSettings.rotationMinZ, ref prefabSettings.rotationMaxZ, min, max);
                     }
 
                     // VS Pro Id
@@ -316,14 +326,17 @@ namespace Rowlan.Yapp
 
         private void QuickRotationSetting(PrefabSettings prefabSettings, float x, float y, float z)
         {
+            float min = prefabSettings.rotationRange.GetMinimum();
+            float max = prefabSettings.rotationRange.GetMaximum();
+
             prefabSettings.randomRotation = true;
 
-            prefabSettings.rotationMinX = 0f * x;
-            prefabSettings.rotationMaxX = 360f * x;
-            prefabSettings.rotationMinY = 0f * y;
-            prefabSettings.rotationMaxY = 360f * y;
-            prefabSettings.rotationMinZ = 0f * z;
-            prefabSettings.rotationMaxZ = 360f * z;
+            prefabSettings.rotationMinX = min * x;
+            prefabSettings.rotationMaxX = max * x;
+            prefabSettings.rotationMinY = min * y;
+            prefabSettings.rotationMaxY = max * y;
+            prefabSettings.rotationMinZ = min * z;
+            prefabSettings.rotationMaxZ = max * z;
 
         }
 

@@ -8,6 +8,16 @@ namespace Rowlan.Yapp
     [System.Serializable]
     public class PrefabSettings
     {
+
+        public enum RotationRange
+        {
+            [InspectorName("0..360")]
+            Base_360,
+
+            [InspectorName("-180..180")]
+            Base_180
+        }
+
         /// <summary>
         /// The name which will be displayed in the prefab template grid of the inspector
         /// </summary>
@@ -52,6 +62,11 @@ namespace Rowlan.Yapp
         /// Randomize rotation
         /// </summary>
         public bool randomRotation;
+
+        /// <summary>
+        /// The rotation range
+        /// </summary>
+        public RotationRange rotationRange = RotationRange.Base_360;
 
         /// <summary>
         /// Minimum X rotation in degrees when random rotation is used.
@@ -166,4 +181,5 @@ namespace Rowlan.Yapp
         }
 
     }
+
 }
