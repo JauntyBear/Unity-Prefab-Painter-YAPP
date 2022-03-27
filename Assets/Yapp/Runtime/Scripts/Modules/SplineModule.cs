@@ -470,6 +470,23 @@ namespace Rowlan.Yapp
                     rotation = Quaternion.LookRotation(direction);
                     break;
 
+                case SplineSettings.Rotation.SplineRandom:
+
+                    // rotation along spline
+                    rotation = Quaternion.LookRotation(direction);
+
+                    // add random rotation
+                    if (prefabSettings.randomRotation)
+                    {
+                        float rotationX = rotation.eulerAngles.x + Random.Range(prefabSettings.rotationMinX, prefabSettings.rotationMaxX);
+                        float rotationY = rotation.eulerAngles.y + Random.Range(prefabSettings.rotationMinY, prefabSettings.rotationMaxY);
+                        float rotationZ = rotation.eulerAngles.z + Random.Range(prefabSettings.rotationMinZ, prefabSettings.rotationMaxZ);
+
+                        rotation = Quaternion.Euler(rotationX, rotationY, rotationZ);
+                    }
+
+                    break;
+
                 case SplineSettings.Rotation.Prefab:
                     // rotation of the prefab
                     if (prefabSettings.randomRotation)

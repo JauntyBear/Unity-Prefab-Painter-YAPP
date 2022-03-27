@@ -16,7 +16,13 @@ namespace Rowlan.Yapp
 
         public enum Rotation
         {
+            [Tooltip("Exactly along the spline")]
             Spline,
+
+            [Tooltip("Rotate along the spline, then add random rotation of prefab")]
+            SplineRandom,
+
+            [Tooltip("Rotate according to prefab settings, ignore spline rotation")]
             Prefab
         }
 
