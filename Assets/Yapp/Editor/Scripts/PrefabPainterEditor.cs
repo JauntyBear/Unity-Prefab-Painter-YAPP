@@ -77,6 +77,10 @@ namespace Rowlan.Yapp
                 new GUIContent( "Operations", "Operations on the container"),
             };
 
+            // subscribe to play mode state changes
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
             // subscribe to scene gui changes
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
@@ -96,6 +100,10 @@ namespace Rowlan.Yapp
 
             // unsubscribe from scene gui changes
             SceneView.duringSceneGui -= OnSceneGUI;
+
+            // unsubscribe to play mode state changes
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+
         }
 
         public PrefabPainter GetPainter()
@@ -320,6 +328,20 @@ namespace Rowlan.Yapp
                     break;
             }
 
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
+        {
+            if (stateChange == PlayModeStateChange.EnteredEditMode || stateChange == PlayModeStateChange.ExitingPlayMode)
+            {
+                // currently no implementation necessary
+                // Debug.Log("exit play mode");
+            }
+            else if (stateChange == PlayModeStateChange.ExitingEditMode || stateChange == PlayModeStateChange.EnteredPlayMode)
+            {
+                // currently no implementation necessary
+                // Debug.Log("enter play mode");
+            }
         }
 
         public static void ShowGuiInfo(string[] texts)
