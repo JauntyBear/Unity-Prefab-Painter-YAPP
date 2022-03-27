@@ -48,5 +48,9 @@ namespace Rowlan.Yapp
         {
         }
 
+        public void OnEnteredPlayMode()
+        {
+        }
+
     }
 }

@@ -376,7 +376,6 @@ namespace Rowlan.Yapp
 
         public void OnEnable()
         {
-            brushDistribution.CreatePreviewPrefab();
         }
 
         public void OnDisable()
@@ -394,6 +393,12 @@ namespace Rowlan.Yapp
             {
                 brushDistribution.DestroyPreviewPrefab();
             }
+        }
+
+        public void OnEnteredPlayMode()
+        {
+            // ensure no preview gameobject remains when we enter play mode
+            brushDistribution.DestroyPreviewPrefab();
         }
     }
 

@@ -299,6 +299,10 @@ namespace Rowlan.Yapp
         {
         }
 
+        public void OnEnteredPlayMode()
+        {
+        }
+
         private void Grow(RaycastHit hit)
         {
             ChangeScale(hit, true);

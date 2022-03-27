@@ -338,5 +338,9 @@ namespace Rowlan.Yapp
         public void ModeChanged(PrefabPainter.Mode mode)
         {
         }
+        public void OnEnteredPlayMode()
+        {
+        }
+
     }
 }

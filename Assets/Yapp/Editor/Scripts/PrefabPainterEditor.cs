@@ -334,13 +334,11 @@ namespace Rowlan.Yapp
         {
             if (stateChange == PlayModeStateChange.EnteredEditMode || stateChange == PlayModeStateChange.ExitingPlayMode)
             {
-                // currently no implementation necessary
-                // Debug.Log("exit play mode");
+                // currently nothing to do
             }
             else if (stateChange == PlayModeStateChange.ExitingEditMode || stateChange == PlayModeStateChange.EnteredPlayMode)
             {
-                // currently no implementation necessary
-                // Debug.Log("enter play mode");
+                brushModule.OnEnteredPlayMode();
             }
         }
 
