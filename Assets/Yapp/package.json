@@ -1,7 +1,7 @@
 {
   "name": "com.rowlan.yapp",
   "displayName": "YAPP",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "unity": "2019.1",
   "description": "Yet Another Prefab Painter - Easily distribute Prefabs using Brush and Spline tools while optionally applying Physics to the Prefabs",
   "keywords": [
