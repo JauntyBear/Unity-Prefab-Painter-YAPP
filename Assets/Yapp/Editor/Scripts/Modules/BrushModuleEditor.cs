@@ -189,13 +189,25 @@ namespace Rowlan.Yapp
 
                 // terrain details
                 terrainDetailsIntegration.OnInspectorGUI();
-
-                if (editorTarget.brushSettings.spawnToTerrainDetails)
-                {
-                    EditorGUILayout.HelpBox("Terrain Details is experimental and not fully implemented yet!", MessageType.Warning);
-                }
             }
             GUILayout.EndVertical();
+
+            // show integration settings in case they are selected
+            if (editorTarget.brushSettings.spawnToVSPro)
+            {
+                vegetationStudioProIntegration.OnInspectorSettingsGUI();
+            }
+            else if (editorTarget.brushSettings.spawnToTerrainDetails)
+            {
+                terrainDetailsIntegration.OnInspectorSettingsGUI();
+            }
+
+            // consistency check: only vsp or terrain details supported
+            // TODO: should probably be a combobox; will decide later in case it would make sense to spawn into both
+            if(editorTarget.brushSettings.spawnToVSPro && editorTarget.brushSettings.spawnToTerrainDetails)
+            {
+                EditorGUILayout.HelpBox("Only VSPro or Terrain Details supported, not both at the same time!", MessageType.Error);
+            }
         }
 
         public void OnSceneGUI()

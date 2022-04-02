@@ -31,6 +31,11 @@ namespace Rowlan.Yapp
 #endif
         }
 
+        public void OnInspectorSettingsGUI()
+        {
+            // no detail settings yet
+        }
+
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
         {
 #if VEGETATION_STUDIO_PRO

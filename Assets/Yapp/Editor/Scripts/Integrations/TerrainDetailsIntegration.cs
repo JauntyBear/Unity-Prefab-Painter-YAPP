@@ -21,7 +21,40 @@ namespace Rowlan.Yapp
 
         public void OnInspectorGUI()
         {
-                EditorGUILayout.PropertyField(spawnToTerrainDetails, new GUIContent("Spawn to Terrain Details"));
+            EditorGUILayout.PropertyField(spawnToTerrainDetails, new GUIContent("Spawn to Terrain Details"));
+        }
+
+        public void OnInspectorSettingsGUI()
+        {
+            GUILayout.BeginVertical("box");
+            {
+                EditorGUILayout.LabelField("Terrain Details", GUIStyles.BoxTitleStyle);
+
+                EditorGUILayout.HelpBox("Terrain Details is experimental and not fully implemented yet!", MessageType.Warning);
+
+                if (GUILayout.Button("Extract Prefabs", GUILayout.Width(100)))
+                {
+                    ExtractPrefabs();
+                }
+            }
+            GUILayout.EndVertical();
+
+        }
+
+        private void ExtractPrefabs()
+        {
+            Terrain terrain = Terrain.activeTerrain;
+
+            if( terrain == null|| terrain.terrainData == null)
+            {
+                Debug.Log("No Terrain");
+            }
+
+            TreePrototype[] trees = terrain.terrainData.treePrototypes;
+            foreach(TreePrototype pt in trees)
+            {
+                Debug.Log("pt: " + pt.prefab);
+            }
         }
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
