@@ -106,5 +106,10 @@ namespace Rowlan.Yapp
         /// </summary>
         public bool spawnToVSPro = false;
 
+        /// <summary>
+        /// Optionally spawn into the Unity's Terrain Details
+        /// </summary>
+        public bool spawnToTerrainDetails = false;
+
     }
 }

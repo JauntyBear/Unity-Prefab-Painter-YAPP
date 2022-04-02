@@ -33,10 +33,13 @@ namespace Rowlan.Yapp
         #endregion Properties
 
         #region Integration to external applications
+
         VegetationStudioProIntegration vegetationStudioProIntegration;
+        TerrainDetailsIntegration terrainDetailsIntegration;
+
         #endregion Integration to external applications
 
-        #pragma warning disable 0414
+#pragma warning disable 0414
         PrefabPainterEditor editor;
         #pragma warning restore 0414
          
@@ -86,6 +89,7 @@ namespace Rowlan.Yapp
 
             // initialize integrated applications
             vegetationStudioProIntegration = new VegetationStudioProIntegration( editor);
+            terrainDetailsIntegration = new TerrainDetailsIntegration(editor);
 
         }
 
@@ -164,9 +168,6 @@ namespace Rowlan.Yapp
             EditorGUILayout.MinMaxSlider(ref editorTarget.brushSettings.slopeMin, ref editorTarget.brushSettings.slopeMax, editorTarget.brushSettings.slopeMinLimit, editorTarget.brushSettings.slopeMaxLimit);
             EditorGUILayout.EndHorizontal();
 
-            // vegetation studio pro
-            vegetationStudioProIntegration.OnInspectorGUI();
-
             // consistency check
             float minDiscSize = PoissonDiscSampleProvider.MIN_DISC_SIZE;
             if( poissonDiscSize.floatValue < minDiscSize)
@@ -177,6 +178,19 @@ namespace Rowlan.Yapp
 
             GUILayout.EndVertical();
 
+
+            // Integrations
+            GUILayout.BeginVertical("box");
+            {
+                EditorGUILayout.LabelField("Integrations", GUIStyles.BoxTitleStyle);
+
+                // vegetation studio pro
+                vegetationStudioProIntegration.OnInspectorGUI();
+
+                // terrain details
+                terrainDetailsIntegration.OnInspectorGUI();
+            }
+            GUILayout.EndVertical();
         }
 
         public void OnSceneGUI()
@@ -343,6 +357,11 @@ namespace Rowlan.Yapp
             if (editorTarget.brushSettings.spawnToVSPro)
             {
                 vegetationStudioProIntegration.AddNewPrefab( prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
+            }
+            // spawn item to terrain details
+            else if (editorTarget.brushSettings.spawnToTerrainDetails)
+            {
+                terrainDetailsIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
             }
             // spawn item to scene
             else
