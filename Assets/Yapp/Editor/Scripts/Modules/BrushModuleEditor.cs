@@ -189,6 +189,11 @@ namespace Rowlan.Yapp
 
                 // terrain details
                 terrainDetailsIntegration.OnInspectorGUI();
+
+                if (editorTarget.brushSettings.spawnToTerrainDetails)
+                {
+                    EditorGUILayout.HelpBox("Terrain Details is experimental and not fully implemented yet!", MessageType.Warning);
+                }
             }
             GUILayout.EndVertical();
         }
