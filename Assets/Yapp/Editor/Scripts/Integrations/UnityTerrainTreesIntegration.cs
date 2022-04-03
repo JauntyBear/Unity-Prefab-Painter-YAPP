@@ -81,12 +81,12 @@ namespace Rowlan.Yapp
 
         private void LogInfo()
         {
-            terrainTreeManager.LogTreePrototypes();
+            terrainTreeManager.LogPrototypes();
         }
 
         private void RemoveAll()
         {
-            terrainTreeManager.RemoveAllTreeInstances();
+            terrainTreeManager.RemoveAllInstances();
         }
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
@@ -102,7 +102,7 @@ namespace Rowlan.Yapp
 
             GameObject prefab = prefabSettings.prefab;
 
-            terrainTreeManager.PlaceTree( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
+            terrainTreeManager.PlacePrefab( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
         }
 
         public void RemovePrefabs( RaycastHit raycastHit)

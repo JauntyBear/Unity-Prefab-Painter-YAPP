@@ -60,13 +60,13 @@ namespace Rowlan.Yapp
         /// </summary>
         /// <param name="prefab"></param>
         /// <returns>The prototype index or -1 if the no matching prototype found</returns>
-        public int GetTreePrototypeIndex(TerrainData terrainData, GameObject prefab)
+        public int GetPrototypeIndex(TerrainData terrainData, GameObject prefab)
         {
-            TreePrototype[] trees = terrainData.treePrototypes;
+            TreePrototype[] prototypes = terrainData.treePrototypes;
 
-            for (int i = 0; i < trees.Length; i++)
+            for (int i = 0; i < prototypes.Length; i++)
             {
-                TreePrototype prototype = trees[i];
+                TreePrototype prototype = prototypes[i];
 
                 if (prototype.prefab == prefab)
                     return i;
@@ -76,7 +76,7 @@ namespace Rowlan.Yapp
         }
 
 
-        public void PlaceTree( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
+        public void PlacePrefab( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomColor, float colorAdjustment)
         {
             Terrain terrain = GetTerrain();
 
@@ -87,7 +87,7 @@ namespace Rowlan.Yapp
 
             Vector3 localPosition = GetLocalPosition(terrain, worldPosition);
 
-            int prototypeIndex = GetTreePrototypeIndex(terrainData, prefab);
+            int prototypeIndex = GetPrototypeIndex(terrainData, prefab);
 
             if (prototypeIndex == -1)
             {
@@ -95,7 +95,7 @@ namespace Rowlan.Yapp
                 return;
             }
 
-            Color color = randomTreeColor ? GetTreeColor(treeColorAdjustment) : Color.white;
+            Color color = randomColor ? GetColor(colorAdjustment) : Color.white;
 
             float rotationYRad = rotation.eulerAngles.y * Mathf.Deg2Rad;
 
@@ -117,13 +117,13 @@ namespace Rowlan.Yapp
                 float widthScale = worldScale.x;
                 float heightScale = worldScale.y;
 
-                PlaceTree(terrain, prototypeIndex, localPosition, color, heightScale, widthScale, rotationYRad);
+                PlacePrototype(terrain, prototypeIndex, localPosition, color, heightScale, widthScale, rotationYRad);
 
             }
         }
 
         /// <summary>
-        /// Add a single tree instance to the terrain
+        /// Add a single instance to the terrain
         /// </summary>
         /// <param name="terrain"></param>
         /// <param name="prototypeIndex"></param>
@@ -132,7 +132,7 @@ namespace Rowlan.Yapp
         /// <param name="height"></param>
         /// <param name="width"></param>
         /// <param name="rotation"></param>
-        private void PlaceTree(Terrain terrain, int prototypeIndex, Vector3 position, Color color, float height, float width, float rotation)
+        private void PlacePrototype(Terrain terrain, int prototypeIndex, Vector3 position, Color color, float height, float width, float rotation)
         {
             TreeInstance instance = new TreeInstance();
 
@@ -149,10 +149,10 @@ namespace Rowlan.Yapp
 
 
         /// <summary>
-        /// Remove all trees from the terrain
+        /// Remove all instances from the terrain
         /// </summary>
         /// <param name="terrainData"></param>
-        public void RemoveAllTreeInstances()
+        public void RemoveAllInstances()
         {
             TerrainData terrainData = GetTerrainData();
 
@@ -165,20 +165,20 @@ namespace Rowlan.Yapp
         }
 
         /// <summary>
-        /// Get tree color using with variation in color
+        /// Get color with variation in color
         /// </summary>
-        /// <param name="treeColorAdjustment"></param>
+        /// <param name="colorAdjustment"></param>
         /// <returns></returns>
-        public Color GetTreeColor(float treeColorAdjustment)
+        public Color GetColor(float colorAdjustment)
         {
-            Color color = Color.white * UnityEngine.Random.Range(1.0F, 1.0F - treeColorAdjustment);
+            Color color = Color.white * UnityEngine.Random.Range(1.0F, 1.0F - colorAdjustment);
             color.a = 1;
 
             return color;
         }
 
 
-        public void LogTreePrototypes()
+        public void LogPrototypes()
         {
 
             Terrain terrain = GetTerrain();
@@ -188,14 +188,14 @@ namespace Rowlan.Yapp
 
             TerrainData terrainData = terrain.terrainData;
 
-            TreePrototype[] trees = terrainData.treePrototypes;
+            TreePrototype[] prototypes = terrainData.treePrototypes;
 
-            foreach (TreePrototype prototype in trees)
+            foreach (TreePrototype prototype in prototypes)
             {
                 Debug.Log("prototype: " + prototype.prefab);
             }
 
-            Debug.Log("Terrain: " + terrain.name + "\nTrees: " + trees.Length);
+            Debug.Log("Terrain: " + terrain.name + "\nTrees: " + prototypes.Length);
 
         }
 
@@ -208,9 +208,9 @@ namespace Rowlan.Yapp
             if (terrainData == null)
                 return prefabs;
 
-            TreePrototype[] trees = terrainData.treePrototypes;
+            TreePrototype[] prototypes = terrainData.treePrototypes;
 
-            foreach (TreePrototype prototype in trees)
+            foreach (TreePrototype prototype in prototypes)
             {
                 prefabs.Add(prototype.prefab);
             }
@@ -219,7 +219,7 @@ namespace Rowlan.Yapp
         }
 
         /// <summary>
-        /// Change the scale of all the trees within the brush
+        /// Change the scale of all instances within the brush
         /// </summary>
         /// <param name="terrain"></param>
         /// <param name="position"></param>
@@ -237,7 +237,7 @@ namespace Rowlan.Yapp
         }
 
         /// <summary>
-        /// Change the scale of all the trees within the brush
+        /// Change the scale of all instances within the brush
         /// </summary>
         /// <param name="terrain"></param>
         /// <param name="position"></param>
@@ -254,7 +254,7 @@ namespace Rowlan.Yapp
             // local position
             Vector3 localPosition = GetLocalPosition(terrain, position);
 
-            // get all the trees within the brush
+            // get all the instances within the brush
             int[] prototypeIndexes = terrainData.treeInstances.AsParallel().Select((c, i) => new { TreeInstance = c, Index = i }).Where(x => (localPosition - x.TreeInstance.position).magnitude < localBrushRadius).Select(x => x.Index).ToArray();
 
             if (prototypeIndexes.Length == 0)
@@ -262,22 +262,22 @@ namespace Rowlan.Yapp
 
             Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Scale tree");
 
-            var existingTrees = terrainData.treeInstances;
+            var existingInstances = terrainData.treeInstances;
 
             // change scale of all selected instances
             for (int i = 0; i < prototypeIndexes.Length; i++)
             {
 
-                TreeInstance treeInstance = existingTrees[prototypeIndexes[i]];
+                TreeInstance instance = existingInstances[prototypeIndexes[i]];
 
-                treeInstance.heightScale += treeInstance.heightScale * adjustFactor * (grow ? 1 : -1);
-                treeInstance.widthScale += treeInstance.widthScale * adjustFactor * (grow ? 1 : -1);
+                instance.heightScale += instance.heightScale * adjustFactor * (grow ? 1 : -1);
+                instance.widthScale += instance.widthScale * adjustFactor * (grow ? 1 : -1);
 
-                existingTrees[prototypeIndexes[i]] = treeInstance;
+                existingInstances[prototypeIndexes[i]] = instance;
             }
 
             //terrainData.treeInstances = existingTrees;
-            terrainData.SetTreeInstances(existingTrees, true);
+            terrainData.SetTreeInstances(existingInstances, true);
         }
 
         public void SetScale( Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
@@ -291,7 +291,7 @@ namespace Rowlan.Yapp
         }
 
         /// <summary>
-        /// Change the scale of all the trees within the brush
+        /// Change the scale of all instances within the brush
         /// </summary>
         /// <param name="terrain"></param>
         /// <param name="position"></param>
@@ -308,7 +308,7 @@ namespace Rowlan.Yapp
             // local position
             Vector3 localPosition = GetLocalPosition(terrain, position);
 
-            // get all the trees within the brush
+            // get all instances within the brush
             int[] prototypeIndexes = terrainData.treeInstances.AsParallel().Select((c, i) => new { TreeInstance = c, Index = i }).Where(x => (localPosition - x.TreeInstance.position).magnitude < localBrushRadius).Select(x => x.Index).ToArray();
 
             if (prototypeIndexes.Length == 0)
@@ -316,22 +316,22 @@ namespace Rowlan.Yapp
 
             Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Scale tree");
 
-            var existingTrees = terrainData.treeInstances;
+            var existingInstances = terrainData.treeInstances;
 
             // change scale of all selected instances
             for (int i = 0; i < prototypeIndexes.Length; i++)
             {
 
-                TreeInstance treeInstance = existingTrees[prototypeIndexes[i]];
+                TreeInstance instance = existingInstances[prototypeIndexes[i]];
 
-                treeInstance.widthScale = scaleValueX;
-                treeInstance.heightScale = scaleValueY;
+                instance.widthScale = scaleValueX;
+                instance.heightScale = scaleValueY;
 
-                existingTrees[prototypeIndexes[i]] = treeInstance;
+                existingInstances[prototypeIndexes[i]] = instance;
             }
 
             //terrainData.treeInstances = existingTrees;
-            terrainData.SetTreeInstances(existingTrees, true);
+            terrainData.SetTreeInstances(existingInstances, true);
         }
 
         private bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
@@ -440,18 +440,18 @@ namespace Rowlan.Yapp
 
             List<TreeInstance> list = new List<TreeInstance>();
 
-            foreach (TreeInstance treeInstance in terrainData.treeInstances)
+            foreach (TreeInstance instance in terrainData.treeInstances)
             {
                 // filter on prototype index
-                if (prototypeIndexFilter != PROTOTYPE_DEFAULT_FILTER_INDEX && prototypeIndexFilter != treeInstance.prototypeIndex)
+                if (prototypeIndexFilter != PROTOTYPE_DEFAULT_FILTER_INDEX && prototypeIndexFilter != instance.prototypeIndex)
                     continue;
 
                 // check distance
-                float distance = Vector3.Distance(localPosition, treeInstance.position);
+                float distance = Vector3.Distance(localPosition, instance.position);
 
                 if (distance < localBrushRadius)
                 {
-                    list.Add(treeInstance);
+                    list.Add(instance);
                 }
             }
 
@@ -463,7 +463,7 @@ namespace Rowlan.Yapp
 
         #region Internal overlapping methods
 
-        // check for overlaps with other trees. using parallel linq
+        // check for overlaps with other instances. using parallel linq
         private static bool IsOverlappingFast(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
         {
 
@@ -480,18 +480,18 @@ namespace Rowlan.Yapp
         }
 
 
-        // check for overlaps with other trees. that's way too slow on a terrain full of trees
+        // check for overlaps with other instances. that's way too slow on a terrain full of instances
         private static bool IsOverlappingSlow(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
         {
 
-            foreach (TreeInstance treeInstance in terrainData.treeInstances)
+            foreach (TreeInstance instance in terrainData.treeInstances)
             {
                 // filter on prototype index
-                if (prototypeIndexFilter != PROTOTYPE_DEFAULT_FILTER_INDEX && prototypeIndexFilter != treeInstance.prototypeIndex)
+                if (prototypeIndexFilter != PROTOTYPE_DEFAULT_FILTER_INDEX && prototypeIndexFilter != instance.prototypeIndex)
                     continue;
 
                 // check distance
-                float distance = Vector3.Distance(position, treeInstance.position) * terrainData.size.x;
+                float distance = Vector3.Distance(position, instance.position) * terrainData.size.x;
 
                 if (distance < minDistanceWorld)
                 {
