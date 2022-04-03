@@ -85,10 +85,6 @@ namespace Rowlan.Yapp
 
             TerrainData terrainData = terrain.terrainData;
 
-            // convert position to [0..1] on the terrain
-            float x = (worldPosition.x - terrain.transform.position.x) / terrain.terrainData.size.x;
-            float z = (worldPosition.z - terrain.transform.position.z) / terrain.terrainData.size.z;
-
             Vector3 localPosition = GetLocalPosition(terrain, worldPosition);
 
             int prototypeIndex = GetTreePrototypeIndex(terrainData, prefab);
@@ -338,7 +334,7 @@ namespace Rowlan.Yapp
             terrainData.SetTreeInstances(existingTrees, true);
         }
 
-        public bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
+        private bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
         {
             if (useLinq)
             {
@@ -417,7 +413,6 @@ namespace Rowlan.Yapp
 
             // get radius in terrain local space
             localBrushRadius = localBrushRadius / terrainData.size.x;
-
 
             return localBrushRadius;
         }

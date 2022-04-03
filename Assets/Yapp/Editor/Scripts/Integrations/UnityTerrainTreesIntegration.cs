@@ -43,6 +43,11 @@ namespace Rowlan.Yapp
                         CreatePrefabSettingsFromUnityTerrain();
                     }
 
+                    if (GUILayout.Button(new GUIContent("Clear Prefabs", "Remove all prefab settings"), GUILayout.Width(100)))
+                    {
+                        ClearPrefabs();
+                    }
+
                     if (GUILayout.Button(new GUIContent("Log Info", "Log terrain info to the console"), GUILayout.Width(100)))
                     {
                         LogInfo();
@@ -51,11 +56,6 @@ namespace Rowlan.Yapp
                     if (GUILayout.Button(new GUIContent( "Clear Terrain", "Remove all trees from the terrain"), GUILayout.Width(120)))
                     {
                         RemoveAll();
-                    }
-
-                    if (GUILayout.Button(new GUIContent("Clear Prefabs", "Remove all prefab settings"), GUILayout.Width(100)))
-                    {
-                        ClearPrefabs();
                     }
 
                 }
