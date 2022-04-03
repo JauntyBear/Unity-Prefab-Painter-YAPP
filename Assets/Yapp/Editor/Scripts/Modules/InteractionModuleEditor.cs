@@ -9,9 +9,6 @@ namespace Rowlan.Yapp
         #region Properties
 
         SerializedProperty interactionType;
-        SerializedProperty magnetStrength;
-        SerializedProperty changeScaleStrength;
-        SerializedProperty setScaleValue;
 
         #endregion Properties
 
@@ -31,6 +28,9 @@ namespace Rowlan.Yapp
 
 
         private InteractionModuleI antiGravityModule;
+        private InteractionModuleI magnetModule;
+        private InteractionModuleI changeScaleModule;
+        private InteractionModuleI setScaleModule;
 
         public InteractionModuleEditor(PrefabPainterEditor editor)
         {
@@ -38,11 +38,11 @@ namespace Rowlan.Yapp
             this.editorTarget = editor.GetPainter();
 
             interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
-            magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
-            changeScaleStrength = editor.FindProperty(x => x.interactionSettings.changeScaleStrength);
-            setScaleValue = editor.FindProperty(x => x.interactionSettings.setScaleValue);
 
             antiGravityModule = new AntiGravityInteraction(editor);
+            magnetModule = new MagnetInteraction(editor);
+            changeScaleModule = new ChangeScaleInteraction(editor);
+            setScaleModule = new SetScaleInteraction(editor);
         }
 
         public void OnInspectorGUI()
@@ -65,48 +65,27 @@ namespace Rowlan.Yapp
 
             GUILayout.EndVertical();
 
-
-            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.AntiGravity)
+            switch (interactionType.enumValueIndex)
             {
-                antiGravityModule.OnInspectorGUI();
+                case (int)InteractionSettings.InteractionType.AntiGravity:
+                    antiGravityModule.OnInspectorGUI();
+                    break;
+
+                case (int)InteractionSettings.InteractionType.Magnet:
+                    magnetModule.OnInspectorGUI();
+                    break;
+
+                case (int)InteractionSettings.InteractionType.ChangeScale:
+                    changeScaleModule.OnInspectorGUI();
+                    break;
+
+                case (int)InteractionSettings.InteractionType.SetScale:
+                    setScaleModule.OnInspectorGUI();
+                    break;
+
+                default:
+                    throw new System.Exception("Not implemented interaction index: " + interactionType.enumValueIndex);
             }
-
-
-            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.Magnet)
-            {
-                GUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Magnet", GUIStyles.BoxTitleStyle);
-
-                EditorGUILayout.PropertyField(magnetStrength, new GUIContent("Strength", "Strength of the Magnet"));
-
-                GUILayout.EndVertical();
-            }
-
-            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.ChangeScale)
-            {
-                EditorGUILayout.HelpBox(new GUIContent("Shift = Grow, Ctrl+Shift = Shrink"));
-
-                GUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Change Scale", GUIStyles.BoxTitleStyle);
-
-                EditorGUILayout.PropertyField(changeScaleStrength, new GUIContent("Strength", "Strength of the scale adjustment"));
-
-                GUILayout.EndVertical();
-            }
-
-            if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.SetScale)
-            {
-                GUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Set Scale", GUIStyles.BoxTitleStyle);
-
-                EditorGUILayout.PropertyField(setScaleValue, new GUIContent("Value", "The scale value to set"));
-
-                GUILayout.EndVertical();
-            }
-
         }
 
         public void OnSceneGUI()
@@ -115,87 +94,34 @@ namespace Rowlan.Yapp
             // paint prefabs on mouse drag. don't do anything if no mode is selected, otherwise e.g. movement in scene view wouldn't work with alt key pressed
             if (brushComponent.DrawBrush(editorTarget.mode, editorTarget.brushSettings, out BrushMode brushMode, out RaycastHit raycastHit))
             {
-                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
+
+                bool applyPhysics = false;
+
+                switch (interactionType.enumValueIndex)
                 {
-                    if( antiGravityModule.OnSceneGUI( brushMode, raycastHit, out bool applyPhysics))
-                    {
-                        if (applyPhysics)
-                            needsPhysicsApplied = true;
-                    }
+                    case (int)InteractionSettings.InteractionType.AntiGravity:
+                        antiGravityModule.OnSceneGUI(brushMode, raycastHit, out applyPhysics);
+                        break;
+
+                    case (int)InteractionSettings.InteractionType.Magnet:
+                        magnetModule.OnSceneGUI(brushMode, raycastHit, out applyPhysics);
+                        break;
+
+                    case (int)InteractionSettings.InteractionType.ChangeScale:
+                        changeScaleModule.OnSceneGUI(brushMode, raycastHit, out applyPhysics);
+                        break;
+
+                    case (int)InteractionSettings.InteractionType.SetScale:
+                        setScaleModule.OnSceneGUI(brushMode, raycastHit, out applyPhysics);
+                        break;
+
+                    default:
+                        throw new System.Exception("Not implemented interaction index: " + interactionType.enumValueIndex);
+
                 }
 
-                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
-                {
-
-                    switch (brushMode)
-                    {
-                        case BrushMode.ShiftPressed:
-
-                            Attract(raycastHit);
-
-                            needsPhysicsApplied = true;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
-
-                        case BrushMode.ShiftCtrlPressed:
-
-                            Repell(raycastHit);
-
-                            needsPhysicsApplied = true;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
-
-                    }
-                }
-
-
-                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.ChangeScale)
-                {
-                    switch (brushMode)
-                    {
-                        case BrushMode.ShiftPressed:
-
-                            Grow(raycastHit);
-
-                            needsPhysicsApplied = false;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
-
-                        case BrushMode.ShiftCtrlPressed:
-
-                            Shrink(raycastHit);
-
-                            needsPhysicsApplied = false;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
-
-                    }
-                }
-
-                if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.SetScale)
-                {
-                    switch (brushMode)
-                    {
-                        case BrushMode.ShiftPressed:
-
-                            SetScale(raycastHit);
-
-                            needsPhysicsApplied = false;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
-
-                    }
-                }
+                if (applyPhysics)
+                    needsPhysicsApplied = true;
             }
 
             // TODO: change text
@@ -208,43 +134,6 @@ namespace Rowlan.Yapp
             if (applyAutoPhysics)
             {
                 AutoPhysicsSimulation.ApplyPhysics(editorTarget.physicsSettings, editorTarget.container, editorTarget.spawnSettings.autoSimulationType);
-            }
-        }
-
-
-        private void Attract(RaycastHit hit)
-        {
-            Magnet(hit, true);
-        }
-
-        private void Repell(RaycastHit hit)
-        {
-            Magnet(hit, false);
-        }
-
-        /// <summary>
-        /// Attract/Repell the gameobjects of the container which are within the brush
-        /// </summary>
-        /// <param name="hit"></param>
-        /// <param name="attract"></param>
-        private void Magnet(RaycastHit hit, bool attract)
-        {
-            // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float magnetFactor = editorTarget.interactionSettings.magnetStrength / 1000f;
-
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
-
-            foreach (Transform transform in containerChildren)
-            {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
-                Vector3 direction = distance.normalized;
-
-                transform.position += direction * magnetFactor * (attract ? 1 : -1);
             }
         }
 
@@ -264,58 +153,5 @@ namespace Rowlan.Yapp
         {
         }
 
-        private void Grow(RaycastHit hit)
-        {
-            ChangeScale(hit, true);
-        }
-
-        private void Shrink(RaycastHit hit)
-        {
-            ChangeScale(hit, false);
-        }
-
-        // TODO: check performance; currently invoked multiple times in the editor loop
-        private void ChangeScale(RaycastHit hit, bool grow)
-        {
-            // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float adjustFactor = editorTarget.interactionSettings.changeScaleStrength / 1000f;
-
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
-
-            foreach (Transform transform in containerChildren)
-            {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
-                Undo.RegisterCompleteObjectUndo(transform, "Change scale");
-
-                transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);
-            }
-        }
-
-        // TODO: check performance; currently invoked multiple times in the editor loop
-        private void SetScale(RaycastHit hit)
-        {
-            float scaleValue = editorTarget.interactionSettings.setScaleValue;
-            Vector3 scaleVector = new Vector3(scaleValue, scaleValue, scaleValue);
-
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
-
-            foreach (Transform transform in containerChildren)
-            {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
-                Undo.RegisterCompleteObjectUndo(transform, "Set scale");
-
-                transform.localScale = scaleVector;
-            }
-        }
     }
 }
