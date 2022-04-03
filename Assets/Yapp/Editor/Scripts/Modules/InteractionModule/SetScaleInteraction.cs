@@ -60,16 +60,10 @@ namespace Rowlan.Yapp
             float scaleValue = editorTarget.interactionSettings.setScale.setScaleValue;
             Vector3 scaleVector = new Vector3(scaleValue, scaleValue, scaleValue);
 
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, hit, editorTarget.brushSettings.brushSize);
 
             foreach (Transform transform in containerChildren)
             {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
                 Undo.RegisterCompleteObjectUndo(transform, "Set scale");
 
                 transform.localScale = scaleVector;

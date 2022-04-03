@@ -81,16 +81,10 @@ namespace Rowlan.Yapp
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
             float adjustFactor = editorTarget.interactionSettings.changeScale.changeScaleStrength / 1000f;
 
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, hit, editorTarget.brushSettings.brushSize);
 
             foreach (Transform transform in containerChildren)
             {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
                 Undo.RegisterCompleteObjectUndo(transform, "Change scale");
 
                 transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);

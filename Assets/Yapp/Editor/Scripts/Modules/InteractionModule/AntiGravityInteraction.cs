@@ -65,16 +65,10 @@ namespace Rowlan.Yapp
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
             float antiGravityFactor = editorTarget.interactionSettings.antiGravity.strength / 1000f;
 
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, hit, editorTarget.brushSettings.brushSize);
 
             foreach (Transform transform in containerChildren)
             {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
                 // https://docs.unity3d.com/ScriptReference/Transform-up.html
                 // https://docs.unity3d.com/ScriptReference/Vector3-up.html
                 transform.position += Vector3.up * antiGravityFactor;
