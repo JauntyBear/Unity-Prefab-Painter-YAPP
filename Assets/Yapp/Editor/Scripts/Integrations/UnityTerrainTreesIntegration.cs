@@ -34,6 +34,11 @@ namespace Rowlan.Yapp
                         CreatePrefabSettingsFromUnityTerrain();
                     }
 
+                    if (GUILayout.Button(new GUIContent("Log Info", "Log terrain info to the console"), GUILayout.Width(100)))
+                    {
+                        LogInfo();
+                    }
+
                     if (GUILayout.Button(new GUIContent( "Clear Terrain", "Remove all trees from the terrain"), GUILayout.Width(120)))
                     {
                         RemoveAll();
@@ -44,6 +49,10 @@ namespace Rowlan.Yapp
             GUILayout.EndVertical();
         }
 
+        private void LogInfo()
+        {
+            UnityTerrainUtils.LogTreePrototypes();
+        }
 
         private void RemoveAll()
         {

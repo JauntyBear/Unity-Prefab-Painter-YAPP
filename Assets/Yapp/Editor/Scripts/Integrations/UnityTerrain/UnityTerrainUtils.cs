@@ -175,10 +175,13 @@ namespace Rowlan.Yapp
 
         public static void LogTreePrototypes()
         {
-            TerrainData terrainData = GetTerrainData();
 
-            if (terrainData == null)
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
                 return;
+
+            TerrainData terrainData = terrain.terrainData;
 
             TreePrototype[] trees = terrainData.treePrototypes;
 
@@ -186,6 +189,9 @@ namespace Rowlan.Yapp
             {
                 Debug.Log("prototype: " + prototype.prefab);
             }
+
+            Debug.Log("Terrain: " + terrain.name + "\nTrees: " + trees.Length);
+
         }
 
         public static List<GameObject> ExtractPrefabs()
