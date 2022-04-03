@@ -33,7 +33,7 @@ namespace Rowlan.Yapp
                 {
                     if (GUILayout.Button("Log Instances", GUILayout.Width(100)))
                     {
-                        ExtractPrefabs();
+                        LogInstances();
                     }
 
                     if (GUILayout.Button("Remove All", GUILayout.Width(100)))
@@ -46,57 +46,20 @@ namespace Rowlan.Yapp
             GUILayout.EndVertical();
         }
 
-        private void ExtractPrefabs()
+        private void LogInstances()
         {
-            TerrainData terrainData = GetTerrainData();
-
-            if (terrainData == null)
-                return;
-
-            TreePrototype[] trees = terrainData.treePrototypes;
-
-            foreach(TreePrototype prototype in trees)
-            {
-                Debug.Log("prototype: " + prototype.prefab);
-            }
+            UnityTerrainUtils.LogTreePrototypes();
         }
 
-        private Terrain GetTerrain()
-        {
-            return Terrain.activeTerrain; // TODO: multi terrain
-        }
 
-        private TerrainData GetTerrainData()
-        {
-            Terrain terrain = GetTerrain();
-
-            if (terrain == null)
-            {
-                Debug.LogError("Terrain not found");
-
-                return null;
-            }
-
-            return terrain.terrainData;
-        }
 
         private void RemoveAll()
         {
-            TerrainData terrainData = GetTerrainData();
-
-            if (terrainData == null)
-                return;
-
-            UnityTerrainUtils.RemoveAllTreeInstances(terrainData);
+            UnityTerrainUtils.RemoveAllTreeInstances();
         }
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
         {
-            Terrain terrain = GetTerrain();
-
-            if (terrain == null)
-                return;
-
             // brush mode
             float brushSize = editor.GetPainter().brushSettings.brushSize;
 
@@ -108,20 +71,15 @@ namespace Rowlan.Yapp
 
             GameObject prefab = prefabSettings.prefab;
 
-            UnityTerrainUtils.PlaceTree(terrain, prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
+            UnityTerrainUtils.PlaceTree( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
         }
 
         public void RemovePrefabs( RaycastHit raycastHit)
         {
-            Terrain terrain = GetTerrain();
-
-            if (terrain == null)
-                return;
-
             Vector3 position = raycastHit.point;
             float brushSize = editor.GetPainter().brushSettings.brushSize;
 
-            UnityTerrainUtils.RemoveOverlapping(terrain, position, brushSize);
+            UnityTerrainUtils.RemoveOverlapping( position, brushSize);
 
         }
     }

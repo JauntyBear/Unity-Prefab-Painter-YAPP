@@ -42,8 +42,13 @@ namespace Rowlan.Yapp
         }
 
 
-        public static void PlaceTree(Terrain terrain, GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
+        public static void PlaceTree( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
         {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
             TerrainData terrainData = terrain.terrainData;
 
             // convert position to [0..1] on the terrain
@@ -117,8 +122,13 @@ namespace Rowlan.Yapp
         /// Remove all trees from the terrain
         /// </summary>
         /// <param name="terrainData"></param>
-        public static void RemoveAllTreeInstances(TerrainData terrainData)
+        public static void RemoveAllTreeInstances()
         {
+            TerrainData terrainData = GetTerrainData();
+
+            if (terrainData == null)
+                return;
+
             Undo.RegisterCompleteObjectUndo(terrainData, "Remove all trees");
 
             terrainData.treeInstances = new TreeInstance[0];
@@ -137,6 +147,7 @@ namespace Rowlan.Yapp
             return color;
         }
 
+        // TODO: multi tile terrain
         private static Terrain GetTerrain()
         {
             Terrain terrain = Terrain.activeTerrain;
@@ -148,6 +159,33 @@ namespace Rowlan.Yapp
 
             return terrain;
 
+        }
+
+        private static TerrainData GetTerrainData()
+        {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+            {
+                return null;
+            }
+
+            return terrain.terrainData;
+        }
+
+        public static void LogTreePrototypes()
+        {
+            TerrainData terrainData = GetTerrainData();
+
+            if (terrainData == null)
+                return;
+
+            TreePrototype[] trees = terrainData.treePrototypes;
+
+            foreach (TreePrototype prototype in trees)
+            {
+                Debug.Log("prototype: " + prototype.prefab);
+            }
         }
 
         /// <summary>
@@ -224,8 +262,13 @@ namespace Rowlan.Yapp
             }
         }
 
-        public static void RemoveOverlapping(Terrain terrain, Vector3 position, float brushSize)
+        public static void RemoveOverlapping( Vector3 position, float brushSize)
         {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
             RemoveOverlapping(terrain, position, PROTOTYPE_DEFAULT_FILTER_INDEX, brushSize);
         }
 
