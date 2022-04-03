@@ -34,7 +34,17 @@ namespace Rowlan.Yapp
             {
                 EditorGUILayout.LabelField("Terrain Trees", GUIStyles.BoxTitleStyle);
 
+                if (this.editor.GetPainter().brushSettings.targetTerrain == null)
+                {
+                    editor.SetErrorBackgroundColor();
+                }
+
                 EditorGUILayout.PropertyField(targetTerrain, new GUIContent("Target Terrain", "The terrain to work with"));
+
+                editor.SetDefaultBackgroundColor();
+
+
+                EditorGUILayout.Space();
 
                 EditorGUILayout.BeginHorizontal();
                 {
