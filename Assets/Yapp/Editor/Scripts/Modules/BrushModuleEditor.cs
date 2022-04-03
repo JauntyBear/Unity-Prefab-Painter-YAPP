@@ -339,28 +339,11 @@ namespace Rowlan.Yapp
             if (!editor.IsEditorSettingsValid())
                 return;
 
-            Vector3 position = raycastHit.point;
-
-            // check if a gameobject of the container is within the brush size and remove it
-            GameObject container = editorTarget.container as GameObject;
-
-            float radius = editorTarget.brushSettings.brushSize / 2f;
-
-            List<Transform> removeList = new List<Transform>();
-
-            foreach (Transform transform in container.transform)
-            {
-                float dist = Vector3.Distance(position, transform.transform.position);
-
-                if (dist <= radius)
-                {
-                    removeList.Add(transform);
-                }
-
-            }
+            // get children within brush
+            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, raycastHit, editorTarget.brushSettings.brushSize);
 
             // remove gameobjects
-            foreach( Transform transform in removeList)
+            foreach( Transform transform in containerChildren)
             {
                 Undo.DestroyObjectImmediate(transform.gameObject);
             }
