@@ -236,7 +236,7 @@ namespace Rowlan.Yapp
             switch (mode)
             {
                 case PrefabPainter.Mode.Brush:
-                    DrawPaintBrush(brushSettings, position, normal, radius, innerColor, outerColor);
+                    DrawPaintBrush(brushSettings, position, normal, radius, innerColor, outerColor, brushMode);
                     break;
 
                 case PrefabPainter.Mode.Interaction:
@@ -264,7 +264,7 @@ namespace Rowlan.Yapp
             Handles.DrawWireDisc(position, normal, radius);
         }
 
-        private void DrawPaintBrush(BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, Color innerColor, Color outerColor)
+        private void DrawPaintBrush(BrushSettings brushSettings, Vector3 position, Vector3 normal, float radius, Color innerColor, Color outerColor, BrushMode brushMode)
         {
 
             // consider distribution
@@ -357,7 +357,29 @@ namespace Rowlan.Yapp
                         Handles.DrawLine(lineStart, lineEnd);
                     }
 
+                    bool drawDiscs = false;
+
+                    // draw poisson only when inactive or adding, but not when deleting
                     if (brushSettings.poissonDiscsVisible)
+                    {
+                        switch (brushMode)
+                        {
+                            case BrushMode.None:
+                            case BrushMode.ShiftKey:
+                            case BrushMode.ShiftPressed:
+                            case BrushMode.ShiftDrag:
+                                drawDiscs = true;
+                                break;
+
+                            case BrushMode.ShiftCtrlKey:
+                            case BrushMode.ShiftCtrlPressed:
+                            case BrushMode.ShiftCtrlDrag:
+                                drawDiscs = false;
+                                break;
+                        }
+                    }
+                    
+                    if (drawDiscs)
                     {
                         float brushSize = brushSettings.brushSize;
                         float brushRadius = brushSize / 2.0f;
