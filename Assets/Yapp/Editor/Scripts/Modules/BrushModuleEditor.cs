@@ -37,7 +37,7 @@ namespace Rowlan.Yapp
         #region Integration to external applications
 
         VegetationStudioProIntegration vegetationStudioProIntegration;
-        TerrainDetailsIntegration terrainDetailsIntegration;
+        UnityTerrainTreesIntegration unityTerrainTreesIntegration;
 
         #endregion Integration to external applications
 
@@ -93,7 +93,7 @@ namespace Rowlan.Yapp
 
             // initialize integrated applications
             vegetationStudioProIntegration = new VegetationStudioProIntegration( editor);
-            terrainDetailsIntegration = new TerrainDetailsIntegration(editor);
+            unityTerrainTreesIntegration = new UnityTerrainTreesIntegration(editor);
 
         }
 
@@ -199,7 +199,7 @@ namespace Rowlan.Yapp
                     break;
 
                 case BrushSettings.SpawnTarget.TerrainTrees:
-                    terrainDetailsIntegration.OnInspectorGUI();
+                    unityTerrainTreesIntegration.OnInspectorGUI();
                     break;
 
                 case BrushSettings.SpawnTarget.TerrainDetails:
@@ -341,15 +341,42 @@ namespace Rowlan.Yapp
             if (!editor.IsEditorSettingsValid())
                 return;
 
-            // get children within brush
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, raycastHit, editorTarget.brushSettings.brushSize);
-
-            // remove gameobjects
-            foreach( Transform transform in containerChildren)
+            switch (editorTarget.brushSettings.spawnTarget)
             {
-                Undo.DestroyObjectImmediate(transform.gameObject);
+                case BrushSettings.SpawnTarget.PrefabContainer:
+
+                    // get children within brush
+                    Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container, raycastHit, editorTarget.brushSettings.brushSize);
+
+                    // remove gameobjects
+                    foreach (Transform transform in containerChildren)
+                    {
+                        Undo.DestroyObjectImmediate(transform.gameObject);
+                    }
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainTrees:
+
+                    unityTerrainTreesIntegration.RemovePrefabs( raycastHit);
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainDetails:
+
+                    Debug.LogError("Not implemented");
+
+                    break;
+
+                case BrushSettings.SpawnTarget.VegetationStudioPro:
+
+                    Debug.LogError("Not implemented");
+
+                    break;
             }
-           
+
+
+
         }
 
         public void PersistPrefab(PrefabSettings prefabSettings, PrefabTransform prefabTransform)
@@ -379,7 +406,7 @@ namespace Rowlan.Yapp
 
                 case BrushSettings.SpawnTarget.TerrainTrees:
 
-                    terrainDetailsIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
+                    unityTerrainTreesIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
 
                     break;
 
