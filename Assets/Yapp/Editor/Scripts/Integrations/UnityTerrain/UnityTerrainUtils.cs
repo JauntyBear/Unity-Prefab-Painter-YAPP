@@ -41,20 +41,77 @@ namespace Rowlan.Yapp
             return -1;
         }
 
-        public static void PlaceTree(Terrain terrain, int treePrototype, Vector3 position, Color color, float height, float width, float rotation)
+
+        public static void PlaceTree( Terrain terrain, GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
+        {
+            TerrainData terrainData = terrain.terrainData;
+
+            // convert position to [0..1] on the terrain
+            float x = (worldPosition.x - terrain.transform.position.x) / terrain.terrainData.size.x;
+            float z = (worldPosition.z - terrain.transform.position.z) / terrain.terrainData.size.z;
+
+            Vector3 localPosition = GetLocalPosition(terrain, worldPosition);
+
+            int prototypeIndex = GetTreePrototypeIndex(terrainData, prefab);
+
+            if (prototypeIndex == -1)
+            {
+                Debug.LogError("Prototype not found: " + prefab.name);
+                return;
+            }
+
+            Color color = randomTreeColor ? GetTreeColor(treeColorAdjustment) : Color.white;
+
+            float rotationYRad = rotation.eulerAngles.y * Mathf.Deg2Rad;
+
+            if (localPosition.x >= 0 && localPosition.x <= 1 && localPosition.z >= 0 && localPosition.z <= 1)
+            {
+                Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Add tree");
+
+                // use the brush radius
+                // this applies for the brush size as well as discs in poisson distribution
+                float minDistance = brushSize * 0.5f;
+
+                int prototypeFilterIndex = PROTOTYPE_DEFAULT_FILTER_INDEX; // no prototypeIndex, we check against all
+
+                bool isOverlapping = IsOverlapping(terrain.terrainData, localPosition, prototypeFilterIndex, minDistance);
+
+                if (isOverlapping)
+                    return;
+
+                float widthScale = worldScale.x;
+                float heightScale = worldScale.y;
+
+                PlaceTree(terrain, prototypeIndex, localPosition, color, heightScale, widthScale, rotationYRad);
+
+            }
+        }
+
+        /// <summary>
+        /// Add a single tree instance to the terrain
+        /// </summary>
+        /// <param name="terrain"></param>
+        /// <param name="prototypeIndex"></param>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        /// <param name="height"></param>
+        /// <param name="width"></param>
+        /// <param name="rotation"></param>
+        private static void PlaceTree(Terrain terrain, int prototypeIndex, Vector3 position, Color color, float height, float width, float rotation)
         {
             TreeInstance instance = new TreeInstance();
 
             instance.position = position;
             instance.color = color;
             instance.lightmapColor = Color.white;
-            instance.prototypeIndex = treePrototype;
+            instance.prototypeIndex = prototypeIndex;
             instance.heightScale = height;
             instance.widthScale = width;
-            instance.rotation = rotation;
+            instance.rotation = rotation; // rotation in radians
 
             terrain.AddTreeInstance(instance);
         }
+
 
         /// <summary>
         /// Remove all trees from the terrain

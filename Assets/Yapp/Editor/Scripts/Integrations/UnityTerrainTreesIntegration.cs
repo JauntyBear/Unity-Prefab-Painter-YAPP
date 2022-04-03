@@ -10,6 +10,10 @@ namespace Rowlan.Yapp
         // unfiltered
         private const int PROTOTYPE_FILTER_DEFAULT = -1;
 
+        // internal properties, maybe we'll make them public
+        private bool randomTreeColor = false;
+        private float treeColorAdjustment = 0.8f;
+
         PrefabPainterEditor editor;
 
         public UnityTerrainTreesIntegration(PrefabPainterEditor editor)
@@ -27,7 +31,7 @@ namespace Rowlan.Yapp
 
                 EditorGUILayout.BeginHorizontal();
                 {
-                    if (GUILayout.Button("Extract Prefabs", GUILayout.Width(100)))
+                    if (GUILayout.Button("Log Instances", GUILayout.Width(100)))
                     {
                         ExtractPrefabs();
                     }
@@ -88,7 +92,23 @@ namespace Rowlan.Yapp
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
         {
-            Debug.LogError("Not implemented");
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
+            // brush mode
+            float brushSize = editor.GetPainter().brushSettings.brushSize;
+
+            // poisson mode: use the discs as brush size
+            if (editor.GetPainter().brushSettings.distribution == BrushSettings.Distribution.Poisson_Any || editor.GetPainter().brushSettings.distribution == BrushSettings.Distribution.Poisson_Terrain)
+            {
+                brushSize = editor.GetPainter().brushSettings.poissonDiscSize;
+            }
+
+            GameObject prefab = prefabSettings.prefab;
+
+            UnityTerrainUtils.PlaceTree(terrain, prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
         }
 
         public void RemovePrefabs( RaycastHit raycastHit)
