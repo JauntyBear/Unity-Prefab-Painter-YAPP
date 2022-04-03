@@ -13,7 +13,7 @@ namespace Rowlan.Yapp
         /// Internal variable which switches between linq (parallel) usage and serial usage.
         /// Will be removed once parallel linq proves it's way superior.
         /// </summary>
-        private static bool useLinq = false;
+        private static bool useLinq = true;
 
         /// <summary>
         /// Unfiltered
@@ -128,7 +128,7 @@ namespace Rowlan.Yapp
             Vector3 localPosition = GetLocalPosition(terrain, position);
 
             // set a new tree instance array without the elements within the brush
-            terrainData.treeInstances = terrainData.treeInstances.AsParallel().Where(x => (prototypeIndexFilter != PROTOTYPE_DEFAULT_FILTER_INDEX || prototypeIndexFilter == x.prototypeIndex) && Vector3.Distance(localPosition, x.position) > localBrushRadius).ToArray();
+            terrainData.treeInstances = terrainData.treeInstances.AsParallel().Where(x => (prototypeIndexFilter == PROTOTYPE_DEFAULT_FILTER_INDEX || prototypeIndexFilter == x.prototypeIndex) && Vector3.Distance(localPosition, x.position) > localBrushRadius).ToArray();
 
         }
 
