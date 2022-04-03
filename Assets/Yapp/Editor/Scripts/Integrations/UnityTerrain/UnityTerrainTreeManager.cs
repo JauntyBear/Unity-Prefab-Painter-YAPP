@@ -398,7 +398,7 @@ namespace Rowlan.Yapp
         {
             Vector3 localPosition = new Vector3(
                 (position.x - terrain.transform.position.x) / terrain.terrainData.size.x,
-                0f,
+                (position.y - terrain.transform.position.y) / terrain.terrainData.size.y,
                 (position.z - terrain.transform.position.z) / terrain.terrainData.size.z
                 )
             ;
