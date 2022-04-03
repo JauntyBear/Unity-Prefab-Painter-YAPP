@@ -24,6 +24,11 @@ namespace Rowlan.Yapp
 
         public void OnInspectorGUI()
         {
+            // show the spawn target in bold
+            EditorStyles.helpBox.richText = true;
+            EditorGUILayout.HelpBox(new GUIContent("Using target <b>" + editor.GetPainter().brushSettings.spawnTarget + "</b>"));
+            EditorStyles.helpBox.richText = false;
+
             EditorGUILayout.HelpBox(new GUIContent("Shift = Grow, Ctrl+Shift = Shrink"));
 
             GUILayout.BeginVertical("box");
@@ -33,6 +38,7 @@ namespace Rowlan.Yapp
             EditorGUILayout.PropertyField(changeScaleStrength, new GUIContent("Strength", "Strength of the scale adjustment"));
 
             GUILayout.EndVertical();
+
         }
 
         public bool OnSceneGUI(BrushMode brushMode, RaycastHit raycastHit, out bool applyPhysics)
@@ -75,8 +81,38 @@ namespace Rowlan.Yapp
             ChangeScale(hit, false);
         }
 
-        // TODO: check performance; currently invoked multiple times in the editor loop
         private void ChangeScale(RaycastHit hit, bool grow)
+        {
+            switch (editor.GetPainter().brushSettings.spawnTarget)
+            {
+                case BrushSettings.SpawnTarget.PrefabContainer:
+
+                    ChangeScalePrefabs(hit, grow);
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainTrees:
+
+                    float brushSize = editorTarget.brushSettings.brushSize;
+                    float adjustFactor = editorTarget.interactionSettings.changeScale.changeScaleStrength / 1000f;
+
+                    UnityTerrainUtils.ChangeScale(hit.point, brushSize, grow, adjustFactor);
+                    
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainDetails:
+                    Debug.LogError("Not implemented");
+                    break;
+
+                case BrushSettings.SpawnTarget.VegetationStudioPro:
+                    Debug.LogError("Not implemented");
+                    break;
+            }
+        }
+
+
+        // TODO: check performance; currently invoked multiple times in the editor loop
+        private void ChangeScalePrefabs(RaycastHit hit, bool grow)
         {
             // just some arbitrary value depending on the magnet strength which ranges from 0..100
             float adjustFactor = editorTarget.interactionSettings.changeScale.changeScaleStrength / 1000f;
@@ -90,5 +126,6 @@ namespace Rowlan.Yapp
                 transform.localScale += transform.localScale * adjustFactor * (grow ? 1 : -1);
             }
         }
+
     }
 }

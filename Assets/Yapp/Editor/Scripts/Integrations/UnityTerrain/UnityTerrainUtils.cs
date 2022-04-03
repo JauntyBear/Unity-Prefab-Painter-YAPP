@@ -42,7 +42,7 @@ namespace Rowlan.Yapp
         }
 
 
-        public static void PlaceTree( Terrain terrain, GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
+        public static void PlaceTree(Terrain terrain, GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
         {
             TerrainData terrainData = terrain.terrainData;
 
@@ -129,12 +129,87 @@ namespace Rowlan.Yapp
         /// </summary>
         /// <param name="treeColorAdjustment"></param>
         /// <returns></returns>
-        public static Color GetTreeColor( float treeColorAdjustment)
+        public static Color GetTreeColor(float treeColorAdjustment)
         {
             Color color = Color.white * UnityEngine.Random.Range(1.0F, 1.0F - treeColorAdjustment);
             color.a = 1;
 
             return color;
+        }
+
+        private static Terrain GetTerrain()
+        {
+            Terrain terrain = Terrain.activeTerrain;
+
+            if( terrain == null)
+            {
+                Debug.LogError("Terrain not found");
+            }
+
+            return terrain;
+
+        }
+
+        /// <summary>
+        /// Change the scale of all the trees within the brush
+        /// </summary>
+        /// <param name="terrain"></param>
+        /// <param name="position"></param>
+        /// <param name="brushSize"></param>
+        /// <param name="grow"></param>
+        /// <param name="adjustFactor"></param>
+        public static void ChangeScale(Vector3 position, float brushSize, bool grow, float adjustFactor)
+        { 
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
+            ChangeScale(terrain, position, brushSize, grow, adjustFactor);
+        }
+
+        /// <summary>
+        /// Change the scale of all the trees within the brush
+        /// </summary>
+        /// <param name="terrain"></param>
+        /// <param name="position"></param>
+        /// <param name="brushSize"></param>
+        /// <param name="grow"></param>
+        /// <param name="adjustFactor"></param>
+        public static void ChangeScale(Terrain terrain, Vector3 position, float brushSize, bool grow, float adjustFactor)
+        {
+            TerrainData terrainData = terrain.terrainData;
+
+            // local brush radius
+            float localBrushRadius = GetLocalBrushRadius(terrainData, brushSize);
+
+            // local position
+            Vector3 localPosition = GetLocalPosition(terrain, position);
+
+            // get all the trees within the brush
+            int[] prototypeIndexes = terrainData.treeInstances.AsParallel().Select((c, i) => new { TreeInstance = c, Index = i }).Where(x => (localPosition - x.TreeInstance.position).magnitude < localBrushRadius).Select(x => x.Index).ToArray();
+
+            if (prototypeIndexes.Length == 0)
+                return;
+
+            Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Scale tree");
+
+            var existingTrees = terrainData.treeInstances;
+
+            // change scale of all selected instances
+            for (int i = 0; i < prototypeIndexes.Length; i++)
+            {
+
+                TreeInstance treeInstance = existingTrees[prototypeIndexes[i]];
+
+                treeInstance.heightScale += treeInstance.heightScale * adjustFactor * (grow ? 1 : -1);
+                treeInstance.widthScale += treeInstance.widthScale * adjustFactor * (grow ? 1 : -1);
+
+                existingTrees[prototypeIndexes[i]] = treeInstance;
+            }
+
+            //terrainData.treeInstances = existingTrees;
+            terrainData.SetTreeInstances(existingTrees, true);
         }
 
         public static bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
@@ -176,10 +251,7 @@ namespace Rowlan.Yapp
             TerrainData terrainData = terrain.terrainData;
 
             // get radius in world space
-            float localBrushRadius = brushSize * 0.5f;
-
-            // get radius in terrain local space
-            localBrushRadius = localBrushRadius / terrainData.size.x;
+            float localBrushRadius = GetLocalBrushRadius( terrainData, brushSize);
 
             // local position
             Vector3 localPosition = GetLocalPosition(terrain, position);
@@ -207,6 +279,18 @@ namespace Rowlan.Yapp
             return localPosition;
         }
 
+        private static float GetLocalBrushRadius(TerrainData terrainData, float brushSize)
+        {
+            // get radius in world space
+            float localBrushRadius = brushSize * 0.5f;
+
+            // get radius in terrain local space
+            localBrushRadius = localBrushRadius / terrainData.size.x;
+
+
+            return localBrushRadius;
+        }
+
         private static void RemoveOverlappingSlow(Terrain terrain, Vector3 position, int prototypeIndexFilter, float brushSize)
         {
             TerrainData terrainData = terrain.terrainData;
@@ -222,12 +306,9 @@ namespace Rowlan.Yapp
         {
             TerrainData terrainData = terrain.terrainData;
 
-            // get radius in world space
-            float localBrushRadius = brushSize * 0.5f;
-
-            // get radius in terrain local space
-            localBrushRadius = localBrushRadius / terrainData.size.x;
-
+            // local brush radius
+            float localBrushRadius = GetLocalBrushRadius(terrainData, brushSize);
+            
             // local position
             Vector3 localPosition = GetLocalPosition(terrain, position);
 
