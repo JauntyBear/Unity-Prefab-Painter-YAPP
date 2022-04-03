@@ -54,8 +54,39 @@ namespace Rowlan.Yapp
             return false;
         }
 
-        // TODO: check performance; currently invoked multiple times in the editor loop
         private void SetScale(RaycastHit hit)
+        {
+            switch (editor.GetPainter().brushSettings.spawnTarget)
+            {
+                case BrushSettings.SpawnTarget.PrefabContainer:
+
+                    SetScalePrefabs(hit);
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainTrees:
+
+                    float brushSize = editorTarget.brushSettings.brushSize;
+
+                    float scaleValueX = editorTarget.interactionSettings.setScale.setScaleValue;
+                    float scaleValueY = editorTarget.interactionSettings.setScale.setScaleValue;
+
+                    UnityTerrainUtils.SetScale(hit.point, brushSize, scaleValueX, scaleValueY);
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainDetails:
+                    Debug.LogError("Not implemented");
+                    break;
+
+                case BrushSettings.SpawnTarget.VegetationStudioPro:
+                    Debug.LogError("Not implemented");
+                    break;
+            }
+        }
+
+        // TODO: check performance; currently invoked multiple times in the editor loop
+        private void SetScalePrefabs(RaycastHit hit)
         {
             float scaleValue = editorTarget.interactionSettings.setScale.setScaleValue;
             Vector3 scaleVector = new Vector3(scaleValue, scaleValue, scaleValue);

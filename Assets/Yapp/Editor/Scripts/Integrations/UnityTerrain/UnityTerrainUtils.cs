@@ -250,6 +250,60 @@ namespace Rowlan.Yapp
             terrainData.SetTreeInstances(existingTrees, true);
         }
 
+        public static void SetScale( Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
+        {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
+            SetScale(terrain, position, brushSize, scaleValueX, scaleValueY);
+        }
+
+        /// <summary>
+        /// Change the scale of all the trees within the brush
+        /// </summary>
+        /// <param name="terrain"></param>
+        /// <param name="position"></param>
+        /// <param name="brushSize"></param>
+        /// <param name="grow"></param>
+        /// <param name="adjustFactor"></param>
+        public static void SetScale(Terrain terrain, Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
+        {
+            TerrainData terrainData = terrain.terrainData;
+
+            // local brush radius
+            float localBrushRadius = GetLocalBrushRadius(terrainData, brushSize);
+
+            // local position
+            Vector3 localPosition = GetLocalPosition(terrain, position);
+
+            // get all the trees within the brush
+            int[] prototypeIndexes = terrainData.treeInstances.AsParallel().Select((c, i) => new { TreeInstance = c, Index = i }).Where(x => (localPosition - x.TreeInstance.position).magnitude < localBrushRadius).Select(x => x.Index).ToArray();
+
+            if (prototypeIndexes.Length == 0)
+                return;
+
+            Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Scale tree");
+
+            var existingTrees = terrainData.treeInstances;
+
+            // change scale of all selected instances
+            for (int i = 0; i < prototypeIndexes.Length; i++)
+            {
+
+                TreeInstance treeInstance = existingTrees[prototypeIndexes[i]];
+
+                treeInstance.widthScale = scaleValueX;
+                treeInstance.heightScale = scaleValueY;
+
+                existingTrees[prototypeIndexes[i]] = treeInstance;
+            }
+
+            //terrainData.treeInstances = existingTrees;
+            terrainData.SetTreeInstances(existingTrees, true);
+        }
+
         public static bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
         {
             if (useLinq)
