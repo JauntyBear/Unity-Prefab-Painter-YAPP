@@ -31,7 +31,6 @@ namespace Rowlan.Yapp
         SerializedProperty curveSamplePoints;
 
         SerializedProperty spawnTarget;
-        SerializedProperty targetTerrain;
 
         #endregion Properties
 
@@ -91,7 +90,6 @@ namespace Rowlan.Yapp
             layerMask = editor.FindProperty(x => x.brushSettings.layerMask);
 
             spawnTarget = editor.FindProperty(x => x.brushSettings.spawnTarget);
-            targetTerrain = editor.FindProperty(x => x.brushSettings.targetTerrain);
 
             // initialize integrated applications
             vegetationStudioProIntegration = new VegetationStudioProIntegration( editor);

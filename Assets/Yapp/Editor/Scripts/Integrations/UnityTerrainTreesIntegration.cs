@@ -52,6 +52,12 @@ namespace Rowlan.Yapp
                     {
                         RemoveAll();
                     }
+
+                    if (GUILayout.Button(new GUIContent("Clear Prefabs", "Remove all prefab settings"), GUILayout.Width(100)))
+                    {
+                        ClearPrefabs();
+                    }
+
                 }
                 EditorGUILayout.EndHorizontal();
 
@@ -109,5 +115,12 @@ namespace Rowlan.Yapp
             // create new settings list
             editor.AddPrefabs( Constants.TEMPLATE_NAME_TREE, prefabs, true);
         }
+
+        private void ClearPrefabs()
+        {
+            // create new settings list
+            editor.ClearPrefabs();
+        }
+
     }
 }

@@ -423,6 +423,22 @@ namespace Rowlan.Yapp
             return template;
         }
 
+        /// <summary>
+        /// Remove all prefab settings
+        /// </summary>
+        public void ClearPrefabs()
+        {
+            editor.GetPainter().prefabSettingsList.Clear();
+        }
+
+
+        /// <summary>
+        /// Add the provided prefabs as new prefab settings using the template specified by name.
+        /// Clear is applied if requested.
+        /// </summary>
+        /// <param name="templateName"></param>
+        /// <param name="prefabs"></param>
+        /// <param name="clear"></param>
         public void AddPrefabs( string templateName, List<GameObject> prefabs, bool clear)
         {
             // find tree template
