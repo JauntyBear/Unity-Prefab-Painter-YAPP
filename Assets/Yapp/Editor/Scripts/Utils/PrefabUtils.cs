@@ -37,7 +37,8 @@ namespace Rowlan.Yapp
 
             Transform[] children = container.transform.Cast<Transform>()
                 .Select( x => x)
-                .Where( x => (hit.point - x.position).magnitude <= brushRadius)
+                //.Where(x => (hit.point - x.position).magnitude <= brushRadius)
+                .Where( x => Vector3.Distance(hit.point, x.position) <= brushRadius)
                 .ToArray();
 
             return children;
