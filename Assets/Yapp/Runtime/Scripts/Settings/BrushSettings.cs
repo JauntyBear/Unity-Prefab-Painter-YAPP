@@ -25,6 +25,14 @@ namespace Rowlan.Yapp
             FallOff2d
         }
 
+        public enum SpawnTarget
+        {
+            PrefabContainer = 0,
+            TerrainTrees = 1,
+            TerrainDetails = 2,
+            VegetationStudioPro = 3,
+        }
+
         public float brushSize = 2.0f;
 
         /// <summary>
@@ -102,14 +110,9 @@ namespace Rowlan.Yapp
         public LayerMask layerMask = (int) LayerUtils.LayerIndex.Everything;
 
         /// <summary>
-        /// Optionally spawn into the Persistent Storage of Vegetation Studio Pro
+        /// Where to add the instantiated objects
         /// </summary>
-        public bool spawnToVSPro = false;
-
-        /// <summary>
-        /// Optionally spawn into the Unity's Terrain Details
-        /// </summary>
-        public bool spawnToTerrainDetails = false;
+        public SpawnTarget spawnTarget = SpawnTarget.PrefabContainer;
 
     }
 }

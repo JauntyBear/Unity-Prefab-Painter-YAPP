@@ -7,24 +7,14 @@ namespace Rowlan.Yapp
 {
     public class TerrainDetailsIntegration
     {
-        SerializedProperty spawnToTerrainDetails;
-
         PrefabPainterEditor editor;
 
         public TerrainDetailsIntegration(PrefabPainterEditor editor)
         {
             this.editor = editor;
-
-            spawnToTerrainDetails = editor.FindProperty(x => x.brushSettings.spawnToTerrainDetails);
-
         }
 
         public void OnInspectorGUI()
-        {
-            EditorGUILayout.PropertyField(spawnToTerrainDetails, new GUIContent("Spawn to Terrain Details"));
-        }
-
-        public void OnInspectorSettingsGUI()
         {
             GUILayout.BeginVertical("box");
             {
@@ -38,7 +28,6 @@ namespace Rowlan.Yapp
                 }
             }
             GUILayout.EndVertical();
-
         }
 
         private void ExtractPrefabs()

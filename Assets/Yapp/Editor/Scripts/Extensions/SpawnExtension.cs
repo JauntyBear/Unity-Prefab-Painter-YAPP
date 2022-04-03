@@ -32,10 +32,10 @@ namespace Rowlan.Yapp
         public void OnInspectorGUI()
         {
             GUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("Spawn", GUIStyles.BoxTitleStyle);
+            EditorGUILayout.LabelField("Physics", GUIStyles.BoxTitleStyle);
 
             // auto physics
-            EditorGUILayout.PropertyField(autoSimulationType, new GUIContent("Physics Simulation"));
+            EditorGUILayout.PropertyField(autoSimulationType, new GUIContent("Simulation"));
             if (autoSimulationType.enumValueIndex != (int)SpawnSettings.AutoSimulationType.None)
             {
                 EditorGUI.indentLevel++;

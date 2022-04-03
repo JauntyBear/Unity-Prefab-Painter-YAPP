@@ -30,6 +30,8 @@ namespace Rowlan.Yapp
         SerializedProperty fallOff2dCurveZ;
         SerializedProperty curveSamplePoints;
 
+        SerializedProperty spawnTarget;
+
         #endregion Properties
 
         #region Integration to external applications
@@ -86,6 +88,8 @@ namespace Rowlan.Yapp
             curveSamplePoints = editor.FindProperty(x => x.brushSettings.curveSamplePoints);
             allowOverlap = editor.FindProperty(x => x.brushSettings.allowOverlap);
             layerMask = editor.FindProperty(x => x.brushSettings.layerMask);
+
+            spawnTarget = editor.FindProperty(x => x.brushSettings.spawnTarget);
 
             // initialize integrated applications
             vegetationStudioProIntegration = new VegetationStudioProIntegration( editor);
@@ -178,35 +182,33 @@ namespace Rowlan.Yapp
 
             GUILayout.EndVertical();
 
-
-            // Integrations
             GUILayout.BeginVertical("box");
             {
-                EditorGUILayout.LabelField("Integrations", GUIStyles.BoxTitleStyle);
+                EditorGUILayout.LabelField("Spawn", GUIStyles.BoxTitleStyle);
 
-                // vegetation studio pro
-                vegetationStudioProIntegration.OnInspectorGUI();
-
-                // terrain details
-                terrainDetailsIntegration.OnInspectorGUI();
+                EditorGUILayout.PropertyField(spawnTarget, new GUIContent("Target"));
             }
             GUILayout.EndVertical();
 
+            // Integrations
             // show integration settings in case they are selected
-            if (editorTarget.brushSettings.spawnToVSPro)
+            switch (editorTarget.brushSettings.spawnTarget)
             {
-                vegetationStudioProIntegration.OnInspectorSettingsGUI();
-            }
-            else if (editorTarget.brushSettings.spawnToTerrainDetails)
-            {
-                terrainDetailsIntegration.OnInspectorSettingsGUI();
-            }
+                case BrushSettings.SpawnTarget.PrefabContainer:
+                    // nothing to do
+                    break;
 
-            // consistency check: only vsp or terrain details supported
-            // TODO: should probably be a combobox; will decide later in case it would make sense to spawn into both
-            if(editorTarget.brushSettings.spawnToVSPro && editorTarget.brushSettings.spawnToTerrainDetails)
-            {
-                EditorGUILayout.HelpBox("Only VSPro or Terrain Details supported, not both at the same time!", MessageType.Error);
+                case BrushSettings.SpawnTarget.TerrainTrees:
+                    terrainDetailsIntegration.OnInspectorGUI();
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainDetails:
+                    EditorGUILayout.HelpBox("Not implemented", MessageType.Error);
+                    break;
+
+                case BrushSettings.SpawnTarget.VegetationStudioPro:
+                    vegetationStudioProIntegration.OnInspectorGUI();
+                    break;
             }
         }
 
@@ -352,37 +354,46 @@ namespace Rowlan.Yapp
 
         public void PersistPrefab(PrefabSettings prefabSettings, PrefabTransform prefabTransform)
         {
-
-            // spawn item to vs pro
-            if (editorTarget.brushSettings.spawnToVSPro)
+            switch (editorTarget.brushSettings.spawnTarget)
             {
-                vegetationStudioProIntegration.AddNewPrefab( prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
-            }
-            // spawn item to terrain details
-            else if (editorTarget.brushSettings.spawnToTerrainDetails)
-            {
-                terrainDetailsIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
-            }
-            // spawn item to scene
-            else
-            {
+                case BrushSettings.SpawnTarget.PrefabContainer:
 
-                // new prefab
-                GameObject instance = PrefabUtility.InstantiatePrefab( prefabSettings.prefab) as GameObject;
+                    // new prefab
+                    GameObject instance = PrefabUtility.InstantiatePrefab(prefabSettings.prefab) as GameObject;
 
-                instance.transform.position = prefabTransform.position;
-                instance.transform.rotation = prefabTransform.rotation;
-                instance.transform.localScale = prefabTransform.scale;
+                    instance.transform.position = prefabTransform.position;
+                    instance.transform.rotation = prefabTransform.rotation;
+                    instance.transform.localScale = prefabTransform.scale;
 
-                // attach as child of container
-                instance.transform.parent = editorTarget.container.transform;
+                    // attach as child of container
+                    instance.transform.parent = editorTarget.container.transform;
 
-                Undo.RegisterCreatedObjectUndo(instance, "Instantiate Prefab");
+                    Undo.RegisterCreatedObjectUndo(instance, "Instantiate Prefab");
 
-                if (editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None)
-                {
-                    autoPhysicsCollection.Add(instance);
-                }
+                    if (editorTarget.spawnSettings.autoSimulationType != SpawnSettings.AutoSimulationType.None)
+                    {
+                        autoPhysicsCollection.Add(instance);
+                    }
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainTrees:
+
+                    terrainDetailsIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
+
+                    break;
+
+                case BrushSettings.SpawnTarget.TerrainDetails:
+
+                    Debug.LogError("Not implemented");
+
+                    break;
+
+                case BrushSettings.SpawnTarget.VegetationStudioPro:
+
+                    vegetationStudioProIntegration.AddNewPrefab(prefabSettings, prefabTransform.position, prefabTransform.rotation, prefabTransform.scale);
+
+                    break;
             }
         }
 

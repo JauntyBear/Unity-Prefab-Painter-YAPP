@@ -12,22 +12,19 @@ namespace Rowlan.Yapp
 {
     public class VegetationStudioProIntegration
     {
-        SerializedProperty spawnToVSPro;
-
         PrefabPainterEditor editor;
 
         public VegetationStudioProIntegration(PrefabPainterEditor editor)
         {
             this.editor = editor;
-
-            spawnToVSPro = editor.FindProperty(x => x.brushSettings.spawnToVSPro);
-
         }
 
         public void OnInspectorGUI()
         {
 #if VEGETATION_STUDIO_PRO
-                EditorGUILayout.PropertyField(spawnToVSPro, new GUIContent("Spawn to VS Pro"));
+            // no detail settings yet
+#else
+            EditorGUILayout.HelpBox("Vegetation Studio Pro not found", MessageType.Error);
 #endif
         }
 
