@@ -14,10 +14,14 @@ namespace Rowlan.Yapp
         PrefabPainter editorTarget;
 #pragma warning restore 0414
 
+        UnityTerrainTreeManager terrainTreeManager;
+
         public ChangeScaleInteraction(PrefabPainterEditor editor)
         {
             this.editor = editor;
             this.editorTarget = editor.GetPainter();
+
+            terrainTreeManager = new UnityTerrainTreeManager(editor);
 
             changeScaleStrength = editor.FindProperty(x => x.interactionSettings.changeScale.changeScaleStrength);
         }
@@ -96,7 +100,7 @@ namespace Rowlan.Yapp
                     float brushSize = editorTarget.brushSettings.brushSize;
                     float adjustFactor = editorTarget.interactionSettings.changeScale.changeScaleStrength / 1000f;
 
-                    UnityTerrainUtils.ChangeScale(hit.point, brushSize, grow, adjustFactor);
+                    terrainTreeManager.ChangeScale(hit.point, brushSize, grow, adjustFactor);
                     
                     break;
 

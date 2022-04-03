@@ -12,11 +12,20 @@ namespace Rowlan.Yapp
         private bool randomTreeColor = false;
         private float treeColorAdjustment = 0.8f;
 
+        SerializedProperty targetTerrain;
+
         PrefabPainterEditor editor;
+
+        UnityTerrainTreeManager terrainTreeManager;
 
         public UnityTerrainTreesIntegration(PrefabPainterEditor editor)
         {
             this.editor = editor;
+
+            terrainTreeManager = new UnityTerrainTreeManager(editor);
+
+            targetTerrain = editor.FindProperty(x => x.brushSettings.targetTerrain);
+
         }
 
         public void OnInspectorGUI()
@@ -25,7 +34,7 @@ namespace Rowlan.Yapp
             {
                 EditorGUILayout.LabelField("Terrain Trees", GUIStyles.BoxTitleStyle);
 
-                EditorGUILayout.HelpBox("Terrain Trees is highly experimental and not fully implemented yet! Backup your project!", MessageType.Warning);
+                EditorGUILayout.PropertyField(targetTerrain, new GUIContent("Target Terrain", "The terrain to work with"));
 
                 EditorGUILayout.BeginHorizontal();
                 {
@@ -45,18 +54,23 @@ namespace Rowlan.Yapp
                     }
                 }
                 EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.HelpBox("Terrain Trees is highly experimental and not fully implemented yet! Backup your project!", MessageType.Warning);
+
             }
             GUILayout.EndVertical();
+
+
         }
 
         private void LogInfo()
         {
-            UnityTerrainUtils.LogTreePrototypes();
+            terrainTreeManager.LogTreePrototypes();
         }
 
         private void RemoveAll()
         {
-            UnityTerrainUtils.RemoveAllTreeInstances();
+            terrainTreeManager.RemoveAllTreeInstances();
         }
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
@@ -72,7 +86,7 @@ namespace Rowlan.Yapp
 
             GameObject prefab = prefabSettings.prefab;
 
-            UnityTerrainUtils.PlaceTree( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
+            terrainTreeManager.PlaceTree( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
         }
 
         public void RemovePrefabs( RaycastHit raycastHit)
@@ -80,7 +94,7 @@ namespace Rowlan.Yapp
             Vector3 position = raycastHit.point;
             float brushSize = editor.GetPainter().brushSettings.brushSize;
 
-            UnityTerrainUtils.RemoveOverlapping( position, brushSize);
+            terrainTreeManager.RemoveOverlapping( position, brushSize);
 
         }
 
@@ -90,7 +104,7 @@ namespace Rowlan.Yapp
         private void CreatePrefabSettingsFromUnityTerrain()
         {
             // get the prefabs
-            List<GameObject> prefabs = UnityTerrainUtils.ExtractPrefabs();
+            List<GameObject> prefabs = terrainTreeManager.ExtractPrefabs();
 
             // create new settings list
             editor.AddPrefabs( Constants.TEMPLATE_NAME_TREE, prefabs, true);

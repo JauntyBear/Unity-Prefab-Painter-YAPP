@@ -114,5 +114,7 @@ namespace Rowlan.Yapp
         /// </summary>
         public SpawnTarget spawnTarget = SpawnTarget.PrefabContainer;
 
+        // The terrain to work with
+        public Terrain targetTerrain = null;
     }
 }

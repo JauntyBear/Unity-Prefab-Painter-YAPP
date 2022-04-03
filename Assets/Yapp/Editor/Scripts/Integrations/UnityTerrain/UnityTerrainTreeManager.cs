@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rowlan.Yapp
 {
-    public class UnityTerrainUtils
+    public class UnityTerrainTreeManager
     {
 
         /// <summary>
@@ -21,12 +21,46 @@ namespace Rowlan.Yapp
         private const int PROTOTYPE_DEFAULT_FILTER_INDEX = -1;
 
 
+#pragma warning disable 0414
+        PrefabPainterEditor editor;
+#pragma warning restore 0414
+
+        public UnityTerrainTreeManager(PrefabPainterEditor editor)
+        {
+            this.editor = editor;
+        }
+
+        private Terrain GetTerrain()
+        {
+            Terrain terrain = editor.GetPainter().brushSettings.targetTerrain;
+
+            if (terrain == null)
+            {
+                Debug.LogError("Terrain not found");
+            }
+
+            return terrain;
+
+        }
+
+        private TerrainData GetTerrainData()
+        {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+            {
+                return null;
+            }
+
+            return terrain.terrainData;
+        }
+
         /// <summary>
         /// Get the prototype index for the prefab from the terrain data
         /// </summary>
         /// <param name="prefab"></param>
         /// <returns>The prototype index or -1 if the no matching prototype found</returns>
-        public static int GetTreePrototypeIndex(TerrainData terrainData, GameObject prefab)
+        public int GetTreePrototypeIndex(TerrainData terrainData, GameObject prefab)
         {
             TreePrototype[] trees = terrainData.treePrototypes;
 
@@ -42,7 +76,7 @@ namespace Rowlan.Yapp
         }
 
 
-        public static void PlaceTree( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
+        public void PlaceTree( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomTreeColor, float treeColorAdjustment)
         {
             Terrain terrain = GetTerrain();
 
@@ -102,7 +136,7 @@ namespace Rowlan.Yapp
         /// <param name="height"></param>
         /// <param name="width"></param>
         /// <param name="rotation"></param>
-        private static void PlaceTree(Terrain terrain, int prototypeIndex, Vector3 position, Color color, float height, float width, float rotation)
+        private void PlaceTree(Terrain terrain, int prototypeIndex, Vector3 position, Color color, float height, float width, float rotation)
         {
             TreeInstance instance = new TreeInstance();
 
@@ -122,7 +156,7 @@ namespace Rowlan.Yapp
         /// Remove all trees from the terrain
         /// </summary>
         /// <param name="terrainData"></param>
-        public static void RemoveAllTreeInstances()
+        public void RemoveAllTreeInstances()
         {
             TerrainData terrainData = GetTerrainData();
 
@@ -139,7 +173,7 @@ namespace Rowlan.Yapp
         /// </summary>
         /// <param name="treeColorAdjustment"></param>
         /// <returns></returns>
-        public static Color GetTreeColor(float treeColorAdjustment)
+        public Color GetTreeColor(float treeColorAdjustment)
         {
             Color color = Color.white * UnityEngine.Random.Range(1.0F, 1.0F - treeColorAdjustment);
             color.a = 1;
@@ -147,33 +181,8 @@ namespace Rowlan.Yapp
             return color;
         }
 
-        // TODO: multi tile terrain
-        private static Terrain GetTerrain()
-        {
-            Terrain terrain = Terrain.activeTerrain;
 
-            if( terrain == null)
-            {
-                Debug.LogError("Terrain not found");
-            }
-
-            return terrain;
-
-        }
-
-        private static TerrainData GetTerrainData()
-        {
-            Terrain terrain = GetTerrain();
-
-            if (terrain == null)
-            {
-                return null;
-            }
-
-            return terrain.terrainData;
-        }
-
-        public static void LogTreePrototypes()
+        public void LogTreePrototypes()
         {
 
             Terrain terrain = GetTerrain();
@@ -194,7 +203,7 @@ namespace Rowlan.Yapp
 
         }
 
-        public static List<GameObject> ExtractPrefabs()
+        public List<GameObject> ExtractPrefabs()
         {
             List<GameObject> prefabs = new List<GameObject>();
 
@@ -221,7 +230,7 @@ namespace Rowlan.Yapp
         /// <param name="brushSize"></param>
         /// <param name="grow"></param>
         /// <param name="adjustFactor"></param>
-        public static void ChangeScale(Vector3 position, float brushSize, bool grow, float adjustFactor)
+        public void ChangeScale(Vector3 position, float brushSize, bool grow, float adjustFactor)
         { 
             Terrain terrain = GetTerrain();
 
@@ -239,7 +248,7 @@ namespace Rowlan.Yapp
         /// <param name="brushSize"></param>
         /// <param name="grow"></param>
         /// <param name="adjustFactor"></param>
-        public static void ChangeScale(Terrain terrain, Vector3 position, float brushSize, bool grow, float adjustFactor)
+        public void ChangeScale(Terrain terrain, Vector3 position, float brushSize, bool grow, float adjustFactor)
         {
             TerrainData terrainData = terrain.terrainData;
 
@@ -275,7 +284,7 @@ namespace Rowlan.Yapp
             terrainData.SetTreeInstances(existingTrees, true);
         }
 
-        public static void SetScale( Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
+        public void SetScale( Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
         {
             Terrain terrain = GetTerrain();
 
@@ -293,7 +302,7 @@ namespace Rowlan.Yapp
         /// <param name="brushSize"></param>
         /// <param name="grow"></param>
         /// <param name="adjustFactor"></param>
-        public static void SetScale(Terrain terrain, Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
+        public void SetScale(Terrain terrain, Vector3 position, float brushSize, float scaleValueX, float scaleValueY)
         {
             TerrainData terrainData = terrain.terrainData;
 
@@ -329,7 +338,7 @@ namespace Rowlan.Yapp
             terrainData.SetTreeInstances(existingTrees, true);
         }
 
-        public static bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
+        public bool IsOverlapping(TerrainData terrainData, Vector3 position, int prototypeIndexFilter, float minDistanceWorld)
         {
             if (useLinq)
             {
@@ -341,7 +350,7 @@ namespace Rowlan.Yapp
             }
         }
 
-        public static void RemoveOverlapping( Vector3 position, float brushSize)
+        public void RemoveOverlapping( Vector3 position, float brushSize)
         {
             Terrain terrain = GetTerrain();
 
@@ -351,7 +360,7 @@ namespace Rowlan.Yapp
             RemoveOverlapping(terrain, position, PROTOTYPE_DEFAULT_FILTER_INDEX, brushSize);
         }
 
-        public static void RemoveOverlapping(Terrain terrain, Vector3 position, int prototypeIndexFilter, float brushSize)
+        public void RemoveOverlapping(Terrain terrain, Vector3 position, int prototypeIndexFilter, float brushSize)
         {
             Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Remove trees");
 
