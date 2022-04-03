@@ -416,7 +416,50 @@ namespace Rowlan.Yapp
             return children;
         }
 
+        public PrefabSettingsTemplate FindTemplate( string templateName)
+        {
+            PrefabSettingsTemplate template = editor.prefabModule.templateCollection.templates.Find(x => x.name == templateName);
+
+            return template;
+        }
+
+        public void AddPrefabs( string templateName, List<GameObject> prefabs, bool clear)
+        {
+            // find tree template
+            PrefabSettingsTemplate template = editor.FindTemplate(templateName);
+
+            if (!template)
+            {
+                Debug.LogError("Template not found: " + templateName);
+                return;
+            }
+
+            // clear the prefab settings list if required
+            if (clear)
+            {
+                editor.GetPainter().prefabSettingsList.Clear();
+            }
+
+            // add the prefabs using the given template
+            foreach (GameObject prefab in prefabs)
+            {
+                PrefabSettings prefabSettings = new PrefabSettings();
+
+                prefabSettings.prefab = prefab;
+
+                prefabSettings.ApplyTemplate(template);
+
+                editor.GetPainter().prefabSettingsList.Add(prefabSettings);
+            }
+
+            // Apply changes to the serializedProperty - always do this in the end of OnInspectorGUI.
+            editor.serializedObject.ApplyModifiedProperties();
+        }
+
         #endregion Common methods
+
+
+
     }
 
 }

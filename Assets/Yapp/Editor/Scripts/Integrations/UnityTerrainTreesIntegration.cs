@@ -7,8 +7,6 @@ namespace Rowlan.Yapp
 {
     public class UnityTerrainTreesIntegration
     {
-        // unfiltered
-        private const int PROTOTYPE_FILTER_DEFAULT = -1;
 
         // internal properties, maybe we'll make them public
         private bool randomTreeColor = false;
@@ -27,16 +25,16 @@ namespace Rowlan.Yapp
             {
                 EditorGUILayout.LabelField("Terrain Trees", GUIStyles.BoxTitleStyle);
 
-                EditorGUILayout.HelpBox("Terrain Trees is experimental and not fully implemented yet!", MessageType.Warning);
+                EditorGUILayout.HelpBox("Terrain Trees is highly experimental and not fully implemented yet! Backup your project!", MessageType.Warning);
 
                 EditorGUILayout.BeginHorizontal();
                 {
-                    if (GUILayout.Button("Log Instances", GUILayout.Width(100)))
+                    if (GUILayout.Button(new GUIContent( "Extract Prefabs", "Replace the prefabs with the ones from the Unity terrain"), GUILayout.Width(100)))
                     {
-                        LogInstances();
+                        CreatePrefabSettingsFromUnityTerrain();
                     }
 
-                    if (GUILayout.Button("Remove All", GUILayout.Width(100)))
+                    if (GUILayout.Button(new GUIContent( "Clear Terrain", "Remove all trees from the terrain"), GUILayout.Width(120)))
                     {
                         RemoveAll();
                     }
@@ -45,12 +43,6 @@ namespace Rowlan.Yapp
             }
             GUILayout.EndVertical();
         }
-
-        private void LogInstances()
-        {
-            UnityTerrainUtils.LogTreePrototypes();
-        }
-
 
 
         private void RemoveAll()
@@ -81,6 +73,18 @@ namespace Rowlan.Yapp
 
             UnityTerrainUtils.RemoveOverlapping( position, brushSize);
 
+        }
+
+        /// <summary>
+        /// Extract the prefabs of the unity terrain and create yapp settings from them.
+        /// </summary>
+        private void CreatePrefabSettingsFromUnityTerrain()
+        {
+            // get the prefabs
+            List<GameObject> prefabs = UnityTerrainUtils.ExtractPrefabs();
+
+            // create new settings list
+            editor.AddPrefabs( Constants.TEMPLATE_NAME_TREE, prefabs, true);
         }
     }
 }

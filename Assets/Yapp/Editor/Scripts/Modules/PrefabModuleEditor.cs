@@ -310,7 +310,7 @@ namespace Rowlan.Yapp
         {
         }
 
-        private void AddPrefab(GameObject prefab, PrefabSettingsTemplate template)
+        public void AddPrefab(GameObject prefab, PrefabSettingsTemplate template)
         {
             // new settings
             PrefabSettings prefabSettings = new PrefabSettings();

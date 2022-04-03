@@ -19,5 +19,10 @@ namespace Rowlan.Yapp
         /// The id for YAPP in Vegetation Studio Pro. Used for the persistent storage.
         /// </summary>
         public const byte VegetationStudioPro_SourceId = 19;
+
+        /// <summary>
+        /// The template name which will be used for the tree settings when the trees are extracted from the unity terrain.
+        /// </summary>
+        public const string TEMPLATE_NAME_TREE = "Tree";
     }
 }

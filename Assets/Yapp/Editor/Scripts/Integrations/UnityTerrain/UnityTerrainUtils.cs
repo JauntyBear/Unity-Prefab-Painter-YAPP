@@ -188,6 +188,25 @@ namespace Rowlan.Yapp
             }
         }
 
+        public static List<GameObject> ExtractPrefabs()
+        {
+            List<GameObject> prefabs = new List<GameObject>();
+
+            TerrainData terrainData = GetTerrainData();
+
+            if (terrainData == null)
+                return prefabs;
+
+            TreePrototype[] trees = terrainData.treePrototypes;
+
+            foreach (TreePrototype prototype in trees)
+            {
+                prefabs.Add(prototype.prefab);
+            }
+
+            return prefabs;
+        }
+
         /// <summary>
         /// Change the scale of all the trees within the brush
         /// </summary>
