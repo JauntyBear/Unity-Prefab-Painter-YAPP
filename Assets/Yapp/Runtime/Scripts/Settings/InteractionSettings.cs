@@ -20,11 +20,23 @@ namespace Rowlan.Yapp
 
         public InteractionType interactionType;
 
-        /// <summary>
-        /// Anti Gravity strength from 0..100
-        /// </summary>
-        [Range(0, 100)]
-        public int antiGravityStrength = 30;
+        [System.Serializable]
+        public struct AntiGravity
+        {
+            /// <summary>
+            /// Anti Gravity strength from 0..100
+            /// </summary>
+            [Range(0, 100)]
+            public int strength;
+
+            public void Reset()
+            {
+                strength = 30;
+            }
+
+        }
+
+        public AntiGravity antiGravity = new AntiGravity();
 
         /// <summary>
         /// Some arbitrary magnet strength from 0..100

@@ -9,7 +9,6 @@ namespace Rowlan.Yapp
         #region Properties
 
         SerializedProperty interactionType;
-        SerializedProperty antiGravityStrength;
         SerializedProperty magnetStrength;
         SerializedProperty changeScaleStrength;
         SerializedProperty setScaleValue;
@@ -31,17 +30,19 @@ namespace Rowlan.Yapp
         private bool needsPhysicsApplied = false; // TODO property
 
 
+        private InteractionModuleI antiGravityModule;
+
         public InteractionModuleEditor(PrefabPainterEditor editor)
         {
             this.editor = editor;
             this.editorTarget = editor.GetPainter();
 
             interactionType = editor.FindProperty(x => x.interactionSettings.interactionType);
-            antiGravityStrength = editor.FindProperty(x => x.interactionSettings.antiGravityStrength);
             magnetStrength = editor.FindProperty(x => x.interactionSettings.magnetStrength);
             changeScaleStrength = editor.FindProperty(x => x.interactionSettings.changeScaleStrength);
             setScaleValue = editor.FindProperty(x => x.interactionSettings.setScaleValue);
 
+            antiGravityModule = new AntiGravityInteraction(editor);
         }
 
         public void OnInspectorGUI()
@@ -67,14 +68,7 @@ namespace Rowlan.Yapp
 
             if (interactionType.enumValueIndex == (int)InteractionSettings.InteractionType.AntiGravity)
             {
-
-                GUILayout.BeginVertical("box");
-
-                EditorGUILayout.LabelField("Anti-Gravity", GUIStyles.BoxTitleStyle);
-
-                EditorGUILayout.PropertyField(antiGravityStrength, new GUIContent("Strength", "Increments in Y-Position per editor step"));
-
-                GUILayout.EndVertical();
+                antiGravityModule.OnInspectorGUI();
             }
 
 
@@ -123,19 +117,11 @@ namespace Rowlan.Yapp
             {
                 if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.AntiGravity)
                 {
-                    switch (brushMode)
+                    if( antiGravityModule.OnSceneGUI( brushMode, raycastHit, out bool applyPhysics))
                     {
-                        case BrushMode.ShiftPressed:
-
-                            AntiGravity(raycastHit);
-
+                        if (applyPhysics)
                             needsPhysicsApplied = true;
-
-                            // don't consume event; mustn't be consumed during layout or repaint
-                            //Event.current.Use();
-                            break;
                     }
-
                 }
 
                 if (editorTarget.interactionSettings.interactionType == InteractionSettings.InteractionType.Magnet)
@@ -225,31 +211,6 @@ namespace Rowlan.Yapp
             }
         }
 
-
-        /// <summary>
-        /// Increment y-position in world space
-        /// </summary>
-        /// <param name="hit"></param>
-        private void AntiGravity(RaycastHit hit)
-        {
-            // just some arbitrary value depending on the magnet strength which ranges from 0..100
-            float antiGravityFactor = editorTarget.interactionSettings.antiGravityStrength / 1000f;
-
-            Transform[] containerChildren = PrefabUtils.GetContainerChildren(editorTarget.container);
-
-            foreach (Transform transform in containerChildren)
-            {
-                Vector3 distance = hit.point - transform.position;
-
-                // only those within the brush
-                if (distance.magnitude > editorTarget.brushSettings.brushSize / 2f)
-                    continue;
-
-                // https://docs.unity3d.com/ScriptReference/Transform-up.html
-                // https://docs.unity3d.com/ScriptReference/Vector3-up.html
-                transform.position += Vector3.up * antiGravityFactor;
-            }
-        }
 
         private void Attract(RaycastHit hit)
         {
