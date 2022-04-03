@@ -7,6 +7,9 @@ namespace Rowlan.Yapp
 {
     public class UnityTerrainTreesIntegration
     {
+        // unfiltered
+        private const int PROTOTYPE_FILTER_DEFAULT = -1;
+
         PrefabPainterEditor editor;
 
         public UnityTerrainTreesIntegration(PrefabPainterEditor editor)
@@ -22,28 +25,65 @@ namespace Rowlan.Yapp
 
                 EditorGUILayout.HelpBox("Terrain Trees is experimental and not fully implemented yet!", MessageType.Warning);
 
-                if (GUILayout.Button("Extract Prefabs", GUILayout.Width(100)))
+                EditorGUILayout.BeginHorizontal();
                 {
-                    ExtractPrefabs();
+                    if (GUILayout.Button("Extract Prefabs", GUILayout.Width(100)))
+                    {
+                        ExtractPrefabs();
+                    }
+
+                    if (GUILayout.Button("Remove All", GUILayout.Width(100)))
+                    {
+                        RemoveAll();
+                    }
                 }
+                EditorGUILayout.EndHorizontal();
             }
             GUILayout.EndVertical();
         }
 
         private void ExtractPrefabs()
         {
-            Terrain terrain = Terrain.activeTerrain;
+            TerrainData terrainData = GetTerrainData();
 
-            if( terrain == null|| terrain.terrainData == null)
+            if (terrainData == null)
+                return;
+
+            TreePrototype[] trees = terrainData.treePrototypes;
+
+            foreach(TreePrototype prototype in trees)
             {
-                Debug.Log("No Terrain");
+                Debug.Log("prototype: " + prototype.prefab);
+            }
+        }
+
+        private Terrain GetTerrain()
+        {
+            return Terrain.activeTerrain; // TODO: multi terrain
+        }
+
+        private TerrainData GetTerrainData()
+        {
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+            {
+                Debug.LogError("Terrain not found");
+
+                return null;
             }
 
-            TreePrototype[] trees = terrain.terrainData.treePrototypes;
-            foreach(TreePrototype pt in trees)
-            {
-                Debug.Log("pt: " + pt.prefab);
-            }
+            return terrain.terrainData;
+        }
+
+        private void RemoveAll()
+        {
+            TerrainData terrainData = GetTerrainData();
+
+            if (terrainData == null)
+                return;
+
+            UnityTerrainUtils.RemoveAllTreeInstances(terrainData);
         }
 
         public void AddNewPrefab(PrefabSettings prefabSettings, Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
@@ -53,7 +93,15 @@ namespace Rowlan.Yapp
 
         public void RemovePrefabs( RaycastHit raycastHit)
         {
-            Debug.LogError("Not implemented");
+            Terrain terrain = GetTerrain();
+
+            if (terrain == null)
+                return;
+
+            Vector3 position = raycastHit.point;
+            float brushSize = editor.GetPainter().brushSettings.brushSize;
+
+            UnityTerrainUtils.RemoveOverlapping(terrain, position, brushSize);
 
         }
     }
