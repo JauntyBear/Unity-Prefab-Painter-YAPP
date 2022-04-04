@@ -101,8 +101,9 @@ namespace Rowlan.Yapp
             }
 
             GameObject prefab = prefabSettings.prefab;
+            bool allowOverlap = editor.GetPainter().brushSettings.allowOverlap;
 
-            terrainTreeManager.PlacePrefab( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment);
+            terrainTreeManager.PlacePrefab( prefab, newPosition, newLocalScale, newRotation, brushSize, randomTreeColor, treeColorAdjustment, allowOverlap);
         }
 
         public void RemovePrefabs( RaycastHit raycastHit)

@@ -76,7 +76,7 @@ namespace Rowlan.Yapp
         }
 
 
-        public void PlacePrefab( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomColor, float colorAdjustment)
+        public void PlacePrefab( GameObject prefab, Vector3 worldPosition, Vector3 worldScale, Quaternion rotation, float brushSize, bool randomColor, float colorAdjustment, bool allowOverlap)
         {
             Terrain terrain = GetTerrain();
 
@@ -109,10 +109,13 @@ namespace Rowlan.Yapp
 
                 int prototypeFilterIndex = PROTOTYPE_DEFAULT_FILTER_INDEX; // no prototypeIndex, we check against all
 
-                bool isOverlapping = IsOverlapping(terrain.terrainData, localPosition, prototypeFilterIndex, minDistance);
+                if (!allowOverlap)
+                {
+                    bool isOverlapping = IsOverlapping(terrain.terrainData, localPosition, prototypeFilterIndex, minDistance);
 
-                if (isOverlapping)
-                    return;
+                    if (isOverlapping)
+                        return;
+                }
 
                 float widthScale = worldScale.x;
                 float heightScale = worldScale.y;
