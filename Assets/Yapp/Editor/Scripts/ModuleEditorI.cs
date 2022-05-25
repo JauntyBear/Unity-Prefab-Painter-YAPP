@@ -21,7 +21,7 @@ namespace Rowlan.Yapp
 
         void ModeChanged(Mode mode);
 
-        public void OnEnteredPlayMode();
+        void OnEnteredPlayMode();
 
     }
 }

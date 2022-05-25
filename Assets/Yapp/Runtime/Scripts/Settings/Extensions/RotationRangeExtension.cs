@@ -6,40 +6,40 @@ namespace Rowlan.Yapp
     {
         public static float GetMinimum(this PrefabSettings.RotationRange rotationRange)
         {
-            return rotationRange switch
+            switch(rotationRange)
             {
-                PrefabSettings.RotationRange.Base_360 => 0f,
-                PrefabSettings.RotationRange.Base_180 => -180f,
-                _ => throw new Exception("Unsupported enum " + rotationRange),
+                case PrefabSettings.RotationRange.Base_360: return 0f;
+                case PrefabSettings.RotationRange.Base_180: return -180f;
+                default: throw new Exception("Unsupported enum " + rotationRange);
             };
         }
         public static float GetMaximum(this PrefabSettings.RotationRange rotationRange)
         {
-            return rotationRange switch
+            switch(rotationRange)
             {
-                PrefabSettings.RotationRange.Base_360 => 360f,
-                PrefabSettings.RotationRange.Base_180 => 180f,
-                _ => throw new Exception("Unsupported enum " + rotationRange),
+                case PrefabSettings.RotationRange.Base_360: return 360f;
+                case PrefabSettings.RotationRange.Base_180: return 180f;
+                default: throw new Exception("Unsupported enum " + rotationRange);
             };
         }
 
         public static PrefabSettings.RotationRange GetNext(this PrefabSettings.RotationRange rotationRange)
         {
-            return rotationRange switch
+            switch(rotationRange)
             {
-                PrefabSettings.RotationRange.Base_360 => PrefabSettings.RotationRange.Base_180,
-                PrefabSettings.RotationRange.Base_180 => PrefabSettings.RotationRange.Base_360,
-                _ => throw new Exception("Unsupported enum " + rotationRange),
+                case PrefabSettings.RotationRange.Base_360: return PrefabSettings.RotationRange.Base_180;
+                case PrefabSettings.RotationRange.Base_180:  return PrefabSettings.RotationRange.Base_360;
+                default: throw new Exception("Unsupported enum " + rotationRange);
             };
         }
 
         public static string GetDisplayName(this PrefabSettings.RotationRange rotationRange)
         {
-            return rotationRange switch
+            switch(rotationRange)
             {
-                PrefabSettings.RotationRange.Base_360 => "0..360",
-                PrefabSettings.RotationRange.Base_180 => "-180..180",
-                _ => throw new Exception("Unsupported enum " + rotationRange),
+                case PrefabSettings.RotationRange.Base_360: return "0..360";
+                case PrefabSettings.RotationRange.Base_180: return "-180..180";
+                default: throw new Exception("Unsupported enum " + rotationRange);
             };
         }
     }
