@@ -26,6 +26,7 @@ Paint Mode
 
 	* in scene view adjust the radius via ctrl + mouse wheel
 	* start painting prefabs by holding shift & dragging the mouse while holding the left mouse button
+	* fluent mode: use alt + mouse wheel to change prefab position in y direction
 
 Spline Mode
 

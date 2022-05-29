@@ -1,0 +1,14 @@
+{
+    "name": "com.rowlan.yapp.runtime",
+    "rootNamespace": "com.rowlan.yapp",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

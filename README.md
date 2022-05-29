@@ -20,7 +20,9 @@ Installation
 
 * create a new Unity project
 
-* add the Yapp folder of this repository to your project
+* add the Yapp folder of this repository to your project or install via Package Manager and this git url:
+
+  https://github.com/Roland09/PrefabPainter.git?path=/Assets/Yapp
 
 * in Hierarchy view open the context menu and press Yapp -> Create PrefabPainter
  
